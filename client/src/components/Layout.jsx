@@ -13,11 +13,7 @@ import { useCart } from "../context/CartContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useState } from "react";
 
-/*
-  Put your real RR MASALA logo here:
-  client/public/rr-masala-logo.png
-*/
-const LOGO_SRC = "/rr-masala-logo.jpg";
+const LOGO_SRC = "/WhatsApp Image 2026-09-17 at 3.09.40 AM.jpeg";
 
 export function Layout() {
   const { count = 0 } = useCart();
@@ -79,6 +75,8 @@ export function Layout() {
           font-size: 10px;
           font-weight: 700;
           letter-spacing: .3px;
+          border: none !important;
+          box-shadow: none !important;
         }
 
         .announceDot {
@@ -94,7 +92,10 @@ export function Layout() {
           background: var(--rr-black);
           position: relative;
           z-index: 1000;
-          box-shadow: 0 2px 16px rgba(0,0,0,.15);
+          border: none !important;
+          border-bottom: 0px solid transparent !important;
+          box-shadow: none !important;
+          outline: none !important;
         }
 
         .brandLogoOnly {
@@ -216,16 +217,11 @@ export function Layout() {
           color: #777;
         }
 
-        .searchNew > svg {
-          margin-left: 15px;
-          flex: 0 0 auto;
-        }
-
         .searchNew input {
           min-width: 0;
           flex: 1;
           height: 100%;
-          padding: 0 10px;
+          padding: 0 10px 0 20px;
           border: 0;
           outline: 0;
           background: transparent;
@@ -245,9 +241,13 @@ export function Layout() {
           display: grid;
           place-items: center;
           border: 0;
-          background: var(--rr-gold);
-          color: #21140c;
+          background: transparent;
+          color: var(--rr-muted);
           cursor: pointer;
+        }
+        
+        .searchNew button:hover {
+          color: var(--rr-gold);
         }
 
         .navActionsNew {
@@ -509,10 +509,11 @@ export function Layout() {
         }
       `}</style>
 
+      {/* Announcement Text */}
       <div className="announcement">
-        <span>Free delivery on orders above ₹999</span>
+        <span>100% Authentic South Indian Spices</span>
         <span className="announceDot">•</span>
-        <span>Cash on Delivery available</span>
+        <span>Taste the Tradition</span>
       </div>
 
       <header className="navbarNew">
@@ -634,8 +635,6 @@ export function Layout() {
         </nav>
 
         <form className="searchNew" onSubmit={search}>
-          <Search size={17} />
-
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
