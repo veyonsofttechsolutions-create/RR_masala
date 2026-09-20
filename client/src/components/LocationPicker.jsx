@@ -244,7 +244,6 @@ export default function LocationPicker({ value = null, onChange }) {
 
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
-  const [locationLoading, setLocationLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
@@ -345,55 +344,6 @@ export default function LocationPicker({ value = null, onChange }) {
     }
   };
 
-  const useCurrentLocation = () => {
-    setError("");
-    setMessage("");
-
-    if (!navigator.geolocation) {
-      setError(
-        "Your browser does not support location access. Please select the location on the map."
-      );
-      return;
-    }
-
-    setLocationLoading(true);
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          await pickCoordinates(
-            position.coords.latitude,
-            position.coords.longitude
-          );
-        } finally {
-          setLocationLoading(false);
-        }
-      },
-      (geoError) => {
-        setLocationLoading(false);
-
-        if (geoError?.code === 1) {
-          setError(
-            "Location permission was denied. Allow location access in your browser and try again."
-          );
-        } else if (geoError?.code === 2) {
-          setError(
-            "Your current location could not be detected. Please select it on the map."
-          );
-        } else {
-          setError(
-            "Could not get your current location. Please try again or select it on the map."
-          );
-        }
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 60000,
-      }
-    );
-  };
-
   const searchLocation = async (event) => {
     event?.preventDefault();
 
@@ -477,31 +427,6 @@ export default function LocationPicker({ value = null, onChange }) {
           line-height: 1.55;
         }
 
-        .rrGpsButton {
-          flex: 0 0 auto;
-          min-height: 40px;
-          padding: 0 13px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 7px;
-          border: 0;
-          border-radius: 10px;
-          background: #17120f;
-          color: #fff;
-          font-size: 11px;
-          font-weight: 800;
-          cursor: pointer;
-        }
-
-        .rrGpsButton:hover {
-          background: #3a2419;
-        }
-
-        .rrGpsButton:disabled {
-          opacity: .6;
-          cursor: not-allowed;
-        }
 
         .rrLocationSearch {
           display: flex;
@@ -654,10 +579,6 @@ export default function LocationPicker({ value = null, onChange }) {
             flex-direction: column;
           }
 
-          .rrGpsButton {
-            width: 100%;
-          }
-
           .rrLocationSearch {
             flex-direction: column;
           }
@@ -677,21 +598,10 @@ export default function LocationPicker({ value = null, onChange }) {
           <div>
             <h4>Choose delivery location</h4>
             <p>
-              Use your current location, search an address, or tap
-              directly on the map.
+              Search an address or tap directly on the map to choose
+              your delivery location. Live location is not used.
             </p>
           </div>
-
-          <button
-            type="button"
-            className="rrGpsButton"
-            onClick={useCurrentLocation}
-            disabled={locationLoading || loading}
-          >
-            {locationLoading
-              ? "Detecting..."
-              : "Use my current location"}
-          </button>
         </div>
 
         <form
@@ -764,16 +674,7 @@ export default function LocationPicker({ value = null, onChange }) {
           </div>
         ) : (
           <div className="rrLocationAddress">
-            Select a point on the map or use the current-location
-            button.
-          </div>
-        )}
-
-        {selectedPosition && (
-          <div className="rrLocationCoords">
-            Latitude: {Number(selected.lat).toFixed(6)}
-            {" • "}
-            Longitude: {Number(selected.lng).toFixed(6)}
+            Search for your address or select a point directly on the map.
           </div>
         )}
 
