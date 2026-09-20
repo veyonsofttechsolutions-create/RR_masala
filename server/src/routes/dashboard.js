@@ -1,0 +1,1 @@
+import {Router} from "express"; import {dashboard,analytics} from "../controllers/dashboardController.js"; import {auth,roles} from "../middleware/auth.js"; const r=Router();r.use(auth,roles("ADMIN","STAFF"));r.get("/",dashboard);r.get("/analytics",analytics);export default r;

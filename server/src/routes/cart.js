@@ -1,0 +1,1 @@
+import {Router} from 'express'; import * as c from '../controllers/cartController.js'; import {auth} from '../middleware/auth.js'; const r=Router(); r.use(auth); r.get('/',c.get); r.put('/',c.update); r.delete('/',c.clear); export default r;

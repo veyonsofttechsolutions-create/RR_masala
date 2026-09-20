@@ -1,0 +1,1 @@
+import mongoose from 'mongoose'; const schema=new mongoose.Schema({action:String,entity:String,entityId:String,performedBy:{type:mongoose.Schema.Types.ObjectId,ref:'User'},metadata:mongoose.Schema.Types.Mixed,ipAddress:String},{timestamps:true}); export default mongoose.model('AuditLog',schema);

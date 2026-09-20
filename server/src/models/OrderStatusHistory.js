@@ -1,0 +1,1 @@
+import mongoose from 'mongoose'; const schema=new mongoose.Schema({order:{type:mongoose.Schema.Types.ObjectId,ref:'Order',index:true},oldStatus:String,newStatus:String,changedBy:{type:mongoose.Schema.Types.ObjectId,ref:'User'},note:String},{timestamps:true}); export default mongoose.model('OrderStatusHistory',schema);

@@ -1,0 +1,4 @@
+import Wishlist from '../models/Wishlist.js';
+import Product from '../models/Product.js';
+export async function get(req,res,next){try{const w=await Wishlist.findOne({user:req.user._id}).populate('products');res.json({success:true,data:{products:w?.products||[]}})}catch(e){next(e)}}
+export async function toggle(req,res,next){try{const p=await Product.findOne({_id:req.params.productId,isActive:true});if(!p)return res.status(404).json({success:false,message:'Product not found'});let w=await Wishlist.findOne({user:req.user._id});if(!w)w=await Wishlist.create({user:req.user._id,products:[]});const i=w.products.findIndex(x=>x.toString()===p._id.toString());if(i>=0)w.products.splice(i,1);else w.products.push(p._id);await w.save();await w.populate('products');res.json({success:true,data:{products:w.products}})}catch(e){next(e)}}

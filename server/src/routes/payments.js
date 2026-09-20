@@ -1,0 +1,1 @@
+import {Router} from "express"; import {auth} from "../middleware/auth.js"; import * as c from "../controllers/paymentController.js"; const r=Router();r.post("/phonepe/create",auth,c.createPayment);r.get("/phonepe/status/:transactionId",auth,c.status);r.post("/phonepe/callback",c.callback);export default r;

@@ -1,0 +1,1 @@
+export async function nextOrderNumber(Order){const d=new Date();const key=`ORD-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;const count=await Order.countDocuments({createdAt:{$gte:new Date(d.getFullYear(),d.getMonth(),d.getDate())}});return `${key}-${String(count+1).padStart(4,'0')}`;}
