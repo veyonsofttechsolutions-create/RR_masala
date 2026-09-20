@@ -7,6 +7,8 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRight,
   CheckCircle2,
+  CreditCard,
+  Globe2,
   Home,
   Landmark,
   LockKeyhole,
@@ -14,11 +16,13 @@ import {
   Phone,
   Plus,
   Save,
+  ShieldCheck,
+  Truck,
+  Plane,
   User,
   X,
 } from "lucide-react";
 
-import LocationPicker from "../components/LocationPicker.jsx";
 
 
 /* =========================================================================
@@ -153,28 +157,6 @@ export default function Checkout() {
     normalizeAddress(defaultAddress, user)
   );
 
-  const [location, setLocation] = useState(() => {
-    if (
-      defaultAddress?.latitude != null &&
-      defaultAddress?.longitude != null
-    ) {
-      return {
-        lat: Number(defaultAddress.latitude),
-        lng: Number(defaultAddress.longitude),
-        address:
-          defaultAddress.address ||
-          defaultAddress.fullAddress ||
-          getAddressText(defaultAddress),
-        displayAddress:
-          defaultAddress.address ||
-          defaultAddress.fullAddress ||
-          getAddressText(defaultAddress),
-        raw: {},
-      };
-    }
-
-    return null;
-  });
 
 
   /* =========================================================================
@@ -196,6 +178,7 @@ export default function Checkout() {
   const [addressMessage, setAddressMessage] = useState("");
   const [shippingMethod, setShippingMethod] = useState("DOMESTIC");
   const [paymentMessage, setPaymentMessage] = useState("");
+  const [showPaymentPreview, setShowPaymentPreview] = useState(false);
 
 
   /* =========================================================================
@@ -230,24 +213,6 @@ export default function Checkout() {
     setAddr(normalizeAddress(preferred, user));
     setSelectedSavedIndex(preferredIndex);
 
-    if (
-      preferred.latitude != null &&
-      preferred.longitude != null
-    ) {
-      setLocation({
-        lat: Number(preferred.latitude),
-        lng: Number(preferred.longitude),
-        address:
-          preferred.address ||
-          preferred.fullAddress ||
-          getAddressText(preferred),
-        displayAddress:
-          preferred.address ||
-          preferred.fullAddress ||
-          getAddressText(preferred),
-        raw: {},
-      });
-    }
   }, [user]);
 
 
@@ -255,11 +220,26 @@ export default function Checkout() {
      SHIPPING
      ========================================================================= */
 
-  const country = String(addr.country || "India").trim();
+  const country =
+    addr.country === "Other"
+      ? String(addr.customCountry || "International").trim()
+      : String(addr.country || "India").trim();
+
   const international = country.toLowerCase() !== "india";
-  const shipping = international ? 0 : (Number(total || 0) >= 999 ? 0 : 50);
-  const grandTotal = Number(total || 0) + shipping;
-  useEffect(() => { setShippingMethod(international ? "AIR" : "DOMESTIC"); }, [international]);
+
+  // Domestic pricing is known by the store configuration.
+  // International freight must come from the server/carrier quote because
+  // destination, parcel weight, dimensions and service affect the charge.
+  const shipping = international
+    ? null
+    : (Number(total || 0) >= 999 ? 0 : 50);
+
+  const grandTotal =
+    Number(total || 0) + Number(shipping || 0);
+
+  useEffect(() => {
+    setShippingMethod(international ? "AIR_EXPRESS" : "DOMESTIC");
+  }, [international]);
 
 
   /* =========================================================================
@@ -302,26 +282,6 @@ export default function Checkout() {
     setErr("");
     setAddressMessage("");
 
-    if (
-      normalized.latitude != null &&
-      normalized.longitude != null
-    ) {
-      setLocation({
-        lat: Number(normalized.latitude),
-        lng: Number(normalized.longitude),
-        address:
-          normalized.address ||
-          normalized.fullAddress ||
-          getAddressText(normalized),
-        displayAddress:
-          normalized.address ||
-          normalized.fullAddress ||
-          getAddressText(normalized),
-        raw: {},
-      });
-    } else {
-      setLocation(null);
-    }
   };
 
 
@@ -334,7 +294,6 @@ export default function Checkout() {
       normalizeAddress(null, user)
     );
 
-    setLocation(null);
     setSelectedSavedIndex(-1);
     setShowNewAddress(true);
     setAddressMessage("");
@@ -345,90 +304,6 @@ export default function Checkout() {
   /* =========================================================================
      LOCATION CHANGE
      ========================================================================= */
-
-  const handleLocationChange = (
-    selectedLocation
-  ) => {
-    if (!selectedLocation) return;
-
-    setLocation(selectedLocation);
-
-    const raw =
-      selectedLocation.raw || {};
-
-    setAddr((previous) => ({
-      ...previous,
-
-      address:
-        selectedLocation.address ||
-        selectedLocation.displayAddress ||
-        previous.address ||
-        "",
-
-      latitude:
-        selectedLocation.lat ??
-        selectedLocation.latitude ??
-        previous.latitude ??
-        null,
-
-      longitude:
-        selectedLocation.lng ??
-        selectedLocation.longitude ??
-        previous.longitude ??
-        null,
-
-      house:
-        selectedLocation.house ||
-        raw.house_number ||
-        previous.house ||
-        "",
-
-      street:
-        selectedLocation.street ||
-        raw.road ||
-        previous.street ||
-        "",
-
-      area:
-        selectedLocation.area ||
-        raw.suburb ||
-        raw.neighbourhood ||
-        raw.village ||
-        previous.area ||
-        "",
-
-      city:
-        selectedLocation.city ||
-        raw.city ||
-        raw.town ||
-        raw.municipality ||
-        previous.city ||
-        "",
-
-      district:
-        selectedLocation.district ||
-        raw.state_district ||
-        raw.county ||
-        previous.district ||
-        "",
-
-      state:
-        selectedLocation.state ||
-        raw.state ||
-        previous.state ||
-        "Tamil Nadu",
-
-      pincode:
-        selectedLocation.pincode ||
-        raw.postcode ||
-        previous.pincode ||
-        "",
-    }));
-
-    setSelectedSavedIndex(-1);
-    setShowNewAddress(true);
-    setErr("");
-  };
 
 
   /* =========================================================================
@@ -478,7 +353,7 @@ export default function Checkout() {
       !getAddressText(addr).trim()
     ) {
       setErr(
-        "Please select your location or enter your address."
+        "Please enter your delivery address."
       );
       return;
     }
@@ -523,29 +398,6 @@ export default function Checkout() {
 
 
     /* -----------------------------------------------------------------------
-       LOCATION
-       ----------------------------------------------------------------------- */
-
-    const lat =
-      location?.lat ??
-      addr?.latitude;
-
-    const lng =
-      location?.lng ??
-      addr?.longitude;
-
-    if (
-      lat == null ||
-      lng == null
-    ) {
-      setErr(
-        "Please select your live location or choose a location on the map."
-      );
-      return;
-    }
-
-
-    /* -----------------------------------------------------------------------
        NAME
        ----------------------------------------------------------------------- */
 
@@ -561,11 +413,15 @@ export default function Checkout() {
 
     const cleanMobile = String(
       addr.mobile || ""
-    ).replace(/\D/g, "");
+    ).trim();
 
-    if (cleanMobile.length !== 10) {
+    const mobileDigits = cleanMobile.replace(/\D/g, "");
+
+    if (mobileDigits.length < 7 || mobileDigits.length > 15) {
       setErr(
-        "Please enter a valid 10 digit mobile number."
+        international
+          ? "Please enter a valid international phone number."
+          : "Please enter a valid 10 digit mobile number."
       );
       return;
     }
@@ -581,16 +437,29 @@ export default function Checkout() {
 
     if (!addressText) {
       setErr(
-        "Please select your delivery location and confirm the address."
+        "Please enter and confirm your delivery address."
       );
       return;
     }
 
     if (!addr.pincode?.trim()) {
-      setErr("Please enter your pincode.");
+      setErr(
+        international
+          ? "Please enter your postal / ZIP code."
+          : "Please enter your pincode."
+      );
       return;
     }
 
+    if (!addr.country?.trim()) {
+      setErr("Please select your delivery country.");
+      return;
+    }
+
+    if (international && !shippingMethod) {
+      setErr("Please select an international delivery method.");
+      return;
+    }
 
     setBusy(true);
 
@@ -604,11 +473,8 @@ export default function Checkout() {
         mobile:
           cleanMobile,
 
-        latitude:
-          Number(lat),
+        country,
 
-        longitude:
-          Number(lng),
 
         address:
           addressText,
@@ -647,49 +513,15 @@ export default function Checkout() {
 
 
       /* ---------------------------------------------------------------------
-         WHATSAPP
+         ONLINE PAYMENT — PROTOTYPE MODE
          --------------------------------------------------------------------- */
 
-      let paymentData = null;
-      try {
-        const paymentResponse = await API.post("/payments/phonepe/create", { orderId: order._id });
-        paymentData = paymentResponse?.data?.data || null;
-      } catch (paymentError) {
-        if (paymentError?.response?.status === 503) {
-          setPaymentMessage("PhonePe is not configured yet. Configure merchant credentials before production checkout.");
-        } else { throw paymentError; }
-      }
-
-      const whatsappUrl =
-        response?.data?.data?.whatsappUrl;
-
-      if (whatsappUrl) {
-        window.open(
-          whatsappUrl,
-          "_blank",
-          "noopener,noreferrer"
-        );
-      }
-
-
-      /* ---------------------------------------------------------------------
-         CLEAR CART ONLY AFTER SUCCESS
-         --------------------------------------------------------------------- */
-
-      if (
-        typeof clearCart === "function"
-      ) {
-        await clearCart();
-      }
-
-
-      /* ---------------------------------------------------------------------
-         SUCCESS
-         --------------------------------------------------------------------- */
-
-      nav(
-        `/order-success?order=${order._id}`
-      );
+      // PhonePe integration is intentionally not connected yet.
+      // This prototype shows the online-payment experience and completes
+      // the order flow without opening a real payment gateway.
+      setPaymentMessage("Secure online payment preview — PhonePe will be connected later.");
+      setShowPaymentPreview(true);
+      window.__rrMasalaPendingOrderId = order._id;
     } catch (error) {
       console.error(
         "ORDER PLACE ERROR:",
@@ -730,8 +562,7 @@ export default function Checkout() {
           </h1>
 
           <p>
-            Use your live location, select a saved
-            address, or add a new delivery address.
+            Select a saved address or enter a new delivery address. No GPS or live location is required.
           </p>
         </div>
 
@@ -758,7 +589,7 @@ export default function Checkout() {
                 </h3>
 
                 <p>
-                  Choose an existing address or add a new one
+                  Select a saved address or add a new delivery address
                 </p>
               </div>
             </div>
@@ -957,10 +788,27 @@ export default function Checkout() {
                 marginTop: "14px",
               }}
             >
-              <LocationPicker
-                value={location}
-                onChange={handleLocationChange}
-              />
+              <div
+                style={{
+                  display: "flex",
+                  gap: "10px",
+                  alignItems: "flex-start",
+                  padding: "13px 14px",
+                  borderRadius: "13px",
+                  background: "linear-gradient(135deg,#fff8e8,#fff)",
+                  border: "1px solid #ead9b8",
+                }}
+              >
+                <MapPin size={18} style={{ flexShrink: 0, marginTop: 2 }} />
+                <div>
+                  <strong style={{ display: "block", fontSize: "13px" }}>
+                    Choose delivery destination
+                  </strong>
+                  <span style={{ display: "block", marginTop: 4, fontSize: "11px", color: "#74675d", lineHeight: 1.55 }}>
+                    Select the delivery country below and enter the complete address. No map, GPS or live-location permission is required.
+                  </span>
+                </div>
+              </div>
             </div>
 
           </div>
@@ -1032,18 +880,16 @@ export default function Checkout() {
                 <input
                   required
                   type="tel"
-                  inputMode="numeric"
-                  maxLength={10}
+                  inputMode="tel"
+                  maxLength={16}
                   value={addr.mobile || ""}
                   onChange={(e) =>
                     updateAddress(
                       "mobile",
-                      e.target.value
-                        .replace(/\D/g, "")
-                        .slice(0, 10)
+                      e.target.value.slice(0, 16)
                     )
                   }
-                  placeholder="10 digit mobile number"
+                  placeholder={international ? "+1 555 123 4567" : "10 digit mobile number"}
                 />
               </label>
 
@@ -1053,7 +899,257 @@ export default function Checkout() {
 
 
           {/* ===============================================================
-              03 FULL ADDRESS
+              03 DESTINATION & DELIVERY
+          ================================================================ */}
+
+          <div className="formSection">
+            <div className="formSectionHead">
+              <span className="number">03</span>
+              <div>
+                <h3>Destination & delivery</h3>
+                <p>Choose India delivery or an international export destination</p>
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gap: "12px",
+              }}
+            >
+              <label>
+                <span style={{ display: "block", marginBottom: "6px" }}>
+                  Country / destination
+                </span>
+                <select
+                  required
+                  value={addr.country || "India"}
+                  onChange={(e) => {
+                    updateAddress("country", e.target.value);
+                    if (e.target.value === "India") {
+                      setShippingMethod("DOMESTIC");
+                    } else {
+                      setShippingMethod("AIR_EXPRESS");
+                    }
+                  }}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    borderRadius: "10px",
+                    border: "1px solid #e5e7eb",
+                    background: "#fff",
+                    font: "inherit",
+                  }}
+                >
+                  <option value="India">India</option>
+                  <option value="United Arab Emirates">United Arab Emirates</option>
+                  <option value="Singapore">Singapore</option>
+                  <option value="Malaysia">Malaysia</option>
+                  <option value="United States">United States</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                  <option value="Canada">Canada</option>
+                  <option value="Australia">Australia</option>
+                  <option value="New Zealand">New Zealand</option>
+                  <option value="Germany">Germany</option>
+                  <option value="France">France</option>
+                  <option value="Netherlands">Netherlands</option>
+                  <option value="Saudi Arabia">Saudi Arabia</option>
+                  <option value="Qatar">Qatar</option>
+                  <option value="Kuwait">Kuwait</option>
+                  <option value="Oman">Oman</option>
+                  <option value="Bahrain">Bahrain</option>
+                  <option value="Sri Lanka">Sri Lanka</option>
+                  <option value="Nepal">Nepal</option>
+                  <option value="Bhutan">Bhutan</option>
+                  <option value="Japan">Japan</option>
+                  <option value="Other">Other</option>
+                </select>
+              </label>
+
+              {addr.country === "Other" && (
+                <label>
+                  <span style={{ display: "block", marginBottom: "6px" }}>
+                    Enter country
+                  </span>
+                  <input
+                    required
+                    value={addr.customCountry || ""}
+                    onChange={(e) =>
+                      updateAddress("customCountry", e.target.value)
+                    }
+                    placeholder="Country name"
+                  />
+                </label>
+              )}
+
+              {international && (
+                <div
+                  style={{
+                    display: "grid",
+                    gap: "9px",
+                  }}
+                >
+                  <span style={{ fontSize: "13px", fontWeight: 700 }}>
+                    International delivery method
+                  </span>
+
+                  <label
+                    style={{
+                      display: "flex",
+                      gap: "10px",
+                      alignItems: "flex-start",
+                      padding: "13px",
+                      borderRadius: "12px",
+                      border: shippingMethod === "AIR_EXPRESS"
+                        ? "2px solid #111827"
+                        : "1px solid #e5e7eb",
+                      background: "#fff",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="shippingMethod"
+                      checked={shippingMethod === "AIR_EXPRESS"}
+                      onChange={() => setShippingMethod("AIR_EXPRESS")}
+                    />
+                    <Plane size={18} />
+                    <span>
+                      <strong style={{ display: "block" }}>
+                        International Express · Air
+                      </strong>
+                      <small style={{ color: "#737373", lineHeight: 1.5 }}>
+                        Cross-border courier/air shipment. Final freight is based on destination and shipment details.
+                      </small>
+                    </span>
+                  </label>
+
+                  <label
+                    style={{
+                      display: "flex",
+                      gap: "10px",
+                      alignItems: "flex-start",
+                      padding: "13px",
+                      borderRadius: "12px",
+                      border: shippingMethod === "ECONOMY"
+                        ? "2px solid #111827"
+                        : "1px solid #e5e7eb",
+                      background: "#fff",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="shippingMethod"
+                      checked={shippingMethod === "ECONOMY"}
+                      onChange={() => setShippingMethod("ECONOMY")}
+                    />
+                    <Truck size={18} />
+                    <span>
+                      <strong style={{ display: "block" }}>
+                        International Economy
+                      </strong>
+                      <small style={{ color: "#737373", lineHeight: 1.5 }}>
+                        Economy cross-border service; carrier and route are selected according to the destination and shipment.
+                      </small>
+                    </span>
+                  </label>
+
+                  <div
+                    style={{
+                      padding: "11px 12px",
+                      borderRadius: "10px",
+                      background: "#fffbeb",
+                      border: "1px solid #fde68a",
+                      fontSize: "12px",
+                      color: "#713f12",
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    International duties, taxes and customs charges can vary by destination and may be collected separately by the destination-country authorities/carrier.
+                  </div>
+
+                  <div
+                    style={{
+                      padding: "14px",
+                      borderRadius: "13px",
+                      background: "#fff",
+                      border: "1px solid #e8e0d7",
+                    }}
+                  >
+                    <strong style={{display:"block",fontSize:"13px"}}>
+                      International courier partners
+                    </strong>
+                    <div style={{display:"flex",flexWrap:"wrap",gap:"7px",marginTop:"9px"}}>
+                      {["DHL Express","FedEx","UPS","India Post / EMS"].map((agency) => (
+                        <span
+                          key={agency}
+                          style={{
+                            padding:"7px 9px",
+                            borderRadius:"999px",
+                            background:"#f7f3ee",
+                            border:"1px solid #e8e0d7",
+                            fontSize:"10px",
+                            fontWeight:800,
+                            color:"#4e4037"
+                          }}
+                        >
+                          {agency}
+                        </span>
+                      ))}
+                    </div>
+                    <small style={{display:"block",marginTop:"9px",color:"#777",lineHeight:1.5}}>
+                      Final carrier is selected according to destination, parcel weight, dimensions, service availability and export requirements.
+                    </small>
+                  </div>
+
+                  <div
+                    style={{
+                      padding: "14px",
+                      borderRadius: "13px",
+                      background: "#fafafa",
+                      border: "1px solid #e8e0d7",
+                    }}
+                  >
+                    <strong style={{display:"block",fontSize:"13px"}}>
+                      International delivery charge
+                    </strong>
+                    <div style={{display:"grid",gap:"6px",marginTop:"9px",fontSize:"11px",color:"#62574f",lineHeight:1.5}}>
+                      <span>• Freight: calculated by destination + shipment weight/dimensions</span>
+                      <span>• Express: higher charge, faster international service</span>
+                      <span>• Economy: lower-cost service where available</span>
+                      <span>• Customs duty / import tax: may be charged separately by destination authorities</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {!international && (
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "9px",
+                    alignItems: "center",
+                    padding: "12px",
+                    borderRadius: "11px",
+                    background: "#f8fafc",
+                    border: "1px solid #e5e7eb",
+                    fontSize: "12px",
+                    color: "#525252",
+                  }}
+                >
+                  <Truck size={17} />
+                  <span>
+                    India delivery · Standard domestic courier · Free above ₹999
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
+
+          {/* ===============================================================
+              04 FULL ADDRESS
           ================================================================ */}
 
           {showNewAddress && (
@@ -1061,7 +1157,7 @@ export default function Checkout() {
 
               <div className="formSectionHead">
                 <span className="number">
-                  03
+                  04
                 </span>
 
                 <div>
@@ -1188,23 +1284,23 @@ export default function Checkout() {
 
                   <label>
                     <span>
-                      Pincode
+                      {international ? "Postal / ZIP code" : "Pincode"}
                     </span>
 
                     <input
                       required
                       inputMode="numeric"
-                      maxLength={6}
+                      maxLength={international ? 12 : 6}
                       value={addr.pincode || ""}
                       onChange={(e) =>
                         updateAddress(
                           "pincode",
-                          e.target.value
-                            .replace(/\D/g, "")
-                            .slice(0, 6)
+                          international
+                            ? e.target.value.slice(0, 12)
+                            : e.target.value.replace(/\D/g, "").slice(0, 6)
                         )
                       }
-                      placeholder="6 digit pincode"
+                      placeholder={international ? "Postal / ZIP code" : "6 digit pincode"}
                     />
                   </label>
 
@@ -1217,7 +1313,7 @@ export default function Checkout() {
 
                   <label>
                     <span>
-                      State
+                      {international ? "State / Province / Region" : "State"}
                     </span>
 
                     <input
@@ -1402,23 +1498,23 @@ export default function Checkout() {
 
 
           {/* ===============================================================
-              04 LOCATION CONFIRMATION
+              05 LOCATION CONFIRMATION
           ================================================================ */}
 
           <div className="formSection">
 
             <div className="formSectionHead">
               <span className="number">
-                04
+                05
               </span>
 
               <div>
                 <h3>
-                  Confirm delivery location
+                  Confirm delivery address
                 </h3>
 
                 <p>
-                  Your selected map location will be sent with the order
+                  The selected or entered address will be used for delivery
                 </p>
               </div>
             </div>
@@ -1457,7 +1553,6 @@ export default function Checkout() {
                   }}
                 >
                   {addr.address ||
-                    location?.address ||
                     getAddressText(addr) ||
                     "Select your delivery location"}
                 </strong>
@@ -1495,26 +1590,6 @@ export default function Checkout() {
                 )}
 
 
-                {location?.lat != null &&
-                  location?.lng != null && (
-                    <div
-                      style={{
-                        marginTop: "8px",
-                        fontSize: "10px",
-                        color: "#a3a3a3",
-                      }}
-                    >
-                      GPS:{" "}
-                      {Number(
-                        location.lat
-                      ).toFixed(6)}
-                      ,{" "}
-                      {Number(
-                        location.lng
-                      ).toFixed(6)}
-                    </div>
-                  )}
-
               </div>
 
             </div>
@@ -1523,14 +1598,14 @@ export default function Checkout() {
 
 
           {/* ===============================================================
-              05 PAYMENT
+              06 PAYMENT
           ================================================================ */}
 
           <div className="formSection">
 
             <div className="formSectionHead">
               <span className="number">
-                05
+                06
               </span>
 
               <div>
@@ -1545,26 +1620,52 @@ export default function Checkout() {
             </div>
 
 
-            <div className="paymentChoice">
-
+            <div
+              className="paymentChoice"
+              style={{
+                border: "1.5px solid #111827",
+                background: "#fafafa",
+              }}
+            >
               <span className="paymentIcon">
-                ₹
+                <CreditCard size={19} />
               </span>
 
-              <div>
-                <b>
-                  Cash on Delivery
+              <div style={{ flex: 1 }}>
+                <b style={{ display: "block" }}>
+                  PhonePe Online Payment
                 </b>
 
                 <small>
-                  Pay when your order arrives
+                  Pay securely online through the PhonePe payment gateway.
+                  UPI, cards and other enabled payment methods are shown by PhonePe.
                 </small>
               </div>
 
               <span className="selected">
                 ✓
               </span>
+            </div>
 
+            <div
+              style={{
+                display: "flex",
+                gap: "8px",
+                alignItems: "flex-start",
+                marginTop: "10px",
+                padding: "11px 12px",
+                borderRadius: "10px",
+                background: "#f0fdf4",
+                border: "1px solid #bbf7d0",
+                color: "#166534",
+                fontSize: "12px",
+                lineHeight: 1.5,
+              }}
+            >
+              <ShieldCheck size={16} style={{ flexShrink: 0, marginTop: 1 }} />
+              <span>
+                Cash on Delivery is not available. You will be redirected to PhonePe after the order is created for online payment.
+              </span>
             </div>
 
           </div>
@@ -1595,7 +1696,7 @@ export default function Checkout() {
             {user
               ? busy
                 ? "Placing order..."
-                : "Place order"
+                : "Continue to PhonePe"
               : "Login to place order"}
 
             <ArrowRight size={18} />
@@ -1718,9 +1819,11 @@ export default function Checkout() {
             </span>
 
             <b>
-              {shipping
-                ? `₹${shipping}`
-                : "FREE"}
+              {international
+                ? "Calculated for destination"
+                : shipping
+                  ? `₹${shipping}`
+                  : "FREE"}
             </b>
           </div>
 
@@ -1732,7 +1835,7 @@ export default function Checkout() {
         <div className="summaryTotal">
 
           <span>
-            Total
+            {international ? "Product total" : "Total"}
           </span>
 
           <strong>
@@ -1742,6 +1845,20 @@ export default function Checkout() {
 
         </div>
 
+        {international && (
+          <div
+            style={{
+              marginTop: "8px",
+              fontSize: "11px",
+              color: "#737373",
+              lineHeight: 1.5,
+            }}
+          >
+            International freight is calculated from the destination and selected service.
+            The final payable amount is confirmed by the order/payment system.
+          </div>
+        )}
+
 
         {/* DELIVERY NOTE */}
 
@@ -1750,43 +1867,131 @@ export default function Checkout() {
           <MapPin size={17} />
 
           <span>
-            Delivery across India.
-            Free delivery above ₹999.
+            {international
+              ? "International export delivery · freight depends on destination and selected service."
+              : "India delivery · standard domestic courier · free above ₹999."}
           </span>
 
         </div>
 
 
-        {/* LOCATION STATUS */}
+        {/* DELIVERY STATUS */}
 
-        {location?.lat != null &&
-          location?.lng != null && (
-
-            <div
-              style={{
-                marginTop: "14px",
-                padding: "11px",
-                borderRadius: "11px",
-                background: "#f0fdf4",
-                color: "#166534",
-                display: "flex",
-                gap: "7px",
-                alignItems: "center",
-                fontSize: "12px",
-                fontWeight: 700,
-              }}
-            >
-
-              <CheckCircle2
-                size={15}
-              />
-
-              Delivery location confirmed
-
-            </div>
-          )}
+        <div
+          style={{
+            marginTop: "14px",
+            padding: "12px",
+            borderRadius: "11px",
+            background: "#f8fafc",
+            border: "1px solid #e5e7eb",
+            color: "#525252",
+            display: "flex",
+            gap: "8px",
+            alignItems: "flex-start",
+            fontSize: "12px",
+            lineHeight: 1.5,
+          }}
+        >
+          <Globe2 size={16} style={{ flexShrink: 0, marginTop: 1 }} />
+          <span>
+            {international
+              ? `Export destination: ${country}. Customs clearance and destination-country duties/taxes may apply.`
+              : "Domestic destination: India. Delivery is handled through the configured domestic courier service."}
+          </span>
+        </div>
 
       </aside>
+
+      {showPaymentPreview && (
+        <div
+          style={{
+            position:"fixed", inset:0, zIndex:9999,
+            background:"rgba(22,12,7,.58)",
+            display:"grid", placeItems:"center",
+            padding:20,
+          }}
+        >
+          <div
+            style={{
+              width:"min(460px,100%)",
+              borderRadius:24,
+              background:"#fff",
+              padding:24,
+              boxShadow:"0 25px 80px rgba(0,0,0,.28)",
+            }}
+          >
+            <div style={{
+              width:54,height:54,borderRadius:16,
+              display:"grid",placeItems:"center",
+              background:"#fff4d6",color:"#7b2d12",
+              marginBottom:14
+            }}>
+              <CreditCard size={25}/>
+            </div>
+
+            <div style={{fontSize:11,fontWeight:900,letterSpacing:1.2,color:"#a06b18"}}>
+              PAYMENT PREVIEW
+            </div>
+            <h2 style={{margin:"7px 0 6px",fontSize:24}}>
+              Confirm your online payment
+            </h2>
+            <p style={{margin:"0 0 18px",color:"#70675f",fontSize:13,lineHeight:1.6}}>
+              This is a temporary payment screen. PhonePe will be connected here later.
+              No cash on delivery is available.
+            </p>
+
+            <div style={{
+              padding:15,borderRadius:15,
+              background:"#faf7f1",border:"1px solid #eee3d3",
+              marginBottom:18
+            }}>
+              <div style={{display:"flex",justifyContent:"space-between",gap:12}}>
+                <span>Products</span>
+                <strong>₹{Number(total||0).toFixed(0)}</strong>
+              </div>
+              <div style={{display:"flex",justifyContent:"space-between",gap:12,marginTop:8}}>
+                <span>Delivery</span>
+                <strong>{international ? "Calculated by destination" : shipping ? `₹${shipping}` : "FREE"}</strong>
+              </div>
+              <div style={{height:1,background:"#e7ded2",margin:"12px 0"}}/>
+              <div style={{display:"flex",justifyContent:"space-between",gap:12,fontSize:18}}>
+                <strong>{international ? "Product total*" : "Total"}</strong>
+                <strong>₹{grandTotal.toFixed(0)}</strong>
+              </div>
+              {international && (
+                <small style={{display:"block",marginTop:8,color:"#777",lineHeight:1.5}}>
+                  * International freight is confirmed from destination and shipment details before final gateway integration.
+                </small>
+              )}
+            </div>
+
+            <button
+              type="button"
+              className="primary wide checkoutButton"
+              onClick={() => {
+                const id = window.__rrMasalaPendingOrderId;
+                delete window.__rrMasalaPendingOrderId;
+                clearCart();
+                nav(`/orders/${id}?payment=prototype-success`);
+              }}
+            >
+              Confirm & Place Order <CheckCircle2 size={18}/>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowPaymentPreview(false)}
+              style={{
+                width:"100%",marginTop:9,padding:"11px",
+                border:"1px solid #e6ddd4",borderRadius:11,
+                background:"#fff",cursor:"pointer",fontWeight:700
+              }}
+            >
+              Go back
+            </button>
+          </div>
+        </div>
+      )}
 
     </main>
   );
