@@ -1,4 +1,4 @@
-import { Link, NavLink, useNavigate, Outlet } from "react-router-dom";
+import { Link, NavLink, useNavigate, Outlet, useLocation } from "react-router-dom";
 import {
   Search,
   ShoppingCart,
@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useCart } from "../context/CartContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 /*
   Put your real RR MASALA logo here:
@@ -23,8 +23,16 @@ export function Layout() {
   const { count = 0 } = useCart();
   const { user } = useAuth();
   const nav = useNavigate();
+  const location = useLocation();
 
   const [open, setOpen] = useState(false);
+
+  // React Router keeps the same document scroll position between routes.
+  // Reset it whenever the pathname/query/hash changes so footer links open
+  // at the top of the destination page instead of preserving the old scroll.
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }, [location.pathname, location.search, location.hash]);
   const [productsOpen, setProductsOpen] = useState(false);
   const [q, setQ] = useState("");
 
@@ -410,6 +418,43 @@ export function Layout() {
           border-color: var(--rr-gold);
         }
 
+        /* Premium global motion */
+        .rrApp {
+          animation: rrAppIn .55s cubic-bezier(.16,1,.3,1) both;
+        }
+
+        @keyframes rrAppIn {
+          from { opacity:0; }
+          to { opacity:1; }
+        }
+
+        .footerGrid > div:not(.footerBrandBlock) > a {
+          position:relative;
+          width:max-content;
+          transition:color .25s ease, transform .3s cubic-bezier(.16,1,.3,1);
+        }
+
+        .footerGrid > div:not(.footerBrandBlock) > a::after {
+          content:"";
+          position:absolute;
+          left:0;
+          bottom:-3px;
+          width:100%;
+          height:1px;
+          background:var(--rr-gold);
+          transform:scaleX(0);
+          transform-origin:left;
+          transition:transform .35s cubic-bezier(.16,1,.3,1);
+        }
+
+        .footerGrid > div:not(.footerBrandBlock) > a:hover {
+          transform:translateX(4px);
+        }
+
+        .footerGrid > div:not(.footerBrandBlock) > a:hover::after {
+          transform:scaleX(1);
+        }
+
         .footerBottom {
           width: min(1180px, 90%);
           margin: auto;
@@ -484,6 +529,14 @@ export function Layout() {
           }
         }
 
+        @media (prefers-reduced-motion: reduce) {
+          .rrApp,
+          .footerGrid > div:not(.footerBrandBlock) > a {
+            animation:none !important;
+            transition:none !important;
+          }
+        }
+
         @media (max-width: 520px) {
           .announcement {
             min-height: 27px;
@@ -512,7 +565,7 @@ export function Layout() {
       <div className="announcement">
         <span>Free delivery on orders above ₹999</span>
         <span className="announceDot">•</span>
-        <span>Cash on Delivery available</span>
+        <span>Secure online payment</span>
       </div>
 
       <header className="navbarNew">
@@ -811,26 +864,26 @@ export function Layout() {
 
           <div>
             <h4>Shop</h4>
-            <Link to="/products">All Products</Link>
-            <Link to="/category/biryani-masala">Masalas</Link>
-            <Link to="/category/pickles">Pickles</Link>
-            <Link to="/category/ready-mix">Ready Mix</Link>
-            <Link to="/category/vadagam">Vadagam</Link>
+            <Link to="/products" onClick={closeMenu}>All Products</Link>
+            <Link to="/category/biryani-masala" onClick={closeMenu}>Masalas</Link>
+            <Link to="/category/pickles" onClick={closeMenu}>Pickles</Link>
+            <Link to="/category/ready-mix" onClick={closeMenu}>Ready Mix</Link>
+            <Link to="/category/vadagam" onClick={closeMenu}>Vadagam</Link>
           </div>
 
           <div>
             <h4>Help</h4>
-            <Link to="/faq">FAQ</Link><Link to="/legal">Legal & Compliance</Link>
-            <Link to="/shipping-policy">Shipping</Link>
-            <Link to="/return-policy">Returns</Link>
-            <Link to="/contact">Contact</Link>
+            {/* <Link to="/faq" onClick={closeMenu}>FAQ</Link><Link to="/legal" onClick={closeMenu}>Legal & Compliance</Link> */}
+            <Link to="/shipping-policy" onClick={closeMenu}>Shipping</Link>
+            <Link to="/return-policy" onClick={closeMenu}>Returns</Link>
+            <Link to="/contact" onClick={closeMenu}>Contact</Link>
           </div>
 
           <div>
             <h4>Legal</h4>
-            <Link to="/privacy-policy">Privacy</Link>
-            <Link to="/terms">Terms</Link>
-            <Link to="/about">About RR MASALA</Link>
+            <Link to="/privacy-policy" onClick={closeMenu}>Privacy</Link>
+            <Link to="/terms" onClick={closeMenu}>Terms</Link>
+            <Link to="/about" onClick={closeMenu}>About RR MASALA</Link>
           </div>
         </div>
 
