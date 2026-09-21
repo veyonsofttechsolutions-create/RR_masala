@@ -1,22 +1,20 @@
 import { Link } from "react-router-dom";
-import { Heart, Plus, ShoppingBag } from "lucide-react";
+import {
+  Heart,
+  Minus,
+  Plus,
+  ShoppingBag,
+} from "lucide-react";
 import { useState } from "react";
 
 import { useCart } from "../context/CartContext.jsx";
 import { useWishlist } from "../context/WishlistContext.jsx";
-import { productImageMap } from "../constants/productImageMap.js";
 
-/**
- * Public product APIs should expose only:
- *   inStock: true | false
- *   stockStatus: "in_stock" | "out_of_stock"
- *
- * Exact stock quantity must never be shown to customers.
- */
+const PLACEHOLDER = "/products/placeholder.svg";
+
 function getStockState(product) {
   if (!product) return false;
 
-  // Explicit public stock status always wins.
   if (
     product.inStock !== undefined ||
     product.stockStatus !== undefined
@@ -27,77 +25,70 @@ function getStockState(product) {
     );
   }
 
-  // Backward compatibility for an older endpoint that still sends stock.
   const stock = Number(product.stock);
   return Number.isFinite(stock) && stock > 0;
 }
 
 function getProductImage(product) {
-  const mapped = productImageMap?.[product?.name];
+  const firstImage = Array.isArray(product?.images)
+    ? product.images[0]
+    : "";
 
-  const firstImage =
-    Array.isArray(product?.images)
-      ? product.images[0]
-      : "";
-
-  if (typeof firstImage === "object") {
+  if (firstImage && typeof firstImage === "object") {
     return (
-      mapped ||
-      firstImage?.url ||
-      firstImage?.src ||
-      firstImage?.path ||
+      firstImage.url ||
+      firstImage.src ||
+      firstImage.path ||
       product?.thumbnail ||
-      "/products/placeholder.svg"
+      product?.image ||
+      product?.imageUrl ||
+      PLACEHOLDER
     );
   }
 
   return (
-    mapped ||
-    firstImage ||
+    (typeof firstImage === "string" && firstImage.trim()
+      ? firstImage
+      : "") ||
     product?.thumbnail ||
     product?.image ||
     product?.imageUrl ||
-    "/products/placeholder.svg"
+    PLACEHOLDER
   );
 }
 
 export default function ProductCard({ product }) {
-  const { setQty, items } = useCart();
-  const { has, toggle } = useWishlist();
+  const {
+    getQty,
+    setQty,
+  } = useCart();
 
+  const { has, toggle } = useWishlist();
   const [busy, setBusy] = useState(false);
 
   const inStock = getStockState(product);
-
-  const current =
-    items.find(
-      (item) =>
-        String(item?.product?._id) ===
-        String(product?._id)
-    )?.quantity || 0;
+  const current = getQty(product);
 
   const img = getProductImage(product);
 
   const discount =
     Number(product?.discountPercentage) || 0;
 
-  const price = Number(product?.price) || 0;
+  const price =
+    Number(product?.price) || 0;
 
   const compareAtPrice =
     Number(product?.compareAtPrice) || 0;
 
-  const add = async (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-
+  const changeCartQuantity = async (next) => {
     if (!inStock || busy) return;
 
     try {
       setBusy(true);
-      await setQty(product, current + 1);
+      await setQty(product, next);
     } catch (error) {
       window.alert(
-        error?.message || "Could not add to cart"
+        error?.message || "Could not update cart."
       );
     } finally {
       setBusy(false);
@@ -111,7 +102,7 @@ export default function ProductCard({ product }) {
     try {
       await toggle(product);
     } catch {
-      window.alert("Please try again");
+      window.alert("Please try again.");
     }
   };
 
@@ -123,11 +114,18 @@ export default function ProductCard({ product }) {
       >
         <img
           src={img}
-          alt={product.name}
+          alt={product?.name || "Product"}
           loading="lazy"
           onError={(event) => {
-            event.currentTarget.src =
-              "/products/placeholder.svg";
+            if (
+              event.currentTarget.src.includes(
+                PLACEHOLDER
+              )
+            ) {
+              return;
+            }
+
+            event.currentTarget.src = PLACEHOLDER;
           }}
         />
 
@@ -187,7 +185,7 @@ export default function ProductCard({ product }) {
           className="productName"
           to={`/product/${product.slug}`}
         >
-          {product.name}
+          {product?.name}
         </Link>
 
         <p className="productDesc">
@@ -208,30 +206,58 @@ export default function ProductCard({ product }) {
             )}
           </div>
 
-          {inStock ? (
+          {!inStock ? (
+            <span className="outStock">
+              Out of stock
+            </span>
+          ) : current > 0 ? (
+            <div
+              className="productQtyControl"
+              aria-label={`Quantity for ${product?.name}`}
+            >
+              <button
+                type="button"
+                disabled={busy}
+                aria-label="Decrease quantity"
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  changeCartQuantity(current - 1);
+                }}
+              >
+                <Minus size={14} />
+              </button>
+
+              <strong>{current}</strong>
+
+              <button
+                type="button"
+                disabled={busy}
+                aria-label="Increase quantity"
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  changeCartQuantity(current + 1);
+                }}
+              >
+                <Plus size={14} />
+              </button>
+            </div>
+          ) : (
             <button
               type="button"
               className="addButton"
               disabled={busy}
-              onClick={add}
-              aria-label={`Add ${product.name} to cart`}
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                changeCartQuantity(1);
+              }}
+              aria-label={`Add ${product?.name || "product"} to cart`}
             >
-              {current > 0 ? (
-                <>
-                  <span>{current}</span>
-                  <Plus size={15} />
-                </>
-              ) : (
-                <>
-                  <ShoppingBag size={15} />
-                  <span>ADD</span>
-                </>
-              )}
+              <ShoppingBag size={15} />
+              <span>ADD</span>
             </button>
-          ) : (
-            <span className="outStock">
-              Out of stock
-            </span>
           )}
         </div>
 
@@ -252,6 +278,48 @@ export default function ProductCard({ product }) {
           </span>
         </div>
       </div>
+
+      <style>{`
+        .productQtyControl {
+          display: inline-flex;
+          align-items: center;
+          justify-content: space-between;
+          min-width: 94px;
+          height: 38px;
+          border: 1px solid #e4d8cd;
+          border-radius: 10px;
+          overflow: hidden;
+          background: #fff;
+        }
+
+        .productQtyControl button {
+          width: 31px;
+          height: 100%;
+          border: 0;
+          background: transparent;
+          color: #4b2113;
+          display: grid;
+          place-items: center;
+          cursor: pointer;
+        }
+
+        .productQtyControl button:hover:not(:disabled) {
+          background: #f7eee6;
+        }
+
+        .productQtyControl button:disabled {
+          opacity: .45;
+          cursor: not-allowed;
+        }
+
+        .productQtyControl strong {
+          min-width: 27px;
+          text-align: center;
+          color: #2c160d;
+          font-size: 13px;
+          font-weight: 900;
+        }
+      `}</style>
     </article>
   );
 }

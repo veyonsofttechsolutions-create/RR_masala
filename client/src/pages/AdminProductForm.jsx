@@ -47,6 +47,11 @@ const EMPTY_FORM = {
   origin: "Tamil Nadu, India",
   packagingType: "Food-grade sealed pack",
   countryOfOrigin: "India", hsnCode: "", fssaiLicenseNo: "", manufacturerName: "", manufacturerAddress: "", packerName: "", packerAddress: "", importerName: "", importerAddress: "", netQuantity: "", consumerCareEmail: "", consumerCarePhone: "", legalMetrologyDeclaration: "", exportNotes: "", isExportable: true,
+  returnable: true,
+  cancellationWindowHours: 24,
+  returnWindowDays: 7,
+  returnShippingDeduction: true,
+  returnPolicyText: "Eligible returns are accepted within the stated return window. Refund covers the eligible product value; original delivery charges are non-refundable unless required by applicable law.",
   variants: [],
   seoTitle: "",
   seoDescription: "",
@@ -151,7 +156,39 @@ async function compressImage(file) {
 
   bitmap.close?.();
 
-  return canvas.toDataURL("image/webp", 0.82);
+  return await new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (!blob) reject(new Error("Could not prepare image."));
+      else resolve(blob);
+    }, "image/webp", 0.82);
+  });
+}
+
+async function uploadToCloudinary(blob) {
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+  if (!cloudName || !uploadPreset) {
+    throw new Error(
+      "Cloudinary is not configured. Add VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET to the client .env file."
+    );
+  }
+
+  const formData = new FormData();
+  formData.append("file", blob, `rr-masala-${Date.now()}.webp`);
+  formData.append("upload_preset", uploadPreset);
+  formData.append("folder", "rr-masala/products");
+
+  const response = await fetch(
+    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+    { method: "POST", body: formData }
+  );
+
+  const data = await response.json();
+  if (!response.ok || !data?.secure_url) {
+    throw new Error(data?.error?.message || "Cloudinary image upload failed.");
+  }
+  return data.secure_url;
 }
 
 export default function AdminProductForm() {
@@ -312,8 +349,8 @@ export default function AdminProductForm() {
   };
 
   const handleFiles = async (fileList) => {
-    const files = Array.from(fileList || []).filter(
-      (file) => file.type?.startsWith("image/")
+    const files = Array.from(fileList || []).filter((file) =>
+      file.type?.startsWith("image/")
     );
 
     if (!files.length) {
@@ -321,21 +358,25 @@ export default function AdminProductForm() {
       return;
     }
 
+    if (form.images.length + files.length > 20) {
+      setError("Maximum 20 product images are allowed.");
+      return;
+    }
+
     try {
       setError("");
-      setMessage(`Processing ${files.length} image${files.length > 1 ? "s" : ""}…`);
+      setMessage(`Optimising and uploading ${Math.min(files.length, 6)} image${files.length > 1 ? "s" : ""}…`);
 
       for (const file of files.slice(0, 6)) {
-        const dataUrl = await compressImage(file);
-        addImage(dataUrl);
+        const blob = await compressImage(file);
+        const url = await uploadToCloudinary(blob);
+        addImage(url);
       }
 
-      setMessage("Device image(s) added successfully.");
+      setMessage("Images uploaded to Cloudinary successfully.");
     } catch (fileError) {
-      setError(
-        fileError?.message ||
-          "Could not process the selected image."
-      );
+      setError(fileError?.message || "Could not upload the selected image.");
+      setMessage("");
     }
   };
 
@@ -481,6 +522,27 @@ export default function AdminProductForm() {
       origin: form.origin.trim(),
       packagingType:
         form.packagingType.trim(),
+
+      countryOfOrigin: form.countryOfOrigin.trim(),
+      hsnCode: form.hsnCode.trim(),
+      fssaiLicenseNo: form.fssaiLicenseNo.trim(),
+      manufacturerName: form.manufacturerName.trim(),
+      manufacturerAddress: form.manufacturerAddress.trim(),
+      packerName: form.packerName.trim(),
+      packerAddress: form.packerAddress.trim(),
+      importerName: form.importerName.trim(),
+      importerAddress: form.importerAddress.trim(),
+      netQuantity: form.netQuantity.trim(),
+      consumerCareEmail: form.consumerCareEmail.trim(),
+      consumerCarePhone: form.consumerCarePhone.trim(),
+      legalMetrologyDeclaration: form.legalMetrologyDeclaration.trim(),
+      exportNotes: form.exportNotes.trim(),
+      isExportable: Boolean(form.isExportable),
+      returnable: Boolean(form.returnable),
+      cancellationWindowHours: Number(form.cancellationWindowHours) || 0,
+      returnWindowDays: Number(form.returnWindowDays) || 0,
+      returnShippingDeduction: Boolean(form.returnShippingDeduction),
+      returnPolicyText: form.returnPolicyText.trim(),
 
       variants: Array.isArray(form.variants)
         ? form.variants
@@ -641,6 +703,8 @@ export default function AdminProductForm() {
           font-size: 12px;
         }
 
+        .editorCheckGrid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:12px; }
+        .editorCheckGrid label { display:flex; align-items:center; gap:8px; padding:11px 12px; border:1px solid #e7e8ea; border-radius:10px; background:#fafafa; font-size:9px; font-weight:800; color:#4b4d52; }
         .editorSectionHead span {
           display: block;
           color: #909398;
@@ -1569,10 +1633,9 @@ export default function AdminProductForm() {
                     Production note
                   </strong>
                   <br />
-                  Device images are compressed to WebP data URLs so the
-                  current JSON product API can accept them without a new
-                  upload endpoint. For large-scale production, connect the
-                  same UI to Cloudinary/S3 and store the returned CDN URL.
+                  Images are resized in the browser and uploaded directly to Cloudinary.
+                  Only the secure CDN URL is saved in MongoDB. This keeps the
+                  product documents small and works well for a low-volume catalogue.
                 </div>
               </div>
             </div>
@@ -1700,6 +1763,57 @@ export default function AdminProductForm() {
                 }
               />
             </label>
+          </section>
+
+          <section className="editorSection">
+            <div className="editorSectionHead">
+              <div className="editorSectionIcon">
+                <Check size={16} />
+              </div>
+              <div>
+                <strong>Compliance, legal & returns</strong>
+                <span>Product-level information shown to customers and used for export documentation</span>
+              </div>
+            </div>
+
+            <div className="editorGrid3">
+              <label className="editorLabel">Country of origin<input className="editorInput" value={form.countryOfOrigin} onChange={(e)=>setField("countryOfOrigin",e.target.value)} /></label>
+              <label className="editorLabel">HS / HSN code<input className="editorInput" value={form.hsnCode} onChange={(e)=>setField("hsnCode",e.target.value)} placeholder="Product-specific code" /></label>
+              <label className="editorLabel">Net quantity<input className="editorInput" value={form.netQuantity} onChange={(e)=>setField("netQuantity",e.target.value)} placeholder="100 g" /></label>
+            </div>
+
+            <div className="editorGrid2">
+              <label className="editorLabel">FSSAI licence / registration no.<input className="editorInput" value={form.fssaiLicenseNo} onChange={(e)=>setField("fssaiLicenseNo",e.target.value)} /></label>
+              <label className="editorLabel">Consumer care email<input className="editorInput" value={form.consumerCareEmail} onChange={(e)=>setField("consumerCareEmail",e.target.value)} /></label>
+            </div>
+
+            <div className="editorGrid2">
+              <label className="editorLabel">Manufacturer name<input className="editorInput" value={form.manufacturerName} onChange={(e)=>setField("manufacturerName",e.target.value)} /></label>
+              <label className="editorLabel">Manufacturer address<textarea className="editorTextarea" value={form.manufacturerAddress} onChange={(e)=>setField("manufacturerAddress",e.target.value)} /></label>
+              <label className="editorLabel">Packer name<input className="editorInput" value={form.packerName} onChange={(e)=>setField("packerName",e.target.value)} /></label>
+              <label className="editorLabel">Packer address<textarea className="editorTextarea" value={form.packerAddress} onChange={(e)=>setField("packerAddress",e.target.value)} /></label>
+            </div>
+
+            <div className="editorGrid2">
+              <label className="editorLabel">Importer name (if applicable)<input className="editorInput" value={form.importerName} onChange={(e)=>setField("importerName",e.target.value)} /></label>
+              <label className="editorLabel">Importer address (if applicable)<textarea className="editorTextarea" value={form.importerAddress} onChange={(e)=>setField("importerAddress",e.target.value)} /></label>
+            </div>
+
+            <label className="editorLabel">Legal metrology declaration<textarea className="editorTextarea" value={form.legalMetrologyDeclaration} onChange={(e)=>setField("legalMetrologyDeclaration",e.target.value)} placeholder="Enter the exact declaration used on the pack." /></label>
+            <label className="editorLabel">Export notes<textarea className="editorTextarea" value={form.exportNotes} onChange={(e)=>setField("exportNotes",e.target.value)} placeholder="Destination-specific documentation, packaging or courier notes." /></label>
+
+            <div className="editorGrid3">
+              <label className="editorLabel">Cancellation window (hours)<input className="editorInput" type="number" min="0" value={form.cancellationWindowHours} onChange={(e)=>setField("cancellationWindowHours",e.target.value)} /></label>
+              <label className="editorLabel">Return window (days)<input className="editorInput" type="number" min="0" value={form.returnWindowDays} onChange={(e)=>setField("returnWindowDays",e.target.value)} /></label>
+              <label className="editorLabel">Return shipping deduction<select className="editorSelect" value={form.returnShippingDeduction ? "yes":"no"} onChange={(e)=>setField("returnShippingDeduction",e.target.value==="yes")}><option value="yes">Deduct delivery charge</option><option value="no">Do not deduct</option></select></label>
+            </div>
+
+            <label className="editorLabel">Return / refund policy<textarea className="editorTextarea" value={form.returnPolicyText} onChange={(e)=>setField("returnPolicyText",e.target.value)} /></label>
+
+            <div className="editorCheckGrid">
+              <label><input type="checkbox" checked={Boolean(form.isExportable)} onChange={(e)=>setField("isExportable",e.target.checked)} /> Exportable product</label>
+              <label><input type="checkbox" checked={Boolean(form.returnable)} onChange={(e)=>setField("returnable",e.target.checked)} /> Returns allowed</label>
+            </div>
           </section>
 
           <section className="editorSection">

@@ -17,6 +17,7 @@ import {
   TicketPercent,
   Users,
   X,
+  Trash2,
 } from "lucide-react";
 
 const configs = {
@@ -335,6 +336,31 @@ export default function AdminManager({ type }) {
     type,
     categories,
   ]);
+
+  const deleteProduct = async (item) => {
+    if (type !== "products") return;
+    const name = item?.name || "this product";
+    const confirmed = window.confirm(
+      `Deactivate ${name}? It will be removed from the storefront but retained in the admin database.`
+    );
+    if (!confirmed) return;
+
+    try {
+      await API.delete(`/products/${item._id}`);
+      setItems((current) =>
+        current.map((product) =>
+          String(product._id) === String(item._id)
+            ? { ...product, isActive: false }
+            : product
+        )
+      );
+    } catch (requestError) {
+      setError(
+        requestError?.response?.data?.message ||
+          "Could not deactivate the product."
+      );
+    }
+  };
 
   const getViewPath = (item) => {
     if (type === "orders") {
@@ -697,6 +723,9 @@ export default function AdminManager({ type }) {
         .managerStatus.neutral,
         .managerStatus.muted { background: #f0f1f2; color: #777a80; }
 
+        .managerActionGroupV2 { display:flex; align-items:center; gap:6px; }
+        .deleteButtonV2 { width:32px; height:32px; border:1px solid #f0d7d7; border-radius:8px; background:#fff7f7; color:#b42318; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; }
+        .deleteButtonV2:hover { background:#feecec; border-color:#efb8b8; }
         .viewButtonV2 {
           display: inline-flex;
           align-items: center;
@@ -1066,13 +1095,24 @@ export default function AdminManager({ type }) {
 
                         <td>
                           {getViewPath(item) !== "#" ? (
-                            <Link
-                              className="viewButtonV2"
-                              to={getViewPath(item)}
-                            >
-                              <Eye size={12} /> View{" "}
-                              <ArrowRight size={11} />
-                            </Link>
+                            <div className="managerActionGroupV2">
+                              <Link
+                                className="viewButtonV2"
+                                to={getViewPath(item)}
+                              >
+                                <Eye size={12} /> Edit <ArrowRight size={11} />
+                              </Link>
+                              {type === "products" && (
+                                <button
+                                  type="button"
+                                  className="deleteButtonV2"
+                                  onClick={() => deleteProduct(item)}
+                                  title="Deactivate product"
+                                >
+                                  <Trash2 size={12} />
+                                </button>
+                              )}
+                            </div>
                           ) : (
                             "—"
                           )}
@@ -1155,13 +1195,23 @@ export default function AdminManager({ type }) {
                       </div>
 
                       {getViewPath(item) !== "#" && (
-                        <Link
-                          className="viewButtonV2 mobileActionV2"
-                          to={getViewPath(item)}
-                        >
-                          <Eye size={12} /> View details
-                          <ArrowRight size={11} />
-                        </Link>
+                        <div className="managerActionGroupV2 mobileActionV2">
+                          <Link
+                            className="viewButtonV2"
+                            to={getViewPath(item)}
+                          >
+                            <Eye size={12} /> Edit <ArrowRight size={11} />
+                          </Link>
+                          {type === "products" && (
+                            <button
+                              type="button"
+                              className="deleteButtonV2"
+                              onClick={() => deleteProduct(item)}
+                            >
+                              <Trash2 size={12} /> Deactivate
+                            </button>
+                          )}
+                        </div>
                       )}
                     </article>
                   );

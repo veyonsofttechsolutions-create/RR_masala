@@ -15,32 +15,32 @@ import {
 
 import { API } from "../api/http.js";
 import { useCart } from "../context/CartContext.jsx";
-import { productImageMap } from "../constants/productImageMap.js";
 
 const PLACEHOLDER = "/products/placeholder.svg";
 
 function getImageList(product) {
   if (!product) return [];
 
-  const mapped = productImageMap?.[product.name];
-
+  // Use only the actual images returned by the backend.
+  // Cloudinary URLs are stored in product.images.
   const raw = [
-    mapped,
     ...(Array.isArray(product.images) ? product.images : []),
     product.thumbnail,
     product.image,
     product.imageUrl,
   ];
 
-  return [...new Set(
-    raw
-      .map((item) => {
-        if (typeof item === "string") return item;
-        return item?.url || item?.src || item?.path || "";
-      })
-      .map((item) => item.trim())
-      .filter(Boolean)
-  )];
+  return [
+    ...new Set(
+      raw
+        .map((item) => {
+          if (typeof item === "string") return item;
+          return item?.url || item?.src || item?.path || "";
+        })
+        .map((item) => String(item).trim())
+        .filter(Boolean)
+    ),
+  ];
 }
 
 function getProductImage(product) {
@@ -107,7 +107,7 @@ function ProductImage({ src, alt, className = "", ...props }) {
 export default function ProductDetails() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const { setQty: setCartQty } = useCart();
+  const { setQty: setCartQty, getQty } = useCart();
 
   const [product, setProduct] = useState(null);
   const [related, setRelated] = useState([]);
@@ -196,6 +196,18 @@ export default function ProductDetails() {
 
   const currentImage = images[activeImage] || images[0] || PLACEHOLDER;
 
+  const cartQuantity = useMemo(
+    () => getQty(product),
+    [getQty, product]
+  );
+
+  useEffect(() => {
+    if (!product) return;
+
+    const existingQuantity = getQty(product);
+    setQuantity(existingQuantity > 0 ? existingQuantity : 1);
+  }, [product, getQty]);
+
   useEffect(() => {
     if (!product || !categorySlug) return;
 
@@ -254,7 +266,18 @@ export default function ProductDetails() {
   const changeQuantity = (next) => {
     if (!inStock) return;
 
-    setQuantity(Math.max(1, next));
+    let safeNext = Math.max(1, Math.floor(Number(next) || 1));
+
+    const exactStock = Number(product?.stock);
+
+    if (
+      Number.isFinite(exactStock) &&
+      exactStock >= 0
+    ) {
+      safeNext = Math.min(safeNext, exactStock);
+    }
+
+    setQuantity(safeNext);
   };
 
   const addToCart = () => {
@@ -670,8 +693,8 @@ export default function ProductDetails() {
             <div>
               <span>₹</span>
               <div>
-                <strong>Cash on Delivery</strong>
-                <small>Simple and convenient payment option</small>
+                <strong>Secure online payment</strong>
+                <small>Online payment available at checkout</small>
               </div>
             </div>
           </section>
@@ -839,7 +862,9 @@ const styles = `
     width: 100%;
     height: 100%;
     object-fit: contain;
-    padding: 34px;
+    object-position: center;
+    padding: 0;
+    margin: 0;
     display: block;
     transition: transform .35s ease;
   }
@@ -1650,7 +1675,7 @@ const styles = `
     }
 
     .rrpd-main-photo {
-      padding: 25px;
+      padding: 0;
     }
 
     .rrpd-info {
@@ -1699,7 +1724,7 @@ const styles = `
     }
 
     .rrpd-main-photo {
-      padding: 18px;
+      padding: 0;
     }
 
     .rrpd-sale-badge {

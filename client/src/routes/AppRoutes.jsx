@@ -30,6 +30,7 @@ import Admin from "../pages/Admin.jsx";
 import AdminLogin from "../pages/AdminLogin.jsx";
 import AdminManager from "../pages/AdminManager.jsx";
 import AdminProductForm from "../pages/AdminProductForm.jsx";
+import AdminOrderDetails from "../pages/AdminOrderDetails.jsx";
 import LegalCenter from "../pages/LegalCenter.jsx";
 
 /* =========================================================
@@ -602,6 +603,15 @@ export function AppRoutes() {
           }
         />
       ))}
+
+      <Route
+        path="/admin/orders/:id"
+        element={
+          <Guard admin>
+            <AdminOrderDetails />
+          </Guard>
+        }
+      />
 
       <Route
         path="/admin/products/new"
