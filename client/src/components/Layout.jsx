@@ -3,6 +3,7 @@ import {
   Search,
   ShoppingCart,
   UserRound,
+  Heart,
   Menu,
   X,
   ChevronDown,
@@ -10,6 +11,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { useCart } from "../context/CartContext.jsx";
+import { useWishlist } from "../context/WishlistContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useEffect, useState } from "react";
 
@@ -17,15 +19,15 @@ const LOGO_SRC = "/WhatsApp Image 2026-09-17 at 3.09.40 AM.jpeg";
 
 export function Layout() {
   const { count = 0 } = useCart();
+  const { items = [] } = useWishlist ? useWishlist() : { items: [] };
+  const wishlistCount = items.length;
+
   const { user } = useAuth();
   const nav = useNavigate();
   const location = useLocation();
 
   const [open, setOpen] = useState(false);
 
-  // React Router keeps the same document scroll position between routes.
-  // Reset it whenever the pathname/query/hash changes so footer links open
-  // at the top of the destination page instead of preserving the old scroll.
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
   }, [location.pathname, location.search, location.hash]);
@@ -57,15 +59,15 @@ export function Layout() {
         ================================================================ */
 
         .rrApp {
-          --rr-black: #14120f;
-          --rr-black-2: #1d1915;
-          --rr-gold: #f4b51b;
-          --rr-gold-2: #ffc62d;
-          --rr-brown: #6e2b14;
-          --rr-brown-2: #8e3b17;
+          --rr-black: #140a07;
+          --rr-black-2: #1e100c;
+          --rr-gold: #f08c14;
+          --rr-gold-2: #ffa726;
+          --rr-brown: #b51c1c;
+          --rr-brown-2: #d92b2b;
           --rr-cream: #faf7f1;
           --rr-text: #241812;
-          --rr-muted: #766c64;
+          --rr-muted: #9e8d85;
           min-height: 100vh;
           background: var(--rr-cream);
           color: var(--rr-text);
@@ -78,8 +80,8 @@ export function Layout() {
           justify-content: center;
           align-items: center;
           gap: 12px;
-          background: #2b1a12;
-          color: #f7ead9;
+          background: #0d0604;
+          color: #fcefe6;
           font-size: 10px;
           font-weight: 700;
           letter-spacing: .3px;
@@ -97,12 +99,11 @@ export function Layout() {
           display: flex;
           align-items: center;
           gap: clamp(22px, 3.2vw, 52px);
-          background: var(--rr-black);
+          background: #140a07;
+          border-bottom: 1px solid #2d1710 !important;
           position: relative;
           z-index: 1000;
-          border: none !important;
-          border-bottom: 0px solid transparent !important;
-          box-shadow: none !important;
+          box-shadow: 0 10px 30px rgba(0,0,0,.35) !important;
           outline: none !important;
         }
 
@@ -138,7 +139,7 @@ export function Layout() {
           display: inline-flex;
           align-items: center;
           gap: 5px;
-          color: #f4f0eb;
+          color: #f7ede5;
           background: transparent;
           border: 0;
           text-decoration: none;
@@ -158,7 +159,7 @@ export function Layout() {
           bottom: 0;
           height: 3px;
           border-radius: 4px 4px 0 0;
-          background: var(--rr-gold);
+          background: #d92b2b;
           transform: scaleX(0);
           transition: transform .2s ease;
         }
@@ -167,7 +168,7 @@ export function Layout() {
         .desktopNavNew > a.active,
         .navDropdownButton:hover,
         .navDropdownButton.active {
-          color: var(--rr-gold-2);
+          color: #ffa726;
         }
 
         .desktopNavNew > a.active::after,
@@ -188,25 +189,25 @@ export function Layout() {
           left: -16px;
           width: 220px;
           padding: 8px;
-          background: #fff;
-          border: 1px solid #eee4d9;
+          background: #1c0e09;
+          border: 1px solid #3d1c14;
           border-radius: 12px;
-          box-shadow: 0 18px 45px rgba(37,18,8,.2);
+          box-shadow: 0 18px 45px rgba(0,0,0,.5);
         }
 
         .navDropdownMenu a {
           display: block;
           padding: 11px 13px;
           border-radius: 8px;
-          color: #35170d;
+          color: #f2e7df;
           text-decoration: none;
           font-size: 13px;
           font-weight: 700;
         }
 
         .navDropdownMenu a:hover {
-          background: #fff5df;
-          color: #a04a14;
+          background: #2a150e;
+          color: #ffa726;
         }
 
         .rotateChevron {
@@ -220,9 +221,10 @@ export function Layout() {
           display: flex;
           align-items: center;
           overflow: hidden;
-          background: #fff;
+          background: #23120c;
+          border: 1px solid #3d1c14;
           border-radius: 24px;
-          color: #777;
+          color: #bbb;
         }
 
         .searchNew input {
@@ -233,13 +235,13 @@ export function Layout() {
           border: 0;
           outline: 0;
           background: transparent;
-          color: #30251f;
+          color: #fff;
           font: inherit;
           font-size: 11px;
         }
 
         .searchNew input::placeholder {
-          color: #8c8884;
+          color: #9e8d85;
         }
 
         .searchNew button {
@@ -250,23 +252,23 @@ export function Layout() {
           place-items: center;
           border: 0;
           background: transparent;
-          color: var(--rr-muted);
+          color: #bfaea5;
           cursor: pointer;
         }
         
         .searchNew button:hover {
-          color: var(--rr-gold);
+          color: #ffa726;
         }
 
         .navActionsNew {
           display: flex;
           align-items: center;
-          gap: 20px;
+          gap: 15px;
           flex-shrink: 0;
         }
 
         .accountButton,
-        .cartButtonNew,
+        .wishlistButtonNew,
         .mobileMenuNew {
           position: relative;
           display: grid;
@@ -275,28 +277,77 @@ export function Layout() {
           background: transparent;
           color: #fff;
           cursor: pointer;
-          padding: 4px;
+          padding: 6px;
+          border-radius: 50%;
+          transition: color .2s ease;
         }
 
         .accountButton:hover,
-        .cartButtonNew:hover {
-          color: var(--rr-gold);
+        .wishlistButtonNew:hover {
+          color: #ffa726;
         }
 
-        .cartButtonNew b {
+        .wishlistButtonNew b {
           position: absolute;
-          top: -7px;
-          right: -8px;
+          top: -3px;
+          right: -4px;
           min-width: 17px;
           height: 17px;
           padding: 0 4px;
           display: grid;
           place-items: center;
           border-radius: 50%;
-          background: #e42c25;
+          background: #d92b2b;
           color: #fff;
           font-size: 9px;
           line-height: 1;
+        }
+
+        .cartButtonNew {
+          position: relative;
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          padding: 7px 14px 7px 11px;
+          background: #f7efe5;
+          color: #24140e;
+          border: 1px solid #e7d8c8;
+          border-radius: 20px;
+          font-size: 13px;
+          font-weight: 800;
+          letter-spacing: .2px;
+          cursor: pointer;
+          transition: all .2s ease;
+          box-shadow: 0 3px 10px rgba(0,0,0,.18);
+        }
+
+        .cartButtonNew svg {
+          color: #b51c1c;
+        }
+
+        .cartButtonNew:hover {
+          background: #ffffff;
+          border-color: #ffa726;
+          transform: translateY(-1px);
+          box-shadow: 0 6px 14px rgba(0,0,0,.25);
+        }
+
+        .cartButtonNew b {
+          position: absolute;
+          top: -6px;
+          right: -6px;
+          min-width: 19px;
+          height: 19px;
+          padding: 0 4px;
+          display: grid;
+          place-items: center;
+          border-radius: 10px;
+          background: #d92b2b;
+          color: #fff;
+          font-size: 10px;
+          font-weight: 900;
+          line-height: 1;
+          box-shadow: 0 2px 6px rgba(217,43,43,.4);
         }
 
         .mobileMenuNew {
@@ -310,9 +361,9 @@ export function Layout() {
           right: 0;
           z-index: 999;
           display: none;
-          background: #17130f;
-          border-top: 1px solid rgba(255,255,255,.08);
-          box-shadow: 0 18px 35px rgba(0,0,0,.25);
+          background: #140a07;
+          border-top: 1px solid #2d1710;
+          box-shadow: 0 18px 35px rgba(0,0,0,.45);
         }
 
         .mobileMenuPanel > a,
@@ -324,7 +375,7 @@ export function Layout() {
           align-items: center;
           justify-content: space-between;
           border: 0;
-          border-bottom: 1px solid rgba(255,255,255,.08);
+          border-bottom: 1px solid #28140e;
           background: transparent;
           color: #fff;
           text-decoration: none;
@@ -334,7 +385,7 @@ export function Layout() {
         }
 
         .mobileProductLinks {
-          background: #0f0d0b;
+          background: #0d0604;
         }
 
         .mobileProductLinks a {
@@ -342,14 +393,15 @@ export function Layout() {
           padding: 12px 38px;
           color: #ddd;
           text-decoration: none;
-          border-bottom: 1px solid rgba(255,255,255,.05);
+          border-bottom: 1px solid #1f0e08;
           font-size: 13px;
         }
 
         .footerNew {
           margin-top: 0;
-          background: #1b120e;
+          background: #140a07;
           color: #eadfd5;
+          border-top: 1px solid #2d1710;
         }
 
         .footerGrid {
@@ -373,7 +425,7 @@ export function Layout() {
 
         .footerBrandBlock p {
           margin: 15px 0 18px;
-          color: #bbaea4;
+          color: #b39f94;
           font-size: 13px;
           line-height: 1.7;
         }
@@ -387,13 +439,13 @@ export function Layout() {
         .footerGrid > div:not(.footerBrandBlock) > a {
           display: block;
           margin: 0 0 10px;
-          color: #bbaea4;
+          color: #b39f94;
           text-decoration: none;
           font-size: 12px;
         }
 
         .footerGrid > div:not(.footerBrandBlock) > a:hover {
-          color: var(--rr-gold);
+          color: #ffa726;
         }
 
         .socials {
@@ -406,19 +458,19 @@ export function Layout() {
           height: 34px;
           display: grid;
           place-items: center;
-          border: 1px solid rgba(255,255,255,.12);
+          border: 1px solid #3d1c14;
+          background: #1e100c;
           border-radius: 50%;
           color: #fff;
           text-decoration: none;
         }
 
         .socials a:hover {
-          color: #1a120d;
-          background: var(--rr-gold);
-          border-color: var(--rr-gold);
+          color: #fff;
+          background: #d92b2b;
+          border-color: #d92b2b;
         }
 
-        /* Premium global motion */
         .rrApp {
           animation: rrAppIn .55s cubic-bezier(.16,1,.3,1) both;
         }
@@ -441,7 +493,7 @@ export function Layout() {
           bottom:-3px;
           width:100%;
           height:1px;
-          background:var(--rr-gold);
+          background:#ffa726;
           transform:scaleX(0);
           transform-origin:left;
           transition:transform .35s cubic-bezier(.16,1,.3,1);
@@ -462,8 +514,8 @@ export function Layout() {
           display: flex;
           justify-content: space-between;
           gap: 20px;
-          border-top: 1px solid rgba(255,255,255,.1);
-          color: #8f8178;
+          border-top: 1px solid #26130b;
+          color: #8c786e;
           font-size: 10px;
         }
 
@@ -714,11 +766,24 @@ export function Layout() {
 
           <button
             type="button"
+            className="wishlistButtonNew"
+            onClick={() => nav("/wishlist")}
+            aria-label="Wishlist"
+          >
+            <Heart size={21} />
+            {wishlistCount > 0 && (
+              <b>{wishlistCount}</b>
+            )}
+          </button>
+
+          <button
+            type="button"
             className="cartButtonNew"
             onClick={() => nav("/cart")}
             aria-label="Cart"
           >
-            <ShoppingCart size={23} />
+            <ShoppingCart size={18} />
+            <span>Cart</span>
 
             {Number(count) > 0 && (
               <b>{count}</b>
@@ -824,6 +889,10 @@ export function Layout() {
             {user ? "My Account" : "Login"}
           </Link>
 
+          <Link to="/wishlist" onClick={closeMenu}>
+            Wishlist{wishlistCount > 0 ? ` (${wishlistCount})` : ""}
+          </Link>
+
           <Link to="/cart" onClick={closeMenu}>
             Cart{Number(count) > 0 ? ` (${count})` : ""}
           </Link>
@@ -872,7 +941,6 @@ export function Layout() {
 
           <div>
             <h4>Help</h4>
-            {/* <Link to="/faq" onClick={closeMenu}>FAQ</Link><Link to="/legal" onClick={closeMenu}>Legal & Compliance</Link> */}
             <Link to="/shipping-policy" onClick={closeMenu}>Shipping</Link>
             <Link to="/return-policy" onClick={closeMenu}>Returns</Link>
             <Link to="/contact" onClick={closeMenu}>Contact</Link>
