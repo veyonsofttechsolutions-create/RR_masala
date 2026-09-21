@@ -21,8 +21,6 @@ const PLACEHOLDER = "/products/placeholder.svg";
 function getImageList(product) {
   if (!product) return [];
 
-  // Use only the actual images returned by the backend.
-  // Cloudinary URLs are stored in product.images.
   const raw = [
     ...(Array.isArray(product.images) ? product.images : []),
     product.thumbnail,
@@ -111,7 +109,7 @@ export default function ProductDetails() {
 
   const [product, setProduct] = useState(null);
   const [related, setRelated] = useState([]);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(0);
   const [activeImage, setActiveImage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [relatedLoading, setRelatedLoading] = useState(false);
@@ -125,7 +123,7 @@ export default function ProductDetails() {
     setError("");
     setProduct(null);
     setRelated([]);
-    setQuantity(1);
+    setQuantity(0);
     setActiveImage(0);
     setCartMessage("");
 
@@ -176,7 +174,6 @@ export default function ProductDetails() {
       );
     }
 
-    // Backward compatibility for an older endpoint.
     const value = Number(product.stock);
     return Number.isFinite(value) && value > 0;
   }, [product]);
@@ -205,7 +202,7 @@ export default function ProductDetails() {
     if (!product) return;
 
     const existingQuantity = getQty(product);
-    setQuantity(existingQuantity > 0 ? existingQuantity : 1);
+    setQuantity(existingQuantity > 0 ? existingQuantity : 0);
   }, [product, getQty]);
 
   useEffect(() => {
@@ -266,7 +263,7 @@ export default function ProductDetails() {
   const changeQuantity = (next) => {
     if (!inStock) return;
 
-    let safeNext = Math.max(1, Math.floor(Number(next) || 1));
+    let safeNext = Math.max(0, Math.floor(Number(next) || 0));
 
     const exactStock = Number(product?.stock);
 
@@ -281,7 +278,7 @@ export default function ProductDetails() {
   };
 
   const addToCart = () => {
-    if (!product || !inStock) return;
+    if (!product || !inStock || quantity <= 0) return;
 
     try {
       setCartQty(product, quantity);
@@ -296,7 +293,7 @@ export default function ProductDetails() {
   };
 
   const buyNow = () => {
-    if (!product || !inStock) return;
+    if (!product || !inStock || quantity <= 0) return;
 
     try {
       setCartQty(product, quantity);
@@ -472,7 +469,7 @@ export default function ProductDetails() {
               <div className="rrpd-rating-placeholder">
                 <span className="rrpd-dot" />
                 <span>
-                  Authentic pantry essential from the RR MASALA collection
+                  Authentic pantry essential from the RR MASALA collection[cite: 1]
                 </span>
               </div>
 
@@ -520,7 +517,7 @@ export default function ProductDetails() {
                   <button
                     type="button"
                     onClick={() => changeQuantity(quantity - 1)}
-                    disabled={!inStock || quantity <= 1}
+                    disabled={!inStock || quantity <= 0}
                     aria-label="Decrease quantity"
                   >
                     <Minus size={17} />
@@ -542,7 +539,7 @@ export default function ProductDetails() {
                   type="button"
                   className="rrpd-primary-btn rrpd-cart-btn"
                   onClick={addToCart}
-                  disabled={!inStock}
+                  disabled={!inStock || quantity <= 0}
                 >
                   <ShoppingBag size={18} />
                   {inStock ? "Add to cart" : "Out of stock"}
@@ -554,6 +551,7 @@ export default function ProductDetails() {
                   type="button"
                   className="rrpd-buy-btn"
                   onClick={buyNow}
+                  disabled={quantity <= 0}
                 >
                   Buy it now
                   <ArrowRight size={17} />
@@ -1858,7 +1856,6 @@ const styles = `
     }
   }
 
-  /* Compliance information */
   .rrpd-compliance {
     margin-top: 22px;
     padding: 18px;
