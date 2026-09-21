@@ -1,442 +1,473 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
 import { API } from "../api/http.js";
 import { useAuth } from "./AuthContext.jsx";
 
-const C = createContext(null);
+const CartContext = createContext(null);
 
-const key = "RR MASALA_guest_cart";
+const STORAGE_KEY = "RR MASALA_guest_cart";
 
-/* =========================================================================
-   PUBLIC STOCK STATE
-
-   Customer-facing APIs should expose:
-     inStock: true / false
-     stockStatus: "in_stock" / "out_of_stock"
-
-   They should NOT expose the exact stock quantity.
-   ========================================================================= */
-
-function isProductInStock(product) {
-  if (!product) return false;
-
-  // If the API supplied an explicit public status, trust it.
-  if (
-    product.inStock !== undefined ||
-    product.stockStatus !== undefined
-  ) {
-    return (
-      product.inStock === true ||
-      product.stockStatus === "in_stock"
-    );
-  }
-
-  // Backward compatibility only.
-  const stock = Number(product.stock);
-  return Number.isFinite(stock) && stock > 0;
+function isValidCartItem(item) {
+  return Boolean(
+    item &&
+      item.product &&
+      item.product._id &&
+      Number(item.quantity) > 0
+  );
 }
 
-/* =========================================================================
-   SAFE LOCAL STORAGE
-   ========================================================================= */
+function normalizeItem(item) {
+  if (!item?.product?._id) return null;
 
-function getGuestCart() {
+  const quantity = Math.floor(Number(item.quantity));
+
+  if (!Number.isFinite(quantity) || quantity < 1) {
+    return null;
+  }
+
+  return {
+    product: item.product,
+    quantity,
+  };
+}
+
+function cleanItems(items) {
+  if (!Array.isArray(items)) return [];
+
+  const map = new Map();
+
+  for (const raw of items) {
+    const item = normalizeItem(raw);
+    if (!item) continue;
+
+    const id = String(item.product._id);
+    const existing = map.get(id);
+
+    if (existing) {
+      existing.quantity += item.quantity;
+    } else {
+      map.set(id, item);
+    }
+  }
+
+  return Array.from(map.values());
+}
+
+function readGuestCart() {
   try {
-    const saved = localStorage.getItem(key);
-
+    const saved = localStorage.getItem(STORAGE_KEY);
     if (!saved) return [];
 
-    const parsed = JSON.parse(saved);
-
-    if (!Array.isArray(parsed)) return [];
-
-    return parsed.filter(
-      (item) =>
-        item &&
-        item.product &&
-        item.product._id &&
-        Number(item.quantity) > 0
-    );
+    return cleanItems(JSON.parse(saved));
   } catch {
-    localStorage.removeItem(key);
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // Ignore storage errors.
+    }
+
     return [];
   }
 }
 
-/* =========================================================================
-   CART PROVIDER
-   ========================================================================= */
+function getProductId(product) {
+  return String(product?._id || product?.id || "");
+}
+
+function getServerCartItems(response) {
+  const items =
+    response?.data?.data?.cart?.items ||
+    response?.data?.cart?.items ||
+    response?.data?.items ||
+    [];
+
+  return cleanItems(items);
+}
 
 export function CartProvider({ children }) {
   const { user } = useAuth();
 
-  const [items, setItems] = useState(() =>
-    getGuestCart()
+  const [items, setItems] = useState(() => readGuestCart());
+  const [syncing, setSyncing] = useState(false);
+
+  /*
+   * One source of truth:
+   *
+   * ProductCard
+   * ProductDetails
+   * Cart
+   * Checkout
+   * Header count
+   *
+   * all read/write through this context.
+   */
+
+  const syncServerQuantity = useCallback(
+    async (productId, quantity) => {
+      if (!user || !productId) return null;
+
+      const response = await API.put("/cart", {
+        productId,
+        quantity,
+      });
+
+      return getServerCartItems(response);
+    },
+    [user]
   );
 
-  /* =========================================================================
-     LOAD CART
-     ========================================================================= */
-
+  /*
+   * Load server cart after login.
+   *
+   * Guest cart is merged instead of silently disappearing.
+   */
   useEffect(() => {
     let active = true;
 
     if (!user) {
-      setItems(getGuestCart());
+      setItems(readGuestCart());
+      setSyncing(false);
       return () => {
         active = false;
       };
     }
 
-    API.get("/cart")
-      .then((response) => {
+    const load = async () => {
+      setSyncing(true);
+
+      try {
+        const guestItems = readGuestCart();
+        const response = await API.get("/cart");
+        const serverItems = getServerCartItems(response);
+
+        /*
+         * Merge guest cart into server cart by product id.
+         * Existing server quantity + guest quantity.
+         */
+        const mergedMap = new Map();
+
+        for (const item of serverItems) {
+          mergedMap.set(String(item.product._id), item);
+        }
+
+        for (const item of guestItems) {
+          const id = String(item.product._id);
+          const existing = mergedMap.get(id);
+
+          if (existing) {
+            mergedMap.set(id, {
+              ...existing,
+              quantity:
+                Number(existing.quantity) +
+                Number(item.quantity),
+            });
+          } else {
+            mergedMap.set(id, item);
+          }
+        }
+
+        const merged = Array.from(mergedMap.values());
+
         if (!active) return;
 
-        const serverItems =
-          response?.data?.data?.cart?.items || [];
+        setItems(merged);
 
-        const validItems = serverItems
-          .filter(
-            (item) =>
-              item &&
-              item.product &&
-              item.product._id &&
-              Number(item.quantity) > 0
-          )
-          .map((item) => ({
-            product: item.product,
-            quantity: Number(item.quantity),
-          }));
+        /*
+         * Persist the merged guest quantities to the server.
+         * Existing /cart API is reused.
+         */
+        if (guestItems.length) {
+          await Promise.allSettled(
+            guestItems.map((item) => {
+              const id = String(item.product._id);
+              const mergedItem = mergedMap.get(id);
 
-        setItems(validItems);
-      })
-      .catch((error) => {
-        if (!active) return;
+              return API.put("/cart", {
+                productId: id,
+                quantity: Number(mergedItem?.quantity || 0),
+              });
+            })
+          );
 
-        console.error(
-          "Failed to load cart:",
-          error
-        );
+          try {
+            localStorage.removeItem(STORAGE_KEY);
+          } catch {
+            // Ignore storage errors.
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load cart:", error);
 
-        setItems([]);
-      });
+        /*
+         * Do not destroy a valid guest cart if server loading fails.
+         */
+        if (active) {
+          setItems(readGuestCart());
+        }
+      } finally {
+        if (active) setSyncing(false);
+      }
+    };
+
+    load();
 
     return () => {
       active = false;
     };
   }, [user]);
 
-  /* =========================================================================
-     SAVE GUEST CART
-     ========================================================================= */
-
+  /*
+   * Persist guest cart on every change.
+   */
   useEffect(() => {
     if (user) return;
 
     try {
-      const validItems = items.filter(
-        (item) =>
-          item &&
-          item.product &&
-          item.product._id &&
-          Number(item.quantity) > 0
-      );
-
       localStorage.setItem(
-        key,
-        JSON.stringify(validItems)
+        STORAGE_KEY,
+        JSON.stringify(cleanItems(items))
       );
     } catch (error) {
-      console.error(
-        "Failed to save guest cart:",
-        error
-      );
+      console.error("Failed to save guest cart:", error);
     }
   }, [items, user]);
 
-  /* =========================================================================
-     SET QUANTITY
+  /*
+   * Central quantity setter.
+   *
+   * quantity <= 0 => remove
+   *
+   * This is the ONLY function components need to call for
+   * increasing/decreasing/removing a product.
+   */
+  const setQty = useCallback(
+    async (product, requestedQuantity) => {
+      const productId = getProductId(product);
 
-     IMPORTANT:
-     We do NOT compare against product.stock on the
-     customer side because the public API hides exact stock.
+      if (!productId) {
+        throw new Error("Invalid product.");
+      }
 
-     The server must perform the authoritative quantity
-     validation against MongoDB stock.
-     ========================================================================= */
+      let nextQuantity = Math.floor(Number(requestedQuantity));
 
-  const setQty = async (product, quantity) => {
-    if (!product || !product._id) {
-      console.warn(
-        "Invalid product passed to cart."
-      );
-      return;
-    }
+      if (!Number.isFinite(nextQuantity)) {
+        throw new Error("Invalid quantity.");
+      }
 
-    const productId = product._id;
-    const nextQuantity = Math.floor(
-      Number(quantity)
-    );
+      nextQuantity = Math.max(0, nextQuantity);
 
-    if (!Number.isFinite(nextQuantity)) {
-      throw new Error("Invalid quantity");
-    }
+      /*
+       * Client-side stock check only when exact stock is actually
+       * present. Public APIs may intentionally hide exact stock.
+       */
+      const stock = Number(product?.stock);
 
-    /* -----------------------------------------------------------------------
-       REMOVE PRODUCT
-       ----------------------------------------------------------------------- */
+      if (
+        nextQuantity > 0 &&
+        Number.isFinite(stock) &&
+        stock >= 0 &&
+        nextQuantity > stock
+      ) {
+        throw new Error("Insufficient stock.");
+      }
 
-    if (nextQuantity < 1) {
-      setItems((currentItems) =>
-        currentItems.filter(
+      let previousItems = [];
+
+      setItems((current) => {
+        previousItems = cleanItems(current);
+
+        const next = cleanItems(current).filter(
           (item) =>
-            String(item?.product?._id) !==
-            String(productId)
-        )
-      );
+            String(item.product._id) !== productId
+        );
 
-      if (user) {
-        try {
-          await API.put("/cart", {
-            productId,
-            quantity: 0,
-          });
-        } catch (error) {
-          console.error(
-            "Failed to remove product from server cart:",
-            error
+        if (nextQuantity > 0) {
+          const existing = previousItems.find(
+            (item) =>
+              String(item.product._id) === productId
           );
-        }
-      }
 
-      return;
-    }
-
-    /* -----------------------------------------------------------------------
-       PUBLIC STOCK CHECK
-
-       If the product is explicitly unavailable, do not allow
-       the customer to add/update it.
-       ----------------------------------------------------------------------- */
-
-    if (!isProductInStock(product)) {
-      throw new Error(
-        "This product is currently out of stock."
-      );
-    }
-
-    /* -----------------------------------------------------------------------
-       UPDATE LOCAL STATE
-       ----------------------------------------------------------------------- */
-
-    setItems((currentItems) => {
-      const cleanedItems = currentItems.filter(
-        (item) =>
-          item &&
-          item.product &&
-          item.product._id
-      );
-
-      const index = cleanedItems.findIndex(
-        (item) =>
-          String(item.product._id) ===
-          String(productId)
-      );
-
-      if (index < 0) {
-        return [
-          ...cleanedItems,
-          {
-            product,
+          next.push({
+            product: product || existing?.product,
             quantity: nextQuantity,
-          },
-        ];
+          });
+        }
+
+        return next;
+      });
+
+      /*
+       * Guest cart is complete after local state update.
+       */
+      if (!user) {
+        return;
       }
 
-      const nextItems = [...cleanedItems];
-
-      nextItems[index] = {
-        ...nextItems[index],
-        product,
-        quantity: nextQuantity,
-      };
-
-      return nextItems;
-    });
-
-    /* -----------------------------------------------------------------------
-       UPDATE SERVER CART
-
-       The backend must validate actual stock here.
-       ----------------------------------------------------------------------- */
-
-    if (user) {
       try {
-        await API.put("/cart", {
+        const serverItems = await syncServerQuantity(
           productId,
-          quantity: nextQuantity,
-        });
+          nextQuantity
+        );
+
+        /*
+         * If backend returned a cart, use it as the final source.
+         * Otherwise keep the optimistic state.
+         */
+        if (Array.isArray(serverItems)) {
+          setItems(serverItems);
+        }
       } catch (error) {
         /*
-         * Roll back is handled by reloading the server cart.
-         * This prevents the UI from permanently showing an
-         * invalid server quantity.
+         * Roll back only this operation if the server rejects it.
          */
-
-        console.error(
-          "Failed to update server cart:",
-          error
-        );
-
-        try {
-          const response = await API.get("/cart");
-
-          const serverItems =
-            response?.data?.data?.cart?.items || [];
-
-          const validItems = serverItems
-            .filter(
-              (item) =>
-                item &&
-                item.product &&
-                item.product._id &&
-                Number(item.quantity) > 0
-            )
-            .map((item) => ({
-              product: item.product,
-              quantity: Number(item.quantity),
-            }));
-
-          setItems(validItems);
-        } catch (reloadError) {
-          console.error(
-            "Failed to reload cart after update error:",
-            reloadError
-          );
-        }
-
-        throw new Error(
+        setItems(previousItems);
+        throw (
           error?.response?.data?.message ||
-            error?.message ||
-            "Could not update cart."
+          error?.message ||
+          new Error("Could not update cart.")
         );
       }
-    }
-  };
+    },
+    [syncServerQuantity, user]
+  );
 
-  /* =========================================================================
-     CLEAR CART
-     ========================================================================= */
+  const getQty = useCallback(
+    (productOrId) => {
+      const id =
+        typeof productOrId === "object"
+          ? getProductId(productOrId)
+          : String(productOrId || "");
 
-  const clearCart = async () => {
-    const currentItems = Array.isArray(items)
-      ? items
-      : [];
+      if (!id) return 0;
+
+      const item = items.find(
+        (entry) =>
+          String(entry?.product?._id) === id
+      );
+
+      return Number(item?.quantity || 0);
+    },
+    [items]
+  );
+
+  const increase = useCallback(
+    async (product) => {
+      return setQty(product, getQty(product) + 1);
+    },
+    [getQty, setQty]
+  );
+
+  const decrease = useCallback(
+    async (product) => {
+      return setQty(product, getQty(product) - 1);
+    },
+    [getQty, setQty]
+  );
+
+  const remove = useCallback(
+    async (product) => {
+      return setQty(product, 0);
+    },
+    [setQty]
+  );
+
+  const clearCart = useCallback(async () => {
+    const currentItems = cleanItems(items);
 
     setItems([]);
 
     try {
-      localStorage.removeItem(key);
+      localStorage.removeItem(STORAGE_KEY);
     } catch {
-      // Ignore localStorage errors.
+      // Ignore storage errors.
     }
 
-    if (user) {
-      const validItems = currentItems.filter(
-        (item) =>
-          item &&
-          item.product &&
-          item.product._id
-      );
+    if (!user || !currentItems.length) return;
 
-      await Promise.allSettled(
-        validItems.map((item) =>
-          API.put("/cart", {
-            productId: item.product._id,
-            quantity: 0,
-          })
-        )
-      );
-    }
-  };
+    await Promise.allSettled(
+      currentItems.map((item) =>
+        API.put("/cart", {
+          productId: item.product._id,
+          quantity: 0,
+        })
+      )
+    );
+  }, [items, user]);
 
-  /* =========================================================================
-     COUNT
-     ========================================================================= */
-
-  const count = items.reduce(
-    (sum, item) => {
-      if (
-        !item ||
-        !item.product ||
-        !item.product._id
-      ) {
-        return sum;
-      }
-
-      return (
-        sum +
-        Number(item.quantity || 0)
-      );
-    },
-    0
+  const count = useMemo(
+    () =>
+      items.reduce(
+        (sum, item) =>
+          sum + Number(item?.quantity || 0),
+        0
+      ),
+    [items]
   );
 
-  /* =========================================================================
-     TOTAL
-     ========================================================================= */
+  const total = useMemo(
+    () =>
+      items.reduce((sum, item) => {
+        if (!item?.product?._id) return sum;
 
-  const total = items.reduce(
-    (sum, item) => {
-      if (
-        !item ||
-        !item.product ||
-        !item.product._id
-      ) {
-        return sum;
-      }
+        const price =
+          Number(item.product.price) || 0;
+        const quantity =
+          Number(item.quantity) || 0;
 
-      const price = Number(
-        item.product.price || 0
-      );
+        return sum + price * quantity;
+      }, 0),
+    [items]
+  );
 
-      const quantity = Number(
-        item.quantity || 0
-      );
-
-      return sum + price * quantity;
-    },
-    0
+  const value = useMemo(
+    () => ({
+      items,
+      count,
+      total,
+      syncing,
+      setQty,
+      getQty,
+      increase,
+      decrease,
+      remove,
+      clearCart,
+    }),
+    [
+      items,
+      count,
+      total,
+      syncing,
+      setQty,
+      getQty,
+      increase,
+      decrease,
+      remove,
+      clearCart,
+    ]
   );
 
   return (
-    <C.Provider
-      value={{
-        items,
-        setQty,
-        clearCart,
-        count,
-        total,
-      }}
-    >
+    <CartContext.Provider value={value}>
       {children}
-    </C.Provider>
+    </CartContext.Provider>
   );
 }
 
-export const useCart = () => {
-  const context = useContext(C);
+export function useCart() {
+  const context = useContext(CartContext);
 
   if (!context) {
     throw new Error(
-      "useCart must be used inside CartProvider"
+      "useCart must be used inside CartProvider."
     );
   }
 
   return context;
-};
+}

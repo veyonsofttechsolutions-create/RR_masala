@@ -151,6 +151,18 @@ const validateProductPayload = (b) => {
     errors.push("Maximum 20 product images are allowed");
   }
 
+  if (b.images?.some((url) => String(url).startsWith("data:"))) {
+    errors.push("Product images must be stored as hosted image URLs, not base64 data");
+  }
+
+  if (b.returnWindowDays !== undefined && Number(b.returnWindowDays) < 0) {
+    errors.push("Return window cannot be negative");
+  }
+
+  if (b.cancellationWindowHours !== undefined && Number(b.cancellationWindowHours) < 0) {
+    errors.push("Cancellation window cannot be negative");
+  }
+
   return errors;
 };
 
