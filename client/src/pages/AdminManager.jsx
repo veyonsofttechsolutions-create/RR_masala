@@ -142,7 +142,7 @@ function getImage(item) {
 function StatusBadge({ value }) {
   if (typeof value === "boolean") {
     return (
-      <span className={`managerStatus ${value ? "success" : "muted"}`}>
+      <span className={`rrManagerStatus ${value ? "rrManagerStatus--success" : "rrManagerStatus--muted"}`}>
         <i /> {value ? "Active" : "Inactive"}
       </span>
     );
@@ -179,7 +179,7 @@ function StatusBadge({ value }) {
   }
 
   return (
-    <span className={`managerStatus ${tone}`}>
+    <span className={`rrManagerStatus rrManagerStatus--${tone}`}>
       <i />
       {text.replaceAll("_", " ")}
     </span>
@@ -402,7 +402,7 @@ export default function AdminManager({ type }) {
           align-items: center;
           gap: 6px;
           color: #85888d;
-          font-size: 8px;
+          font-size: 12px;
           font-weight: 850;
           text-decoration: none;
           margin-bottom: 12px;
@@ -431,7 +431,7 @@ export default function AdminManager({ type }) {
 
         .managerEyebrowV2 {
           color: #96999e;
-          font-size: 7px;
+          font-size: 13px;
           font-weight: 900;
           letter-spacing: 1px;
         }
@@ -445,7 +445,7 @@ export default function AdminManager({ type }) {
         .managerHeadingV2 p {
           margin: 0;
           color: #85888d;
-          font-size: 9px;
+          font-size: 13px;
         }
 
         .managerAddV2 {
@@ -459,7 +459,7 @@ export default function AdminManager({ type }) {
           background: #18181b;
           color: #fff;
           text-decoration: none;
-          font-size: 9px;
+          font-size: 13px;
           font-weight: 850;
         }
 
@@ -501,7 +501,7 @@ export default function AdminManager({ type }) {
           outline: 0;
           background: transparent;
           font: inherit;
-          font-size: 9px;
+          font-size: 13px;
         }
 
         .managerSearchV2 button {
@@ -526,7 +526,7 @@ export default function AdminManager({ type }) {
           color: #71747a;
           cursor: pointer;
           font: inherit;
-          font-size: 8px;
+          font-size: 12px;
           font-weight: 800;
           text-transform: capitalize;
         }
@@ -547,7 +547,7 @@ export default function AdminManager({ type }) {
 
         .managerCountV2 {
           color: #85888d;
-          font-size: 8px;
+          font-size: 12px;
           font-weight: 750;
         }
 
@@ -562,7 +562,7 @@ export default function AdminManager({ type }) {
           border-radius: 8px;
           cursor: pointer;
           font: inherit;
-          font-size: 8px;
+          font-size: 12px;
           font-weight: 800;
         }
 
@@ -588,7 +588,7 @@ export default function AdminManager({ type }) {
 
         .managerErrorV2 span {
           flex: 1;
-          font-size: 8px;
+          font-size: 12px;
         }
 
         .managerErrorV2 button {
@@ -597,7 +597,7 @@ export default function AdminManager({ type }) {
           border-radius: 6px;
           padding: 6px 8px;
           cursor: pointer;
-          font-size: 8px;
+          font-size: 12px;
           font-weight: 800;
         }
 
@@ -625,19 +625,27 @@ export default function AdminManager({ type }) {
           background: #fafbfc;
           color: #888b90;
           border-bottom: 1px solid #eceef0;
-          font-size: 7px;
+          font-size: 13px;
           font-weight: 900;
           letter-spacing: .8px;
           text-transform: uppercase;
           white-space: nowrap;
         }
 
+        .managerTableV2 tbody tr {
+          height: 62px !important;
+        }
+
         .managerTableV2 td {
-          padding: 11px 15px;
+          height: 62px !important;
+          max-height: 62px !important;
+          padding: 10px 15px !important;
           border-bottom: 1px solid #eef0f2;
-          color: #484b50;
-          font-size: 8px;
-          vertical-align: middle;
+          color: #3f4247;
+          font-size: 14px !important;
+          line-height: 1.35;
+          vertical-align: middle !important;
+          box-sizing: border-box !important;
         }
 
         .managerTableV2 tbody tr:hover {
@@ -676,7 +684,7 @@ export default function AdminManager({ type }) {
         .productCellV2 strong {
           display: block;
           color: #232428;
-          font-size: 9px;
+          font-size: 13px;
           max-width: 270px;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -687,41 +695,58 @@ export default function AdminManager({ type }) {
           display: block;
           margin-top: 3px;
           color: #96999e;
-          font-size: 7px;
+          font-size: 13px;
         }
 
         .skuV2 {
           background: #f3f4f5;
           padding: 4px 6px;
           border-radius: 5px;
-          font-size: 7px;
+          font-size: 13px;
         }
 
-        .managerStatus {
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          padding: 5px 7px;
-          border-radius: 6px;
-          text-transform: capitalize;
-          white-space: nowrap;
-          font-size: 7px;
-          font-weight: 850;
+        /* RR MASALA status badge - fully scoped, never use generic .success/.warning */
+        .rrManagerStatus {
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 5px !important;
+          width: max-content !important;
+          min-width: 0 !important;
+          max-width: 150px !important;
+          height: 28px !important;
+          min-height: 28px !important;
+          max-height: 28px !important;
+          box-sizing: border-box !important;
+          padding: 0 11px !important;
+          margin: 0 !important;
+          border-radius: 999px !important;
+          text-transform: capitalize !important;
+          white-space: nowrap !important;
+          overflow: hidden !important;
+          line-height: 1 !important;
+          font-size: 13px !important;
+          font-weight: 800 !important;
+          vertical-align: middle !important;
         }
 
-        .managerStatus i {
-          width: 5px;
-          height: 5px;
-          border-radius: 50%;
-          background: currentColor;
+        .rrManagerStatus i {
+          display: block !important;
+          width: 5px !important;
+          height: 5px !important;
+          min-width: 5px !important;
+          min-height: 5px !important;
+          flex: 0 0 5px !important;
+          border-radius: 50% !important;
+          background: currentColor !important;
         }
 
-        .managerStatus.success { background: #edf8f1; color: #2b8050; }
-        .managerStatus.warning { background: #fff6df; color: #9a6900; }
-        .managerStatus.danger { background: #fff0ee; color: #a43d34; }
-        .managerStatus.info { background: #edf4ff; color: #466f9f; }
-        .managerStatus.neutral,
-        .managerStatus.muted { background: #f0f1f2; color: #777a80; }
+        .rrManagerStatus--success { background: #edf8f1 !important; color: #26784a !important; }
+        .rrManagerStatus--warning { background: #fff6df !important; color: #996800 !important; }
+        .rrManagerStatus--danger { background: #fff0ee !important; color: #a43d34 !important; }
+        .rrManagerStatus--info { background: #edf4ff !important; color: #466f9f !important; }
+        .rrManagerStatus--neutral,
+        .rrManagerStatus--muted { background: #f0f1f2 !important; color: #777a80 !important; }
 
         .managerActionGroupV2 { display:flex; align-items:center; gap:6px; }
         .deleteButtonV2 { width:32px; height:32px; border:1px solid #f0d7d7; border-radius:8px; background:#fff7f7; color:#b42318; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; }
@@ -735,7 +760,7 @@ export default function AdminManager({ type }) {
           background: #f6f3e5;
           color: #292a2d;
           text-decoration: none;
-          font-size: 7px;
+          font-size: 13px;
           font-weight: 850;
         }
 
@@ -773,7 +798,7 @@ export default function AdminManager({ type }) {
           max-width: 330px;
           margin: 0 0 9px;
           color: #8c8f94;
-          font-size: 8px;
+          font-size: 12px;
           line-height: 1.5;
         }
 
@@ -782,13 +807,30 @@ export default function AdminManager({ type }) {
         }
 
         .managerLoadingV2 {
-          min-height: 330px;
+          min-height: 360px;
           display: grid;
           place-items: center;
           align-content: center;
-          gap: 9px;
-          color: #898c91;
-          font-size: 8px;
+          gap: 13px;
+          color: #65696f;
+          font-size: 14px;
+          font-weight: 700;
+          text-align: center;
+          padding: 30px;
+          box-sizing: border-box;
+        }
+
+        .managerLoadingV2 .spinner {
+          width: 34px;
+          height: 34px;
+          border: 3px solid #e6e8eb;
+          border-top-color: #c49b18;
+          border-radius: 50%;
+          animation: managerSpin .75s linear infinite;
+        }
+
+        @keyframes managerSpin {
+          to { transform: rotate(360deg); }
         }
 
         @media (max-width: 900px) {
@@ -864,7 +906,7 @@ export default function AdminManager({ type }) {
 
           .mobileTopV2 strong {
             display: block;
-            font-size: 10px;
+            font-size: 12px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -873,7 +915,7 @@ export default function AdminManager({ type }) {
           .mobileTopV2 span {
             display: block;
             color: #8e9196;
-            font-size: 7px;
+            font-size: 13px;
             margin-top: 4px;
           }
 
@@ -887,13 +929,13 @@ export default function AdminManager({ type }) {
           .mobileFieldV2 label {
             display: block;
             color: #999ca1;
-            font-size: 7px;
+            font-size: 13px;
             text-transform: uppercase;
             margin-bottom: 4px;
           }
 
           .mobileFieldV2 strong {
-            font-size: 8px;
+            font-size: 12px;
           }
 
           .mobileActionV2 {

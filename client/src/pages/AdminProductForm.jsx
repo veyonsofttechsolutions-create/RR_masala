@@ -631,7 +631,7 @@ export default function AdminProductForm() {
           align-items: center;
           gap: 6px;
           color: #85888d;
-          font-size: 8px;
+          font-size: 12px;
           font-weight: 850;
           text-decoration: none;
           margin-bottom: 11px;
@@ -650,7 +650,7 @@ export default function AdminProductForm() {
         .editorTop p {
           margin: 0;
           color: #85888d;
-          font-size: 9px;
+          font-size: 13px;
         }
 
         .editorPreviewLink {
@@ -664,7 +664,7 @@ export default function AdminProductForm() {
           background: #fff;
           color: #34363a;
           text-decoration: none;
-          font-size: 8px;
+          font-size: 12px;
           font-weight: 800;
         }
 
@@ -708,7 +708,7 @@ export default function AdminProductForm() {
         .editorSectionHead span {
           display: block;
           color: #909398;
-          font-size: 7px;
+          font-size: 13px;
           margin-top: 3px;
         }
 
@@ -731,7 +731,7 @@ export default function AdminProductForm() {
           gap: 6px;
           margin-bottom: 12px;
           color: #66696f;
-          font-size: 8px;
+          font-size: 12px;
           font-weight: 800;
         }
 
@@ -752,7 +752,7 @@ export default function AdminProductForm() {
           outline: 0;
           padding: 10px 11px;
           font: inherit;
-          font-size: 9px;
+          font-size: 13px;
           font-weight: 500;
         }
 
@@ -776,7 +776,7 @@ export default function AdminProductForm() {
 
         .fieldHint {
           color: #999ca1;
-          font-size: 7px;
+          font-size: 13px;
           font-weight: 500;
           line-height: 1.45;
         }
@@ -821,13 +821,13 @@ export default function AdminProductForm() {
         }
 
         .dropZone strong {
-          font-size: 10px;
+          font-size: 12px;
         }
 
         .dropZone span {
           max-width: 300px;
           color: #8c8f94;
-          font-size: 8px;
+          font-size: 12px;
           line-height: 1.5;
           margin-top: 5px;
         }
@@ -844,7 +844,7 @@ export default function AdminProductForm() {
           align-items: center;
           gap: 7px;
           margin-bottom: 8px;
-          font-size: 9px;
+          font-size: 13px;
           font-weight: 850;
         }
 
@@ -866,7 +866,7 @@ export default function AdminProductForm() {
           background: #18181b;
           color: #fff;
           cursor: pointer;
-          font-size: 8px;
+          font-size: 12px;
           font-weight: 850;
         }
 
@@ -906,7 +906,7 @@ export default function AdminProductForm() {
           border-radius: 5px;
           background: rgba(24,24,27,.78);
           color: #fff;
-          font-size: 7px;
+          font-size: 13px;
           font-weight: 850;
         }
 
@@ -965,7 +965,7 @@ export default function AdminProductForm() {
           border: 1px solid #e4e6e9;
           border-radius: 9px;
           cursor: pointer;
-          font-size: 8px;
+          font-size: 12px;
           font-weight: 750;
         }
 
@@ -977,7 +977,7 @@ export default function AdminProductForm() {
         .editorMessage {
           padding: 10px 12px;
           border-radius: 9px;
-          font-size: 8px;
+          font-size: 12px;
           font-weight: 700;
         }
 
@@ -1017,7 +1017,7 @@ export default function AdminProductForm() {
           gap: 7px;
           border-radius: 8px;
           padding: 0 15px;
-          font-size: 9px;
+          font-size: 13px;
           font-weight: 850;
           text-decoration: none;
           cursor: pointer;
@@ -1045,14 +1045,38 @@ export default function AdminProductForm() {
           display: grid;
           place-items: center;
           background: #f5f6f8;
-          color: #6d7075;
-          font-size: 10px;
+          color: #5f6368;
+          font-size: 15px;
+          font-weight: 700;
+          padding: 24px;
+          box-sizing: border-box;
         }
 
         .productEditorLoading > div {
+          width: min(430px, calc(100% - 30px));
+          min-height: 190px;
+          padding: 30px;
+          background: #fff;
+          border: 1px solid #e1e3e6;
+          border-radius: 20px;
+          box-shadow: 0 12px 35px rgba(20,20,20,.06);
           display: flex;
           align-items: center;
-          gap: 8px;
+          justify-content: center;
+          flex-direction: column;
+          gap: 14px;
+          text-align: center;
+          box-sizing: border-box;
+        }
+
+        .productEditorLoading > div::before {
+          content: "";
+          width: 36px;
+          height: 36px;
+          border: 3px solid #e6e8eb;
+          border-top-color: #c49b18;
+          border-radius: 50%;
+          animation: spinEditor .75s linear infinite;
         }
 
         .spinEditor {

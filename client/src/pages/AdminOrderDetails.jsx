@@ -68,7 +68,7 @@ const dateTime = (value) => {
 
 function StatusBadge({ status }) {
   const [label, tone] = STATUS_META[status] || [titleCase(status), "neutral"];
-  return <span className={`ao-status ${tone}`}><i />{label}</span>;
+  return <span className={`rrAoStatus rrAoStatus--${tone}`}><i />{label}</span>;
 }
 
 function AddressBlock({ address }) {
@@ -296,18 +296,45 @@ export default function AdminOrderDetails() {
         .ao-back:hover{color:#111}
         .ao-hero{background:#fff;border:1px solid #e5e7ea;border-radius:20px;padding:25px;box-shadow:0 8px 30px rgba(20,20,20,.045);margin-bottom:16px}
         .ao-hero-top{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}
-        .ao-eyebrow{font-size:10px;font-weight:900;letter-spacing:1.5px;color:#9a9da2}
+        .ao-eyebrow{font-size:14px;font-weight:900;letter-spacing:1.5px;color:#9a9da2}
         .ao-title-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0 5px}
         .ao-title-row h1{font-size:clamp(24px,3vw,34px);margin:0;letter-spacing:-.8px}
         .ao-copy{border:1px solid #e4e6e9;background:#fff;border-radius:8px;padding:7px 9px;display:inline-flex;gap:5px;align-items:center;cursor:pointer;font-weight:800;font-size:11px}
         .ao-date{margin:0;color:#85888d;font-size:12px}
-        .ao-status{display:inline-flex;align-items:center;gap:7px;padding:9px 12px;border-radius:999px;font-size:11px;font-weight:900;white-space:nowrap}
-        .ao-status i{width:7px;height:7px;border-radius:50%;background:currentColor}
-        .ao-status.warning{color:#9a6b00;background:#fff6d8}
-        .ao-status.info{color:#32699e;background:#eaf4ff}
-        .ao-status.success{color:#237a4b;background:#eaf8ef}
-        .ao-status.danger{color:#a33d36;background:#fff0ee}
-        .ao-status.neutral{color:#666;background:#f1f2f3}
+        .rrAoStatus{
+          display:inline-flex !important;
+          align-items:center !important;
+          justify-content:center !important;
+          gap:6px !important;
+          width:max-content !important;
+          height:30px !important;
+          min-height:30px !important;
+          max-height:30px !important;
+          box-sizing:border-box !important;
+          padding:0 12px !important;
+          margin:0 !important;
+          border-radius:999px !important;
+          font-size:13px !important;
+          font-weight:900 !important;
+          line-height:1 !important;
+          white-space:nowrap !important;
+          overflow:hidden !important;
+        }
+        .rrAoStatus i{
+          display:block !important;
+          width:6px !important;
+          height:6px !important;
+          min-width:6px !important;
+          min-height:6px !important;
+          flex:0 0 6px !important;
+          border-radius:50% !important;
+          background:currentColor !important;
+        }
+        .rrAoStatus--warning{color:#9a6b00 !important;background:#fff6d8 !important}
+        .rrAoStatus--info{color:#32699e !important;background:#eaf4ff !important}
+        .rrAoStatus--success{color:#237a4b !important;background:#eaf8ef !important}
+        .rrAoStatus--danger{color:#a33d36 !important;background:#fff0ee !important}
+        .rrAoStatus--neutral{color:#666 !important;background:#f1f2f3 !important}
         .ao-grid{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:16px}
         .ao-main,.ao-side{display:grid;gap:16px;align-content:start}
         .ao-card{background:#fff;border:1px solid #e5e7ea;border-radius:17px;padding:21px;box-shadow:0 5px 20px rgba(20,20,20,.035)}
@@ -322,48 +349,78 @@ export default function AdminOrderDetails() {
         .ao-thumb img{width:100%;height:100%;object-fit:cover}
         .ao-thumb svg{color:#b2a078}
         .ao-name{font-weight:850;font-size:13px;color:#26272a}
-        .ao-sku{font-size:10px;color:#9a9da2;margin-top:4px}
-        .ao-meta{display:flex;gap:8px;flex-wrap:wrap;color:#72757b;font-size:11px;margin-top:7px}
+        .ao-sku{font-size:14px;color:#9a9da2;margin-top:4px}
+        .ao-meta{display:flex;gap:8px;flex-wrap:wrap;color:#72757b;font-size:13px;margin-top:7px}
         .ao-line{font-weight:900;font-size:13px}
         .ao-money{display:grid;gap:9px}
-        .ao-money-row{display:flex;justify-content:space-between;gap:15px;font-size:12px;color:#70737a}
+        .ao-money-row{display:flex;justify-content:space-between;gap:15px;font-size:14px;color:#70737a}
         .ao-money-row strong{color:#242529}
         .ao-total{display:flex;justify-content:space-between;border-top:1px solid #e8eaed;margin-top:6px;padding-top:14px;font-size:13px}
         .ao-total strong{font-size:20px}
-        .ao-address{display:flex;gap:11px;line-height:1.6;font-size:12px;color:#46494e}
+        .ao-address{display:flex;gap:11px;line-height:1.6;font-size:14px;color:#46494e}
         .ao-icon{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:#fff7d8;color:#8a6a0b;flex:0 0 auto}
         .ao-phone{display:flex;align-items:center;gap:5px;margin-top:6px;font-weight:800}
         .ao-customer{display:flex;gap:12px;align-items:center}
         .ao-avatar{width:43px;height:43px;border-radius:50%;display:grid;place-items:center;background:#18181b;color:#fff;font-weight:900}
         .ao-customer strong{display:block;font-size:13px}
-        .ao-customer span{display:block;color:#85888d;font-size:11px;margin-top:3px}
+        .ao-customer span{display:block;color:#85888d;font-size:13px;margin-top:3px}
         .ao-fields{display:grid;gap:13px}
         .ao-field{display:grid;gap:6px}
-        .ao-field label{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.8px;color:#85888d}
-        .ao-field input,.ao-field select,.ao-field textarea{width:100%;box-sizing:border-box;border:1px solid #dfe2e5;background:#fafbfc;border-radius:9px;padding:10px 11px;font:inherit;font-size:12px;outline:none;color:#222}
+        .ao-field label{font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:.8px;color:#85888d}
+        .ao-field input,.ao-field select,.ao-field textarea{width:100%;box-sizing:border-box;border:1px solid #dfe2e5;background:#fafbfc;border-radius:9px;padding:10px 11px;font:inherit;font-size:14px;outline:none;color:#222}
         .ao-field textarea{min-height:78px;resize:vertical}
         .ao-field input:focus,.ao-field select:focus,.ao-field textarea:focus{border-color:#c6a52e;background:#fff;box-shadow:0 0 0 3px rgba(198,165,46,.1)}
-        .ao-update{width:100%;border:0;border-radius:10px;background:#18181b;color:#fff;padding:12px;display:flex;align-items:center;justify-content:center;gap:7px;font-size:12px;font-weight:900;cursor:pointer}
+        .ao-update{width:100%;border:0;border-radius:10px;background:#18181b;color:#fff;padding:12px;display:flex;align-items:center;justify-content:center;gap:7px;font-size:14px;font-weight:900;cursor:pointer}
         .ao-update:disabled{opacity:.55;cursor:not-allowed}
-        .ao-alert{padding:11px 13px;border-radius:10px;font-size:12px;margin-bottom:16px}
-        .ao-alert.error{background:#fff0ee;border:1px solid #f0d0cb;color:#9c3d35}
-        .ao-alert.success{background:#ecf9f0;border:1px solid #ccebd7;color:#247346}
+        .rrAoAlert{
+          display:flex !important;
+          align-items:center !important;
+          width:100% !important;
+          min-height:0 !important;
+          box-sizing:border-box !important;
+          padding:10px 13px !important;
+          margin:0 0 14px !important;
+          border-radius:10px !important;
+          font-size:14px !important;
+          line-height:1.4 !important;
+        }
+        .rrAoAlert--error{background:#fff0ee !important;border:1px solid #f0d0cb !important;color:#9c3d35 !important}
+        .rrAoAlert--success{background:#ecf9f0 !important;border:1px solid #ccebd7 !important;color:#247346 !important}
         .ao-history{display:grid;gap:0}
         .ao-history-item{position:relative;padding:0 0 17px 25px;border-left:1px solid #ddd}
         .ao-history-item:last-child{border-left-color:transparent;padding-bottom:0}
         .ao-dot{position:absolute;left:-5px;top:1px;width:9px;height:9px;border-radius:50%;background:#c9a72c;border:2px solid #fff;box-shadow:0 0 0 1px #c9a72c}
         .ao-history-item strong{font-size:12px}
-        .ao-history-item p{margin:4px 0;color:#74777d;font-size:11px;line-height:1.5}
+        .ao-history-item p{margin:4px 0;color:#74777d;font-size:13px;line-height:1.5}
         .ao-history-item time{color:#a0a3a8;font-size:10px}
         .ao-shipping-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
         .ao-mini{background:#fafbfc;border:1px solid #e8eaed;border-radius:10px;padding:12px}
-        .ao-mini span{display:block;color:#92959a;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px}
+        .ao-mini span{display:block;color:#92959a;font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.6px}
         .ao-mini strong{display:block;margin-top:5px;font-size:12px}
         .ao-actions{display:flex;gap:9px;flex-wrap:wrap}
-        .ao-primary,.ao-secondary{display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:9px;padding:10px 13px;text-decoration:none;font-size:11px;font-weight:900;cursor:pointer}
+        .ao-primary,.ao-secondary{display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:9px;padding:10px 13px;text-decoration:none;font-size:13px;font-weight:900;cursor:pointer}
         .ao-primary{background:#18181b;color:#fff;border:1px solid #18181b}
         .ao-secondary{background:#fff;color:#333;border:1px solid #e1e3e6}
-        .ao-loading,.ao-error{min-height:55vh;display:grid;place-items:center;align-content:center;gap:10px;text-align:center;color:#777}
+        .ao-loading{
+          min-height:55vh;
+          display:grid;
+          place-items:center;
+          align-content:center;
+          gap:13px;
+          text-align:center;
+          color:#5f6368;
+          font-size:15px;
+          font-weight:700;
+        }
+        .ao-loading::before{
+          content:"";
+          width:34px;
+          height:34px;
+          border:3px solid #e6e8eb;
+          border-top-color:#c49b18;
+          border-radius:50%;
+          animation:aoSpin .75s linear infinite;
+        }
         .ao-error{background:#fff;border:1px solid #e5e7ea;border-radius:18px;max-width:560px;margin:70px auto;padding:35px}
         .ao-error h2{margin:3px 0;font-size:22px;color:#222}
         .ao-error p{margin:0 0 10px;font-size:13px}
@@ -378,8 +435,8 @@ export default function AdminOrderDetails() {
           <ArrowLeft size={16} /> Back to orders
         </Link>
 
-        {error && <div className="ao-alert error">{error}</div>}
-        {notice && <div className="ao-alert success">{notice}</div>}
+        {error && <div className="rrAoAlert rrAoAlert--error">{error}</div>}
+        {notice && <div className="rrAoAlert rrAoAlert--success">{notice}</div>}
 
         <section className="ao-hero">
           <div className="ao-hero-top">

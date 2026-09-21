@@ -539,14 +539,14 @@ export default function Admin() {
           display: block;
           margin-top: 3px;
           color: #85878b;
-          font-size: 8px;
+          font-size: 12px;
           font-weight: 800;
           letter-spacing: 1.2px;
         }
 
         .adminNavTitle {
           color: #686b70;
-          font-size: 8px;
+          font-size: 12px;
           letter-spacing: 1.2px;
           font-weight: 900;
           padding: 13px 10px 7px;
@@ -562,7 +562,7 @@ export default function Admin() {
           gap: 10px;
           color: #aeb0b5;
           text-decoration: none;
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 750;
           transition: .18s ease;
         }
@@ -588,7 +588,7 @@ export default function Admin() {
           align-items: center;
           gap: 7px;
           color: #9da0a5;
-          font-size: 8px;
+          font-size: 12px;
           padding: 6px 5px 10px;
         }
 
@@ -618,7 +618,7 @@ export default function Admin() {
           align-items: center;
           gap: 5px;
           color: #8b8e93;
-          font-size: 8px;
+          font-size: 12px;
           font-weight: 800;
         }
 
@@ -631,7 +631,7 @@ export default function Admin() {
         .adminTopV2 p {
           margin: 0;
           color: #7b7e84;
-          font-size: 10px;
+          font-size: 12px;
         }
 
         .adminTopActions {
@@ -650,7 +650,7 @@ export default function Admin() {
           gap: 7px;
           padding: 0 13px;
           font: inherit;
-          font-size: 9px;
+          font-size: 13px;
           font-weight: 850;
           text-decoration: none;
           cursor: pointer;
@@ -711,7 +711,7 @@ export default function Admin() {
         .adminStatLabelV2 {
           display: block;
           color: #85888d;
-          font-size: 8px;
+          font-size: 12px;
           font-weight: 700;
           margin-bottom: 5px;
         }
@@ -773,7 +773,7 @@ export default function Admin() {
         .panelHeadV2 p {
           margin: 4px 0 0;
           color: #8d9095;
-          font-size: 8px;
+          font-size: 12px;
         }
 
         .livePill {
@@ -832,7 +832,7 @@ export default function Admin() {
 
         .chartLabel {
           fill: #999ca1;
-          font-size: 10px;
+          font-size: 12px;
         }
 
         .chartEmpty {
@@ -848,13 +848,13 @@ export default function Admin() {
 
         .chartEmpty strong {
           color: #4b4e54;
-          font-size: 10px;
+          font-size: 12px;
         }
 
         .chartEmpty span {
           max-width: 260px;
           line-height: 1.5;
-          font-size: 8px;
+          font-size: 12px;
         }
 
         .chartEmpty.compact {
@@ -881,7 +881,7 @@ export default function Admin() {
         .productBarMeta span {
           min-width: 0;
           color: #666a70;
-          font-size: 8px;
+          font-size: 12px;
           text-transform: capitalize;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -891,7 +891,7 @@ export default function Admin() {
         .statusRowTop strong,
         .productBarMeta strong {
           color: #26282c;
-          font-size: 9px;
+          font-size: 13px;
         }
 
         .statusTrack,
@@ -955,7 +955,7 @@ export default function Admin() {
 
         .quickCardV2 strong {
           display: block;
-          font-size: 9px;
+          font-size: 13px;
         }
 
         .quickCardV2 span {
@@ -993,7 +993,7 @@ export default function Admin() {
 
         .recentItemV2 strong {
           display: block;
-          font-size: 9px;
+          font-size: 13px;
         }
 
         .recentItemV2 span {
@@ -1008,7 +1008,7 @@ export default function Admin() {
         }
 
         .recentAmountV2 strong {
-          font-size: 9px;
+          font-size: 13px;
         }
 
         .recentAmountV2 span {
@@ -1022,7 +1022,7 @@ export default function Admin() {
           place-items: center;
           text-align: center;
           color: #979aa0;
-          font-size: 9px;
+          font-size: 13px;
         }
 
         .adminErrorV2 {
@@ -1039,7 +1039,7 @@ export default function Admin() {
 
         .adminErrorV2 span {
           flex: 1;
-          font-size: 8px;
+          font-size: 12px;
         }
 
         .adminErrorV2 button {
@@ -1047,7 +1047,7 @@ export default function Admin() {
           background: #fff;
           border-radius: 7px;
           padding: 6px 9px;
-          font-size: 8px;
+          font-size: 12px;
           font-weight: 800;
           cursor: pointer;
         }
@@ -1057,38 +1057,58 @@ export default function Admin() {
           display: grid;
           place-items: center;
           background: #f5f6f8;
+          padding: 24px;
+          box-sizing: border-box;
         }
 
         .adminLoadingCard {
-          width: min(360px, calc(100% - 30px));
-          padding: 35px 25px;
+          width: min(430px, calc(100% - 30px));
+          min-height: 220px;
+          padding: 34px 30px;
           background: #fff;
-          border: 1px solid #e6e7e9;
-          border-radius: 18px;
+          border: 1px solid #e1e3e6;
+          border-radius: 20px;
           display: flex;
           align-items: center;
+          justify-content: center;
           flex-direction: column;
-          gap: 9px;
+          gap: 12px;
           text-align: center;
+          box-shadow: 0 12px 35px rgba(20,20,20,.06);
+          box-sizing: border-box;
         }
 
         .adminLoadingLogo {
-          width: 48px;
-          height: 48px;
-          border-radius: 13px;
+          width: 58px;
+          height: 58px;
+          border-radius: 15px;
           display: grid;
           place-items: center;
           background: #f6b71c;
+          color: #18181b;
+          font-size: 20px;
           font-weight: 1000;
         }
 
+        .adminLoadingCard .spinner {
+          width: 30px;
+          height: 30px;
+          border: 3px solid #eceef0;
+          border-top-color: #c49b18;
+          border-radius: 50%;
+          animation: adminSpin .75s linear infinite;
+        }
+
         .adminLoadingCard strong {
-          font-size: 13px;
+          font-size: 17px;
+          line-height: 1.3;
         }
 
         .adminLoadingCard span {
-          color: #8a8d92;
-          font-size: 9px;
+          color: #74777d;
+          font-size: 13px;
+          line-height: 1.5;
+          font-size: 13px;
         }
 
         @media (max-width: 1200px) {
