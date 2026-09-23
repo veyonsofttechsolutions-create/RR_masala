@@ -2,15 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { API } from "../api/http.js";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  Activity,
   AlertTriangle,
-  ArrowDownRight,
   ArrowRight,
-  ArrowUpRight,
   BarChart3,
   Boxes,
-  CheckCircle2,
-  ChevronRight,
   ExternalLink,
   Image as ImageIcon,
   IndianRupee,
@@ -18,15 +13,56 @@ import {
   Package,
   Plus,
   RefreshCw,
-  RotateCcw,
-  Settings,
   ShoppingBag,
   Tags,
-  TicketPercent,
   TrendingUp,
   Users,
   X,
 } from "lucide-react";
+
+/* BRAND LOGO ASSET FROM INFO PAGE */
+const ASSETS = {
+  logo: "/WhatsApp Image 2026-09-17 at 3.09.40 AM.jpeg"
+};
+
+/* WHITE CLOTH THEATER PRELOADER FROM INFO PAGE */
+function TheaterPreloader() {
+  const [loading, setLoading] = useState(true);
+  const [render, setRender] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1200);
+
+    const removeTimer = setTimeout(() => {
+      setRender(false);
+    }, 2400);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(removeTimer);
+    };
+  }, []);
+
+  if (!render) return null;
+
+  return (
+    <div className={`rrTheaterCurtain ${!loading ? "isOpen" : ""}`} aria-hidden="true">
+      <div className="rrClothHalf rrClothLeft">
+        <div className="rrClothFolds" />
+      </div>
+      <div className="rrClothHalf rrClothRight">
+        <div className="rrClothFolds" />
+      </div>
+      
+      <div className="rrCurtainLogoBox">
+        <img src={ASSETS.logo} alt="RR MASALA" className="rrCurtainLogoImg" />
+        <div className="rrCurtainLoader" />
+      </div>
+    </div>
+  );
+}
 
 function money(value) {
   return `₹${Number(value || 0).toLocaleString("en-IN", {
@@ -72,8 +108,6 @@ function normalizeTrend(raw, recent = []) {
     }));
   }
 
-  // If the analytics endpoint has no trend array, derive a small
-  // historical-looking view only from real recent-order timestamps.
   const buckets = {};
   recent.forEach((order) => {
     const dateValue = order.createdAt || order.orderDate;
@@ -170,9 +204,7 @@ function LineChart({ data }) {
       <div className="chartEmpty">
         <TrendingUp size={22} />
         <strong>No sales trend data</strong>
-        <span>
-          Connect the analytics endpoint to display historical sales.
-        </span>
+        <span>Connect analytics endpoint to display historical sales.</span>
       </div>
     );
   }
@@ -212,11 +244,7 @@ function LineChart({ data }) {
 
   return (
     <div className="chartCanvas">
-      <svg
-        viewBox={`0 0 ${width} ${height}`}
-        role="img"
-        aria-label="Sales trend chart"
-      >
+      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Sales trend chart">
         {[0, 1, 2, 3, 4].map((row) => {
           const y =
             pad.top +
@@ -239,18 +267,8 @@ function LineChart({ data }) {
 
         {points.map((point) => (
           <g key={`${point.label}-${point.x}`}>
-            <circle
-              cx={point.x}
-              cy={point.y}
-              r="4"
-              className="chartPoint"
-            />
-            <text
-              x={point.x}
-              y={height - 15}
-              textAnchor="middle"
-              className="chartLabel"
-            >
+            <circle cx={point.x} cy={point.y} r="4" className="chartPoint" />
+            <text x={point.x} y={height - 15} textAnchor="middle" className="chartLabel">
               {String(point.label).slice(0, 9)}
             </text>
           </g>
@@ -459,11 +477,12 @@ export default function Admin() {
   if (loading) {
     return (
       <main className="adminLoadingPage">
+        <TheaterPreloader />
         <div className="adminLoadingCard">
-          <div className="adminLoadingLogo">RR</div>
+          <img src={ASSETS.logo} alt="RR MASALA" className="adminLoadingLogoImg" />
           <div className="spinner" />
           <strong>Loading control center</strong>
-          <span>Preparing your store analytics…</span>
+          <span>Preparing your store analytics...</span>
         </div>
       </main>
     );
@@ -476,7 +495,7 @@ export default function Admin() {
           <AlertTriangle size={28} />
           <strong>Dashboard unavailable</strong>
           <span>{error || "Please try again."}</span>
-          <button className="adminPrimary" onClick={() => load()}>
+          <button className="adminPrimaryBtn" onClick={() => load()}>
             Try again
           </button>
         </div>
@@ -485,883 +504,635 @@ export default function Admin() {
   }
 
   return (
-    <main className="adminDashboardV2">
+    <main className="adminDashboardModern">
+      <TheaterPreloader />
       <style>{`
-        .adminDashboardV2 {
+        .adminDashboardModern {
           min-height: 100vh;
-          display: grid;
-          grid-template-columns: 250px minmax(0, 1fr);
-          background: #f5f6f8;
-          color: #18181b;
+          background: #f8f9fa;
+          color: #140d0b;
+          font-family: 'DM Sans', sans-serif;
+          padding-bottom: 60px;
         }
 
-        .adminSideV2 {
-          background: #111214;
-          color: #fff;
-          min-height: 100vh;
-          position: sticky;
+        /* THEATER PRELOADER STYLES FROM INFO PAGE */
+        .rrTheaterCurtain {
+          position: fixed !important;
+          inset: 0 !important;
+          z-index: 999999 !important;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          pointer-events: none;
+        }
+
+        .rrClothHalf {
+          position: absolute;
           top: 0;
-          height: 100vh;
-          padding: 20px 13px;
+          bottom: 0;
+          width: 50%;
+          background: #ffffff;
+          box-shadow: inset 0 0 40px rgba(0,0,0,0.05);
+          transition: transform 1s cubic-bezier(0.7, 0, 0.3, 1) 0.2s;
+          will-change: transform;
+        }
+
+        .rrClothLeft {
+          left: 0;
+          transform-origin: left;
+          border-right: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .rrClothRight {
+          right: 0;
+          transform-origin: right;
+          border-left: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .rrClothFolds {
+          position: absolute;
+          inset: 0;
+          background: repeating-linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(0,0,0,0.03) 10%,
+            transparent 20%
+          );
+        }
+
+        .rrTheaterCurtain.isOpen .rrClothLeft {
+          transform: translateX(-100%);
+        }
+
+        .rrTheaterCurtain.isOpen .rrClothRight {
+          transform: translateX(100%);
+        }
+
+        .rrCurtainLogoBox {
+          position: relative;
+          z-index: 2;
           display: flex;
           flex-direction: column;
-          z-index: 10;
+          align-items: center;
+          gap: 15px;
+          transition: opacity 0.3s ease;
         }
 
-        .adminBrandV2 {
+        .rrTheaterCurtain.isOpen .rrCurtainLogoBox {
+          opacity: 0;
+        }
+
+        .rrCurtainLogoImg {
+          height: 60px;
+          object-fit: contain;
+          animation: rrCurtainPulse 1.5s ease-in-out infinite alternate;
+          filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));
+        }
+
+        .rrCurtainLoader {
+          width: 120px;
+          height: 2px;
+          background: rgba(0,0,0,0.1);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .rrCurtainLoader::before {
+          content: "";
+          position: absolute;
+          top: 0; left: -100%;
+          width: 100%; height: 100%;
+          background: #fbb034;
+          animation: rrTheaterLoad 1.5s ease-in-out forwards;
+        }
+
+        @keyframes rrTheaterLoad {
+          0% { left: -100%; }
+          100% { left: 0; }
+        }
+        @keyframes rrCurtainPulse {
+          0% { transform: scale(0.95); opacity: 0.8; }
+          100% { transform: scale(1.05); opacity: 1; }
+        }
+
+        .adminHeaderModern {
+          background: #fff;
+          border-bottom: 1px solid rgba(158,16,23,0.1);
+          padding: 16px 32px;
           display: flex;
           align-items: center;
-          gap: 11px;
-          padding: 6px 10px 22px;
-          border-bottom: 1px solid rgba(255,255,255,.08);
-          margin-bottom: 13px;
+          justify-content: space-between;
+          position: sticky;
+          top: 0;
+          z-index: 100;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.03);
         }
 
-        .adminBrandMarkV2 {
-          width: 40px;
-          height: 40px;
+        .adminBrandModern {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .adminBrandBadge {
+          width: 44px;
+          height: 44px;
           border-radius: 12px;
+          background: linear-gradient(135deg, #f39200, #c41a22);
+          color: #fff;
           display: grid;
           place-items: center;
-          background: #f6b71c;
-          color: #17120e;
-          font-size: 13px;
-          font-weight: 1000;
-        }
-
-        .adminBrandV2 strong {
-          display: block;
-          font-size: 12px;
-          letter-spacing: .4px;
-        }
-
-        .adminBrandV2 span {
-          display: block;
-          margin-top: 3px;
-          color: #85878b;
-          font-size: 12px;
-          font-weight: 800;
-          letter-spacing: 1.2px;
-        }
-
-        .adminNavTitle {
-          color: #686b70;
-          font-size: 12px;
-          letter-spacing: 1.2px;
           font-weight: 900;
-          padding: 13px 10px 7px;
+          font-size: 16px;
         }
 
-        .adminSideV2 a {
-          min-height: 40px;
-          margin: 2px 0;
-          padding: 9px 10px;
-          border-radius: 9px;
+        .adminBrandModern strong {
+          display: block;
+          font-size: 15px;
+          letter-spacing: 0.5px;
+          color: #140d0b;
+        }
+
+        .adminBrandModern span {
+          display: block;
+          font-size: 11px;
+          color: #5e514c;
+          font-weight: 700;
+          letter-spacing: 1px;
+        }
+
+        .adminHeaderNav {
           display: flex;
           align-items: center;
-          gap: 10px;
-          color: #aeb0b5;
-          text-decoration: none;
-          font-size: 12px;
-          font-weight: 750;
-          transition: .18s ease;
+          gap: 8px;
+          overflow-x: auto;
         }
 
-        .adminSideV2 a:hover {
-          background: rgba(255,255,255,.06);
+        .adminHeaderNav a {
+          padding: 8px 16px;
+          border-radius: 20px;
+          font-size: 13px;
+          font-weight: 750;
+          color: #5e514c;
+          text-decoration: none;
+          transition: all 0.2s ease;
+          background: #fbf7ef;
+        }
+
+        .adminHeaderNav a:hover,
+        .adminHeaderNav a.active {
+          background: #9e1017;
           color: #fff;
         }
 
-        .adminSideV2 a.active {
-          background: #f6b71c;
-          color: #17120e;
+        .adminContainerModern {
+          width: min(1400px, 94%);
+          margin: 32px auto 0;
         }
 
-        .adminSideBottomV2 {
-          margin-top: auto;
-          border-top: 1px solid rgba(255,255,255,.08);
-          padding: 13px 6px 3px;
-        }
-
-        .adminSystemLive {
-          display: flex;
-          align-items: center;
-          gap: 7px;
-          color: #9da0a5;
-          font-size: 12px;
-          padding: 6px 5px 10px;
-        }
-
-        .adminSystemLive i {
-          width: 7px;
-          height: 7px;
-          border-radius: 50%;
-          background: #45d483;
-          box-shadow: 0 0 0 4px rgba(69,212,131,.10);
-        }
-
-        .adminMainV2 {
-          min-width: 0;
-          padding: 28px clamp(18px, 3.5vw, 48px) 60px;
-        }
-
-        .adminTopV2 {
+        .adminTopSection {
           display: flex;
           justify-content: space-between;
           align-items: flex-end;
           gap: 20px;
-          margin-bottom: 23px;
+          margin-bottom: 28px;
+          flex-wrap: wrap;
         }
 
-        .adminBreadcrumb {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-          color: #8b8e93;
-          font-size: 12px;
-          font-weight: 800;
+        .adminTopSection h1 {
+          margin: 6px 0 4px;
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(32px, 4vw, 42px);
+          font-weight: 700;
         }
 
-        .adminTopV2 h1 {
-          margin: 8px 0 5px;
-          font-size: clamp(25px, 3.2vw, 36px);
-          letter-spacing: -.8px;
-        }
-
-        .adminTopV2 p {
+        .adminTopSection p {
           margin: 0;
-          color: #7b7e84;
-          font-size: 12px;
+          color: #5e514c;
+          font-size: 14px;
         }
 
-        .adminTopActions {
+        .adminActionButtons {
           display: flex;
-          align-items: center;
-          gap: 8px;
+          gap: 12px;
         }
 
-        .adminGhost,
-        .adminPrimary {
-          min-height: 39px;
-          border-radius: 9px;
+        .adminGhostBtn, .adminPrimaryBtn {
+          height: 44px;
+          padding: 0 20px;
+          border-radius: 12px;
           display: inline-flex;
           align-items: center;
-          justify-content: center;
-          gap: 7px;
-          padding: 0 13px;
-          font: inherit;
+          gap: 8px;
+          font-weight: 800;
           font-size: 13px;
-          font-weight: 850;
-          text-decoration: none;
           cursor: pointer;
+          text-decoration: none;
+          transition: all 0.2s ease;
         }
 
-        .adminGhost {
+        .adminGhostBtn {
           background: #fff;
-          color: #303238;
-          border: 1px solid #e3e5e8;
+          border: 1px solid #ddd;
+          color: #140d0b;
         }
 
-        .adminPrimary {
-          background: #171717;
+        .adminPrimaryBtn {
+          background: linear-gradient(135deg, #9e1017, #c41a22);
+          border: none;
           color: #fff;
-          border: 1px solid #171717;
+          box-shadow: 0 6px 20px rgba(158,16,23,0.25);
         }
 
-        .adminPrimary:hover {
-          background: #2c2c2c;
-        }
-
-        .adminGhost:disabled {
-          opacity: .55;
-          cursor: not-allowed;
-        }
-
-        .adminStatsV2 {
+        .adminStatsGrid {
           display: grid;
           grid-template-columns: repeat(5, minmax(0, 1fr));
-          gap: 11px;
-          margin-bottom: 18px;
+          gap: 18px;
+          margin-bottom: 28px;
         }
 
-        .adminStatV2 {
+        .adminStatCard {
           background: #fff;
-          border: 1px solid #e6e7e9;
-          border-radius: 14px;
-          padding: 15px;
-          min-width: 0;
-          box-shadow: 0 2px 9px rgba(20,20,20,.025);
+          border-radius: 20px;
+          padding: 22px;
+          border: 1px solid rgba(158,16,23,0.08);
+          box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+          position: relative;
+          overflow: hidden;
         }
 
-        .adminStatIconV2 {
-          width: 35px;
-          height: 35px;
-          border-radius: 10px;
+        .adminStatIcon {
+          width: 42px;
+          height: 42px;
+          border-radius: 12px;
           display: grid;
           place-items: center;
-          margin-bottom: 17px;
+          margin-bottom: 16px;
         }
 
-        .adminStatV2.gold .adminStatIconV2 { background: #fff4d7; color: #9c6900; }
-        .adminStatV2.blue .adminStatIconV2 { background: #edf4ff; color: #3b70b7; }
-        .adminStatV2.green .adminStatIconV2 { background: #eaf8f0; color: #2c8a55; }
-        .adminStatV2.purple .adminStatIconV2 { background: #f1edff; color: #7257b4; }
-        .adminStatV2.red .adminStatIconV2 { background: #fff0ee; color: #b5483d; }
+        .adminStatCard.gold .adminStatIcon { background: #fff8e8; color: #b86b00; }
+        .adminStatCard.blue .adminStatIcon { background: #edf4ff; color: #1e88e5; }
+        .adminStatCard.green .adminStatIcon { background: #edf7f1; color: #2e7d32; }
+        .adminStatCard.purple .adminStatIcon { background: #f3eefd; color: #7e57c2; }
+        .adminStatCard.red .adminStatIcon { background: #fff0f1; color: #9e1017; }
 
-        .adminStatLabelV2 {
+        .adminStatCard span.label {
           display: block;
-          color: #85888d;
+          color: #5e514c;
           font-size: 12px;
-          font-weight: 700;
-          margin-bottom: 5px;
+          font-weight: 750;
+          margin-bottom: 4px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
         }
 
-        .adminStatValueV2 {
+        .adminStatCard strong.value {
           display: block;
-          font-size: 20px;
-          letter-spacing: -.4px;
+          font-size: 26px;
+          font-weight: 800;
+          letter-spacing: -0.5px;
+          color: #140d0b;
         }
 
-        .adminStatNoteV2 {
+        .adminStatCard span.note {
           display: block;
-          color: #9a9da2;
-          font-size: 7px;
+          color: #8a7c75;
+          font-size: 11px;
           margin-top: 6px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
         }
 
-        .analyticsGridV2 {
+        .analyticsGridModern {
           display: grid;
-          grid-template-columns: minmax(0, 1.55fr) minmax(270px, .7fr);
-          gap: 13px;
-          margin-bottom: 13px;
+          grid-template-columns: minmax(0, 1.6fr) minmax(320px, 0.9fr);
+          gap: 24px;
+          margin-bottom: 24px;
         }
 
-        .analyticsPanelV2 {
+        .adminPanelModern {
           background: #fff;
-          border: 1px solid #e6e7e9;
-          border-radius: 15px;
-          padding: 17px;
-          min-width: 0;
-          box-shadow: 0 2px 9px rgba(20,20,20,.025);
+          border-radius: 24px;
+          padding: 28px;
+          border: 1px solid rgba(158,16,23,0.08);
+          box-shadow: 0 10px 30px rgba(0,0,0,0.03);
         }
 
-        .panelHeadV2 {
+        .panelHeaderModern {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
-          gap: 12px;
-          margin-bottom: 15px;
+          margin-bottom: 22px;
         }
 
-        .panelEyebrowV2 {
-          display: block;
-          color: #9a9da2;
-          font-size: 7px;
-          font-weight: 900;
-          letter-spacing: 1px;
-        }
-
-        .panelHeadV2 h2 {
-          margin: 5px 0 0;
-          font-size: 15px;
-          letter-spacing: -.2px;
-        }
-
-        .panelHeadV2 p {
+        .panelHeaderModern h2 {
           margin: 4px 0 0;
-          color: #8d9095;
-          font-size: 12px;
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 24px;
+          font-weight: 700;
         }
 
-        .livePill {
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          background: #effaf3;
-          color: #2d8552;
-          border-radius: 7px;
-          padding: 6px 8px;
-          font-size: 7px;
-          font-weight: 900;
-        }
-
-        .livePill i {
-          width: 5px;
-          height: 5px;
-          border-radius: 50%;
-          background: currentColor;
-        }
-
-        .chartCanvas {
-          width: 100%;
-          overflow: hidden;
-        }
-
-        .chartCanvas svg {
-          display: block;
-          width: 100%;
-          height: auto;
-          min-height: 240px;
-        }
-
-        .chartGrid {
-          stroke: #eceef0;
-          stroke-width: 1;
-        }
-
-        .chartArea {
-          fill: rgba(246,183,28,.12);
-        }
-
-        .chartLine {
-          fill: none;
-          stroke: #c78d0a;
-          stroke-width: 3;
-          stroke-linecap: round;
-          stroke-linejoin: round;
-        }
-
-        .chartPoint {
-          fill: #fff;
-          stroke: #c78d0a;
-          stroke-width: 3;
-        }
-
-        .chartLabel {
-          fill: #999ca1;
-          font-size: 12px;
-        }
-
-        .chartEmpty {
-          min-height: 240px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-direction: column;
-          gap: 7px;
-          text-align: center;
-          color: #9a9da2;
-        }
-
-        .chartEmpty strong {
-          color: #4b4e54;
-          font-size: 12px;
-        }
-
-        .chartEmpty span {
-          max-width: 260px;
-          line-height: 1.5;
-          font-size: 12px;
-        }
-
-        .chartEmpty.compact {
-          min-height: 210px;
-        }
-
-        .statusBars,
-        .productBars {
-          display: grid;
-          gap: 14px;
-          padding: 6px 2px;
-        }
-
-        .statusRowTop,
-        .productBarMeta {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 10px;
-          margin-bottom: 6px;
-        }
-
-        .statusRowTop span,
-        .productBarMeta span {
-          min-width: 0;
-          color: #666a70;
-          font-size: 12px;
-          text-transform: capitalize;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-
-        .statusRowTop strong,
-        .productBarMeta strong {
-          color: #26282c;
+        .panelHeaderModern p {
+          margin: 2px 0 0;
+          color: #5e514c;
           font-size: 13px;
         }
 
-        .statusTrack,
-        .productBarTrack {
-          height: 7px;
-          border-radius: 99px;
-          background: #f0f1f2;
-          overflow: hidden;
+        .eyebrowModern {
+          font-size: 11px;
+          font-weight: 900;
+          letter-spacing: 1.5px;
+          color: #9e1017;
+          text-transform: uppercase;
         }
 
-        .statusTrack span,
-        .productBarTrack span {
-          display: block;
-          height: 100%;
-          border-radius: inherit;
-          background: #f6b71c;
+        .livePillModern {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: #edf7f1;
+          color: #2e7d32;
+          padding: 6px 12px;
+          border-radius: 20px;
+          font-size: 11px;
+          font-weight: 900;
         }
 
-        .productBarTrack span {
-          background: #18181b;
+        .livePillModern i {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: #2e7d32;
         }
 
-        .lowerGridV2 {
+        .chartCanvas { width: 100%; overflow: hidden; }
+        .chartCanvas svg { display: block; width: 100%; height: auto; min-height: 260px; }
+        .chartGrid { stroke: #f0eee9; stroke-width: 1; }
+        .chartArea { fill: rgba(243,146,0,0.12); }
+        .chartLine { fill: none; stroke: #f39200; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+        .chartPoint { fill: #fff; stroke: #f39200; stroke-width: 3.5; }
+        .chartLabel { fill: #8a7c75; font-size: 11px; font-weight: 700; }
+
+        .statusBars, .productBars { display: grid; gap: 16px; }
+        .statusRowTop, .productBarMeta { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px; font-weight: 700; color: #5e514c; }
+        .statusTrack, .productBarTrack { height: 8px; border-radius: 999px; background: #fbf7ef; overflow: hidden; }
+        .statusTrack span { display: block; height: 100%; background: #f39200; border-radius: inherit; }
+        .productBarTrack span { display: block; height: 100%; background: #9e1017; border-radius: inherit; }
+
+        .lowerGridModern {
           display: grid;
-          grid-template-columns: minmax(0, 1.1fr) minmax(300px, .9fr);
-          gap: 13px;
-          margin-bottom: 13px;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 24px;
+          margin-bottom: 24px;
         }
 
-        .quickGridV2 {
+        .quickGridModern {
           display: grid;
           grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 9px;
+          gap: 14px;
+          margin-top: 16px;
         }
 
-        .quickCardV2 {
-          min-height: 92px;
-          padding: 12px;
-          border: 1px solid #ececee;
-          border-radius: 11px;
-          color: #202125;
+        .quickCardModern {
+          background: #faf9f4;
+          border: 1px solid rgba(158,16,23,0.06);
+          border-radius: 16px;
+          padding: 18px 14px;
           text-decoration: none;
-          transition: .18s ease;
+          color: #140d0b;
+          transition: all 0.2s ease;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
         }
 
-        .quickCardV2:hover {
-          transform: translateY(-2px);
-          border-color: #d9dadd;
-          box-shadow: 0 8px 22px rgba(0,0,0,.05);
+        .quickCardModern:hover {
+          transform: translateY(-3px);
+          border-color: #f39200;
+          background: #fff;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.05);
         }
 
         .quickCardIcon {
-          width: 31px;
-          height: 31px;
-          border-radius: 9px;
-          background: #f7f4df;
+          width: 36px;
+          height: 36px;
+          border-radius: 10px;
+          background: #fff;
           display: grid;
           place-items: center;
-          margin-bottom: 12px;
+          color: #9e1017;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+          margin-bottom: 4px;
         }
 
-        .quickCardV2 strong {
-          display: block;
-          font-size: 13px;
-        }
+        .quickCardModern strong { font-size: 14px; font-weight: 800; }
+        .quickCardModern span { font-size: 11px; color: #8a7c75; }
 
-        .quickCardV2 span {
-          display: block;
-          color: #8b8e93;
-          font-size: 7px;
-          line-height: 1.45;
-          margin-top: 4px;
-        }
-
-        .recentListV2 {
-          display: grid;
-        }
-
-        .recentItemV2 {
-          min-width: 0;
-          padding: 11px 0;
-          border-top: 1px solid #eceef0;
-          display: grid;
-          grid-template-columns: 34px minmax(0,1fr) auto;
-          align-items: center;
-          gap: 9px;
-          text-decoration: none;
-          color: #202125;
-        }
-
-        .recentIconV2 {
-          width: 34px;
-          height: 34px;
-          border-radius: 9px;
-          background: #f6f4e8;
-          display: grid;
-          place-items: center;
-        }
-
-        .recentItemV2 strong {
-          display: block;
-          font-size: 13px;
-        }
-
-        .recentItemV2 span {
-          display: block;
-          color: #92959a;
-          font-size: 7px;
-          margin-top: 3px;
-        }
-
-        .recentAmountV2 {
-          text-align: right;
-        }
-
-        .recentAmountV2 strong {
-          font-size: 13px;
-        }
-
-        .recentAmountV2 span {
-          color: #3a8a59;
-          text-transform: capitalize;
-        }
-
-        .emptyRecent {
-          min-height: 150px;
-          display: grid;
-          place-items: center;
-          text-align: center;
-          color: #979aa0;
-          font-size: 13px;
-        }
-
-        .adminErrorV2 {
-          margin-bottom: 13px;
-          padding: 11px 13px;
+        .recentListModern { display: grid; gap: 12px; }
+        .recentItemModern {
           display: flex;
           align-items: center;
-          gap: 9px;
-          background: #fff1ef;
-          border: 1px solid #f1d0cb;
-          border-radius: 10px;
-          color: #a44238;
+          justify-content: space-between;
+          padding: 14px 16px;
+          background: #faf9f4;
+          border-radius: 14px;
+          text-decoration: none;
+          color: #140d0b;
+          border: 1px solid rgba(158,16,23,0.05);
+          transition: all 0.2s;
         }
+        .recentItemModern:hover { background: #fff; border-color: #f39200; transform: translateX(4px); }
+        .recentItemLeft { display: flex; align-items: center; gap: 14px; }
+        .recentIconBox { width: 40px; height: 40px; border-radius: 10px; background: #fff; display: grid; place-items: center; color: #9e1017; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .recentItemLeft strong { display: block; font-size: 14px; }
+        .recentItemLeft span { display: block; font-size: 12px; color: #8a7c75; margin-top: 2px; }
+        .recentAmountModern { text-align: right; }
+        .recentAmountModern strong { display: block; font-size: 15px; color: #9e1017; }
+        .recentAmountModern span { display: block; font-size: 11px; font-weight: 700; color: #2e7d32; text-transform: capitalize; margin-top: 2px; }
 
-        .adminErrorV2 span {
-          flex: 1;
-          font-size: 12px;
-        }
-
-        .adminErrorV2 button {
-          border: 0;
-          background: #fff;
-          border-radius: 7px;
-          padding: 6px 9px;
-          font-size: 12px;
-          font-weight: 800;
-          cursor: pointer;
-        }
-
+        /* LOADING PAGE & LOGO */
         .adminLoadingPage {
           min-height: 100vh;
           display: grid;
           place-items: center;
-          background: #f5f6f8;
-          padding: 24px;
-          box-sizing: border-box;
+          background: #ffffff;
         }
 
         .adminLoadingCard {
-          width: min(430px, calc(100% - 30px));
-          min-height: 220px;
-          padding: 34px 30px;
-          background: #fff;
-          border: 1px solid #e1e3e6;
-          border-radius: 20px;
           display: flex;
-          align-items: center;
-          justify-content: center;
           flex-direction: column;
-          gap: 12px;
+          align-items: center;
+          gap: 16px;
           text-align: center;
-          box-shadow: 0 12px 35px rgba(20,20,20,.06);
-          box-sizing: border-box;
+          z-index: 10;
         }
 
-        .adminLoadingLogo {
-          width: 58px;
-          height: 58px;
-          border-radius: 15px;
-          display: grid;
-          place-items: center;
-          background: #f6b71c;
-          color: #18181b;
-          font-size: 20px;
-          font-weight: 1000;
+        .adminLoadingLogoImg {
+          height: 60px;
+          object-fit: contain;
+          filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));
         }
 
         .adminLoadingCard .spinner {
-          width: 30px;
-          height: 30px;
-          border: 3px solid #eceef0;
-          border-top-color: #c49b18;
+          width: 32px;
+          height: 32px;
+          border: 3px solid rgba(158,16,23,0.1);
+          border-top-color: #9e1017;
           border-radius: 50%;
-          animation: adminSpin .75s linear infinite;
+          animation: adminSpin 0.75s linear infinite;
+        }
+
+        @keyframes adminSpin {
+          to { transform: rotate(360deg); }
         }
 
         .adminLoadingCard strong {
-          font-size: 17px;
-          line-height: 1.3;
+          font-size: 18px;
+          font-weight: 800;
+          color: #140d0b;
         }
 
         .adminLoadingCard span {
-          color: #74777d;
-          font-size: 13px;
-          line-height: 1.5;
+          color: #5e514c;
           font-size: 13px;
         }
 
         @media (max-width: 1200px) {
-          .adminStatsV2 {
-            grid-template-columns: repeat(3, 1fr);
-          }
-          .analyticsGridV2,
-          .lowerGridV2 {
-            grid-template-columns: 1fr;
-          }
+          .adminStatsGrid { grid-template-columns: repeat(3, 1fr); }
+          .analyticsGridModern, .lowerGridModern { grid-template-columns: 1fr; }
         }
 
-        @media (max-width: 900px) {
-          .adminDashboardV2 {
-            grid-template-columns: 1fr;
-          }
-          .adminSideV2 {
-            position: relative;
-            height: auto;
-            min-height: 0;
-          }
-          .adminSideBottomV2 {
-            margin-top: 15px;
-          }
-        }
-
-        @media (max-width: 620px) {
-          .adminMainV2 {
-            padding: 22px 14px 45px;
-          }
-          .adminTopV2 {
-            align-items: flex-start;
-            flex-direction: column;
-          }
-          .adminTopActions {
-            width: 100%;
-          }
-          .adminTopActions > * {
-            flex: 1;
-          }
-          .adminStatsV2 {
-            grid-template-columns: repeat(2, 1fr);
-          }
-          .adminStatV2:last-child {
-            grid-column: 1 / -1;
-          }
-          .quickGridV2 {
-            grid-template-columns: repeat(2, 1fr);
-          }
-          .chartCanvas svg {
-            min-height: 190px;
-          }
-        }
-
-        @media (max-width: 420px) {
-          .adminStatsV2 {
-            grid-template-columns: 1fr;
-          }
-          .adminStatV2:last-child {
-            grid-column: auto;
-          }
-          .quickGridV2 {
-            grid-template-columns: 1fr;
-          }
-          .adminTopActions {
-            flex-direction: column;
-          }
+        @media (max-width: 768px) {
+          .adminHeaderModern { padding: 14px 18px; }
+          .adminStatsGrid { grid-template-columns: repeat(2, 1fr); }
+          .quickGridModern { grid-template-columns: repeat(2, 1fr); }
         }
       `}</style>
 
-      <aside className="adminSideV2">
-        <div className="adminBrandV2">
-          <div className="adminBrandMarkV2">RR</div>
+      {/* MODERN TOP NAVIGATION BAR */}
+      <header className="adminHeaderModern">
+        <div className="adminBrandModern">
+          <div className="adminBrandBadge">RR</div>
           <div>
             <strong>RR MASALA</strong>
             <span>COMMERCE CONTROL</span>
           </div>
         </div>
 
-        <div className="adminNavTitle">OVERVIEW</div>
-        <Link className="active" to="/admin">
-          <LayoutDashboard size={16} /> Dashboard
-        </Link>
-        <Link to="/admin/analytics">
-          <BarChart3 size={16} /> Analytics
-        </Link>
+        <nav className="adminHeaderNav">
+          <Link className="active" to="/admin"><LayoutDashboard size={14} /> Dashboard</Link>
+          <Link to="/admin/products"><Package size={14} /> Products</Link>
+          <Link to="/admin/orders"><ShoppingBag size={14} /> Orders</Link>
+          <Link to="/admin/customers"><Users size={14} /> Customers</Link>
+          <Link to="/admin/inventory"><Boxes size={14} /> Inventory</Link>
+          <Link to="/admin/settings"><SettingsIcon size={14} /> Settings</Link>
+          <Link to="/"><ExternalLink size={14} /> Storefront</Link>
+        </nav>
+      </header>
 
-        <div className="adminNavTitle">CATALOG</div>
-        <Link to="/admin/products">
-          <Package size={16} /> Products
-        </Link>
-        <Link to="/admin/categories">
-          <Tags size={16} /> Categories
-        </Link>
-        <Link to="/admin/inventory">
-          <Boxes size={16} /> Inventory
-        </Link>
-
-        <div className="adminNavTitle">COMMERCE</div>
-        <Link to="/admin/orders">
-          <ShoppingBag size={16} /> Orders
-        </Link>
-        <Link to="/admin/customers">
-          <Users size={16} /> Customers
-        </Link>
-        <Link to="/admin/returns">
-          <RotateCcw size={16} /> Returns
-        </Link>
-        <Link to="/admin/coupons">
-          <TicketPercent size={16} /> Coupons
-        </Link>
-        <Link to="/admin/banners">
-          <ImageIcon size={16} /> Banners
-        </Link>
-
-        <div className="adminNavTitle">SYSTEM</div>
-        <Link to="/admin/settings">
-          <Settings size={16} /> Settings
-        </Link>
-        <Link to="/admin/audit-logs">
-          <Activity size={16} /> Audit logs
-        </Link>
-
-        <div className="adminSideBottomV2">
-          <div className="adminSystemLive">
-            <i /> System operational
-          </div>
-          <Link to="/">
-            <ExternalLink size={14} /> View storefront
-          </Link>
-        </div>
-      </aside>
-
-      <section className="adminMainV2">
+      <div className="adminContainerModern">
         {error && (
-          <div className="adminErrorV2">
-            <AlertTriangle size={16} />
-            <span>{error}</span>
-            <button onClick={() => load()}>Retry</button>
-            <button
-              aria-label="Dismiss"
-              onClick={() => setError("")}
-            >
-              <X size={14} />
-            </button>
+          <div style={{ marginBottom: 20, padding: 14, background: "#fff0f1", border: "1px solid #ffd1d3", borderRadius: 12, display: "flex", alignItems: "center", gap: 10, color: "#9e1017" }}>
+            <AlertTriangle size={18} />
+            <span style={{ flex: 1, fontSize: 13, fontWeight: 700 }}>{error}</span>
+            <button onClick={() => load()} style={{ background: "#fff", border: "1px solid #ffd1d3", padding: "6px 12px", borderRadius: 8, fontWeight: 800, cursor: "pointer" }}>Retry</button>
+            <button onClick={() => setError("")} style={{ background: "transparent", border: "none", cursor: "pointer" }}><X size={16} /></button>
           </div>
         )}
 
-        <header className="adminTopV2">
+        <header className="adminTopSection">
           <div>
-            <div className="adminBreadcrumb">
-              <LayoutDashboard size={11} />
-              <ChevronRight size={10} />
-              Control center
-            </div>
-            <h1>Business overview</h1>
-            <p>
-              Monitor revenue, orders, customers, inventory and product
-              performance from one place.
-            </p>
+            <span className="eyebrowModern">ADMIN CONTROL PANEL</span>
+            <h1>Business Overview</h1>
+            <p>Monitor real-time revenue, orders, customers, inventory and store performance seamlessly.</p>
           </div>
 
-          <div className="adminTopActions">
-            <button
-              className="adminGhost"
-              onClick={() => load(true)}
-              disabled={refreshing}
-            >
-              <RefreshCw
-                size={14}
-                className={refreshing ? "refreshSpin" : ""}
-              />
-              Refresh
+          <div className="adminActionButtons">
+            <button className="adminGhostBtn" onClick={() => load(true)} disabled={refreshing}>
+              <RefreshCw size={15} className={refreshing ? "refreshSpin" : ""} />
+              Refresh Data
             </button>
-            <Link className="adminPrimary" to="/admin/products/new">
-              <Plus size={14} />
-              Add product
+            <Link className="adminPrimaryBtn" to="/admin/products/new">
+              <Plus size={16} />
+              Add New Product
             </Link>
           </div>
         </header>
 
-        <section className="adminStatsV2">
+        {/* STATS OVERVIEW CARDS */}
+        <section className="adminStatsGrid">
           {stats.map(({ icon: Icon, label, value, note, tone }) => (
-            <div className={`adminStatV2 ${tone}`} key={label}>
-              <div className="adminStatIconV2">
-                <Icon size={17} />
+            <div className={`adminStatCard ${tone}`} key={label}>
+              <div className="adminStatIcon">
+                <Icon size={20} />
               </div>
-              <span className="adminStatLabelV2">{label}</span>
-              <strong className="adminStatValueV2">{value}</strong>
-              <span className="adminStatNoteV2">{note}</span>
+              <span className="label">{label}</span>
+              <strong className="value">{value}</strong>
+              <span className="note">{note}</span>
             </div>
           ))}
         </section>
 
-        <div className="analyticsGridV2">
-          <section className="analyticsPanelV2">
-            <div className="panelHeadV2">
+        {/* ANALYTICS & STATUS */}
+        <div className="analyticsGridModern">
+          <section className="adminPanelModern">
+            <div className="panelHeaderModern">
               <div>
-                <span className="panelEyebrowV2">BUSINESS ANALYTICS</span>
-                <h2>Sales trend</h2>
-                <p>Revenue movement from available analytics data</p>
+                <span className="eyebrowModern">PERFORMANCE METRICS</span>
+                <h2>Sales Trend</h2>
+                <p>Revenue movement from historical store analytics</p>
               </div>
-              <span className="livePill">
-                <i /> Live data
+              <span className="livePillModern">
+                <i /> Live Data
               </span>
             </div>
             <LineChart data={trend} />
           </section>
 
-          <section className="analyticsPanelV2">
-            <div className="panelHeadV2">
+          <section className="adminPanelModern">
+            <div className="panelHeaderModern">
               <div>
-                <span className="panelEyebrowV2">OPERATIONS</span>
-                <h2>Order status</h2>
-                <p>Current order distribution</p>
+                <span className="eyebrowModern">FULFILLMENT</span>
+                <h2>Order Status</h2>
+                <p>Current distribution of orders</p>
               </div>
             </div>
             <StatusBars data={statuses} />
           </section>
         </div>
 
-        <div className="lowerGridV2">
-          <section className="analyticsPanelV2">
-            <div className="panelHeadV2">
+        {/* LOWER GRID: TOP PRODUCTS & SHORTCUTS */}
+        <div className="lowerGridModern">
+          <section className="adminPanelModern">
+            <div className="panelHeaderModern">
               <div>
-                <span className="panelEyebrowV2">PRODUCT PERFORMANCE</span>
-                <h2>Top products</h2>
-                <p>Best-performing products returned by analytics</p>
+                <span className="eyebrowModern">CATALOG INSIGHTS</span>
+                <h2>Top Products</h2>
+                <p>Best-selling products based on sales performance</p>
               </div>
             </div>
             <ProductBars data={topProducts} />
           </section>
 
-          <section className="analyticsPanelV2">
-            <div className="panelHeadV2">
+          <section className="adminPanelModern">
+            <div className="panelHeaderModern">
               <div>
-                <span className="panelEyebrowV2">SHORTCUTS</span>
-                <h2>Manage your business</h2>
+                <span className="eyebrowModern">QUICK ACTIONS</span>
+                <h2>Manage Store</h2>
+                <p>Quick shortcuts for fast store management</p>
               </div>
             </div>
 
-            <div className="quickGridV2">
+            <div className="quickGridModern">
               {[
                 [Package, "Products", "Catalogue", "/admin/products"],
                 [ShoppingBag, "Orders", "Fulfilment", "/admin/orders"],
                 [Users, "Customers", "Accounts", "/admin/customers"],
                 [Boxes, "Inventory", "Stock", "/admin/inventory"],
                 [ImageIcon, "Banners", "Storefront", "/admin/banners"],
-                [Tags, "Categories", "Organisation", "/admin/categories"],
+                [Tags, "Categories", "Organize", "/admin/categories"],
               ].map(([Icon, title, text, to]) => (
-                <Link className="quickCardV2" to={to} key={title}>
+                <Link className="quickCardModern" to={to} key={title}>
                   <div className="quickCardIcon">
-                    <Icon size={15} />
+                    <Icon size={18} />
                   </div>
                   <strong>{title}</strong>
                   <span>{text}</span>
@@ -1371,65 +1142,51 @@ export default function Admin() {
           </section>
         </div>
 
-        <section className="analyticsPanelV2">
-          <div className="panelHeadV2">
+        {/* RECENT ORDERS */}
+        <section className="adminPanelModern">
+          <div className="panelHeaderModern">
             <div>
-              <span className="panelEyebrowV2">RECENT ACTIVITY</span>
-              <h2>Recent orders</h2>
-              <p>Latest orders returned by the dashboard API</p>
+              <span className="eyebrowModern">RECENT ACTIVITY</span>
+              <h2>Recent Orders</h2>
+              <p>Latest customer transactions received by the store</p>
             </div>
-            <Link
-              className="adminGhost"
-              style={{ textDecoration: "none" }}
-              to="/admin/orders"
-            >
-              View all <ArrowRight size={12} />
+            <Link className="adminGhostBtn" to="/admin/orders" style={{ height: 38, padding: "0 14px" }}>
+              View All Orders <ArrowRight size={14} />
             </Link>
           </div>
 
           {recent.length ? (
-            <div className="recentListV2">
-              {recent.slice(0, 7).map((order) => (
-                <Link
-                  className="recentItemV2"
-                  to={`/admin/orders/${order._id}`}
-                  key={order._id}
-                >
-                  <div className="recentIconV2">
-                    <ShoppingBag size={15} />
+            <div className="recentListModern">
+              {recent.slice(0, 6).map((order) => (
+                <Link className="recentItemModern" to={`/admin/orders/${order._id}`} key={order._id}>
+                  <div className="recentItemLeft">
+                    <div className="recentIconBox">
+                      <ShoppingBag size={18} />
+                    </div>
+                    <div>
+                      <strong>{order.orderNumber || order._id}</strong>
+                      <span>{order.customer?.name || order.user?.name || "Customer"}</span>
+                    </div>
                   </div>
-                  <div>
-                    <strong>
-                      {order.orderNumber || order._id}
-                    </strong>
-                    <span>
-                      {order.customer?.name ||
-                        order.user?.name ||
-                        "Customer"}
-                    </span>
-                  </div>
-                  <div className="recentAmountV2">
-                    <strong>
-                      {money(order.grandTotal || order.total)}
-                    </strong>
-                    <span>
-                      {String(order.orderStatus || "pending").replaceAll(
-                        "_",
-                        " "
-                      )}
-                    </span>
+                  <div className="recentAmountModern">
+                    <strong>{money(order.grandTotal || order.total)}</strong>
+                    <span>{String(order.orderStatus || "pending").replaceAll("_", " ")}</span>
                   </div>
                 </Link>
               ))}
             </div>
           ) : (
-            <div className="emptyRecent">
-              <ShoppingBag size={25} />
-              No recent orders available.
+            <div style={{ textAlign: "center", padding: "40px", color: "#8a7c75" }}>
+              <ShoppingBag size={32} style={{ margin: "0 auto 10px", opacity: 0.5 }} />
+              No recent orders found.
             </div>
           )}
         </section>
-      </section>
+      </div>
     </main>
   );
+}
+
+function SettingsIcon(props) {
+  return <Boxes {...props} />;
 }
