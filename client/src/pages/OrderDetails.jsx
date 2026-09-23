@@ -1092,6 +1092,53 @@ export default function OrderDetails() {
           .od-support { align-items: flex-start; flex-wrap: wrap; }
           .od-support a { width: 100%; margin-left: 28px; }
         }
+
+        /* RR MASALA — ORDER DETAILS WORLD-CLASS OVERRIDES */
+        .od-page{
+          background:
+            radial-gradient(circle at 5% 5%,rgba(169,15,25,.045),transparent 24%),
+            radial-gradient(circle at 95% 12%,rgba(215,155,28,.07),transparent 25%),
+            #fff!important;
+          padding:34px 18px 90px!important;
+        }
+        .od-shell{width:min(1260px,100%)!important}
+        .od-back{font-size:13px!important;padding:11px 0 20px!important}
+        .od-hero{
+          padding:42px!important;
+          border-radius:26px!important;
+          box-shadow:0 24px 65px rgba(53,20,15,.12)!important;
+        }
+        .od-eyebrow,.od-cardEyebrow{font-size:10px!important;letter-spacing:.16em!important;font-weight:900!important}
+        .od-numberRow h1{font-size:clamp(36px,5vw,62px)!important;letter-spacing:-.045em!important}
+        .od-date{font-size:14px!important}
+        .od-statusPill{font-size:14px!important;padding:12px 17px!important}
+        .od-statusMessage{font-size:14px!important;padding:14px 17px!important}
+        .od-card{
+          border-radius:22px!important;
+          padding:30px!important;
+          box-shadow:0 15px 45px rgba(34,20,12,.06)!important;
+        }
+        .od-sectionHead h2{font-size:30px!important;letter-spacing:-.035em!important}
+        .od-sectionHead p,.od-item p,.od-addressText,.od-summaryRow,.od-trust,.od-trackRow,.od-support{
+          font-size:14px!important;
+        }
+        .od-item{padding:18px 0!important}
+        .od-productImage{width:78px!important;height:78px!important;border-radius:16px!important}
+        .od-itemName{font-size:17px!important}
+        .od-lineTotal{font-size:17px!important}
+        .od-summaryTotal{font-size:25px!important}
+        .od-primary,.od-secondary{font-size:14px!important;padding:13px 17px!important}
+        @media(max-width:620px){
+          .od-page{padding:20px 11px 55px!important}
+          .od-hero{padding:24px 20px!important;border-radius:18px!important}
+          .od-numberRow h1{font-size:38px!important}
+          .od-card{padding:21px!important;border-radius:18px!important}
+          .od-sectionHead h2{font-size:26px!important}
+          .od-itemName{font-size:15px!important}
+          .od-productImage{width:64px!important;height:64px!important}
+          .od-summaryTotal{font-size:22px!important}
+        }
+
       `}</style>
     </main>
   );

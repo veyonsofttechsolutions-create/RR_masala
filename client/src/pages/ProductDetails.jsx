@@ -1910,6 +1910,80 @@ const styles = `
       grid-template-columns: 1fr 1fr;
     }
   }
+
+  /* RR MASALA — PRODUCT DETAILS WORLD-CLASS OVERRIDES */
+  .rrpd-page{
+    background:
+      radial-gradient(circle at 4% 4%,rgba(169,15,25,.045),transparent 22%),
+      radial-gradient(circle at 96% 16%,rgba(215,155,28,.065),transparent 25%),
+      #fff!important;
+    padding-top:34px!important;
+    padding-bottom:100px!important;
+  }
+  .rrpd-shell{width:min(1320px,100%)!important}
+  .rrpd-breadcrumb{font-size:13px!important;padding-bottom:22px!important}
+  .rrpd-product{
+    gap:52px!important;
+    padding:34px!important;
+    border-radius:28px!important;
+    box-shadow:0 25px 75px rgba(46,20,12,.08)!important;
+    background:#fff!important;
+  }
+  .rrpd-main-image{
+    min-height:620px!important;
+    border-radius:24px!important;
+    background:linear-gradient(145deg,#fff,#f8f4ed)!important;
+  }
+  .rrpd-main-photo{max-height:590px!important;object-fit:contain!important}
+  .rrpd-sale-badge{font-size:12px!important;padding:10px 13px!important}
+  .rrpd-productInfo h1{
+    font-size:clamp(42px,5vw,68px)!important;
+    line-height:.96!important;
+    letter-spacing:-.055em!important;
+  }
+  .rrpd-category,.rrpd-eyebrow{font-size:11px!important;letter-spacing:.14em!important}
+  .rrpd-description,.rrpd-productInfo p{
+    font-size:16px!important;line-height:1.85!important;
+  }
+  .rrpd-price,.rrpd-current-price{font-size:38px!important;font-weight:900!important}
+  .rrpd-compare-price{font-size:17px!important}
+  .rrpd-stock,.rrpd-stockStatus{font-size:13px!important;padding:10px 13px!important}
+  .rrpd-quantity label{font-size:12px!important}
+  .rrpd-quantity button{width:45px!important;height:45px!important}
+  .rrpd-quantity span{font-size:17px!important}
+  .rrpd-primary-btn,.rrpd-secondary-btn,.rrpd-buy-btn{
+    min-height:52px!important;
+    font-size:15px!important;
+    font-weight:900!important;
+    border-radius:13px!important;
+  }
+  .rrpd-section{padding:42px 0!important}
+  .rrpd-section h2,.rrpd-compliance h2{
+    font-size:clamp(30px,4vw,48px)!important;
+    letter-spacing:-.04em!important;
+  }
+  .rrpd-section p,.rrpd-compliance p{font-size:15px!important;line-height:1.8!important}
+  .rrpd-compliance-grid{gap:13px!important}
+  .rrpd-compliance-grid>div{padding:16px!important;border-radius:14px!important}
+  .rrpd-compliance-grid span{font-size:10px!important}
+  .rrpd-compliance-grid b{font-size:14px!important}
+  .rrpd-related h2{font-size:42px!important}
+  @media(max-width:850px){
+    .rrpd-product{padding:20px!important;gap:25px!important}
+    .rrpd-main-image{min-height:450px!important}
+    .rrpd-main-photo{max-height:420px!important}
+  }
+  @media(max-width:600px){
+    .rrpd-page{padding:18px 11px 65px!important}
+    .rrpd-product{border-radius:19px!important;padding:14px!important}
+    .rrpd-main-image{min-height:350px!important;border-radius:16px!important}
+    .rrpd-main-photo{max-height:330px!important}
+    .rrpd-productInfo h1{font-size:39px!important}
+    .rrpd-description,.rrpd-productInfo p{font-size:14px!important}
+    .rrpd-price,.rrpd-current-price{font-size:31px!important}
+    .rrpd-primary-btn,.rrpd-secondary-btn,.rrpd-buy-btn{font-size:14px!important}
+    .rrpd-section h2,.rrpd-compliance h2{font-size:31px!important}
+  }
 `;
 
 export { getImageList, getProductImage };

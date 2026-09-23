@@ -601,6 +601,76 @@ export default function LegalCenter() {
           .lcInfoGrid,.lcComplianceGrid,.lcBottom { grid-template-columns:1fr; }
           .lcCurrent { align-items:flex-start; flex-direction:column; }
         }
+
+        /* RR MASALA — LEGAL CENTER PREMIUM OVERRIDES */
+        .legalCenterPremium{
+          --lc-red:#a90f19!important;
+          --lc-red-dark:#69080e!important;
+          --lc-gold:#d79b1c!important;
+          --lc-ink:#171311!important;
+          --lc-muted:#716862!important;
+          padding:46px 18px 100px!important;
+          background:
+            radial-gradient(circle at 7% 5%,rgba(169,15,25,.055),transparent 25%),
+            radial-gradient(circle at 94% 8%,rgba(215,155,28,.08),transparent 24%),
+            #fff!important;
+        }
+        .lcShell{width:min(1280px,100%)!important}
+        .lcBack{font-size:13px!important;padding:10px 0 22px!important}
+        .lcHero{
+          min-height:430px!important;
+          border-radius:30px!important;
+          background:
+            radial-gradient(circle at 82% 30%,rgba(215,155,28,.22),transparent 28%),
+            linear-gradient(135deg,#220c0f,#3d1015 50%,#170e0d)!important;
+          box-shadow:0 30px 90px rgba(66,18,15,.17)!important;
+        }
+        .lcHeroCopy{padding:66px 64px!important}
+        .lcEyebrow{font-size:11px!important}
+        .lcHero h1{
+          font-size:clamp(52px,7vw,88px)!important;
+          line-height:.92!important;
+          letter-spacing:-.055em!important;
+        }
+        .lcHero p{font-size:16px!important;line-height:1.8!important;max-width:690px!important}
+        .lcHeroMeta span{font-size:11px!important;padding:10px 13px!important}
+        .lcHeroArt{min-height:390px!important}
+        .lcLayout{grid-template-columns:300px 1fr!important;gap:22px!important;margin-top:22px!important}
+        .lcNav{padding:12px!important;border-radius:20px!important}
+        .lcNavTitle{font-size:10px!important;padding:13px!important}
+        .lcNav button{font-size:13px!important;padding:14px 12px!important}
+        .lcCurrent{padding:16px 18px!important}
+        .lcCurrent span{font-size:10px!important}
+        .lcCurrent strong{font-size:14px!important}
+        .lcSection{padding:38px 34px!important;border-radius:20px!important;gap:30px!important}
+        .lcSectionRail span{font-size:10px!important}
+        .lcSectionBody h2{font-size:clamp(30px,3vw,45px)!important;letter-spacing:-.035em!important}
+        .lcSectionBody p,.lcSectionBody li{font-size:15px!important;line-height:1.85!important}
+        .lcInfoCard{padding:19px!important;border-radius:14px!important}
+        .lcInfoCard label{font-size:10px!important}
+        .lcValue,.lcMuted{font-size:14px!important}
+        .lcLinks a{font-size:13px!important;padding:10px 13px!important}
+        .lcBottom{gap:18px!important}
+        .lcBottomCard{padding:34px!important;border-radius:20px!important}
+        .lcBottomCard h3{font-size:27px!important}
+        .lcBottomCard p{font-size:14px!important;line-height:1.75!important}
+        .lcFooterNote{font-size:12px!important;line-height:1.7!important}
+        @media(max-width:900px){
+          .lcLayout{grid-template-columns:1fr!important}
+          .lcNav{position:relative!important;top:auto!important}
+        }
+        @media(max-width:620px){
+          .legalCenterPremium{padding:24px 11px 65px!important}
+          .lcHero{min-height:360px!important;border-radius:22px!important}
+          .lcHeroCopy{padding:38px 25px!important}
+          .lcHero h1{font-size:47px!important}
+          .lcHero p{font-size:14px!important}
+          .lcSection{padding:25px 21px!important}
+          .lcSectionBody h2{font-size:32px!important}
+          .lcSectionBody p,.lcSectionBody li{font-size:14px!important}
+          .lcBottomCard{padding:26px!important}
+        }
+
       `}</style>
 
       <div className="lcShell">

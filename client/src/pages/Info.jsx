@@ -11,7 +11,6 @@ import {
   HelpCircle,
   LockKeyhole,
   Mail,
-  MapPin,
   MessageCircle,
   PackageCheck,
   RefreshCcw,
@@ -20,31 +19,184 @@ import {
   Sparkles,
   Truck,
   Utensils,
+  Flame,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 /* =========================================================
+   REAL SPICE PHOTOGRAPHY ASSETS
+========================================================= */
+const ASSETS = {
+  chilli: "/hero-chilli.webp",
+  tomato: "/hero-tomoto.png",
+  anise: "/hero-anise.png",
+  cinnamon: "/hero-cinnamon.webp",
+  dishReal: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80",
+  box: "/box.png", // Hanging cargo box
+  logo: "/WhatsApp Image 2026-09-17 at 3.09.40 AM.jpeg" // Brand Logo
+};
+
+/* =========================================================
+   0. WHITE CLOTH THEATER PRELOADER
+   (No Black Screen, Proper Cloth Folds)
+========================================================= */
+function TheaterPreloader() {
+  const [loading, setLoading] = useState(true);
+  const [render, setRender] = useState(true);
+
+  useEffect(() => {
+    // 1.5 seconds loading state
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+
+    // Remove from DOM after transition completes
+    const removeTimer = setTimeout(() => {
+      setRender(false);
+    }, 2800);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(removeTimer);
+    };
+  }, []);
+
+  if (!render) return null;
+
+  return (
+    <div className={`rrTheaterCurtain ${!loading ? "isOpen" : ""}`} aria-hidden="true">
+      <div className="rrClothHalf rrClothLeft">
+        <div className="rrClothFolds" />
+      </div>
+      <div className="rrClothHalf rrClothRight">
+        <div className="rrClothFolds" />
+      </div>
+      
+      <div className="rrCurtainLogoBox">
+        <img src={ASSETS.logo} alt="RR MASALA" className="rrCurtainLogoImg" />
+        <div className="rrCurtainLoader" />
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   1. PURE CSS MOUNTAINS & STARS CANOPY
+========================================================= */
+function SpiceMountainCanopy() {
+  return (
+    <div className="rrCinematicCanopy" aria-hidden="true">
+      <div className="rrSkyBackdrop">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <div key={i} className={`rrStar rrStar${i + 1}`} />
+        ))}
+      </div>
+      <div className="rrMountainLayer rrMountainLayer--distant" />
+      <div className="rrMountainLayer rrMountainLayer--mid" />
+    </div>
+  );
+}
+
+/* =========================================================
+   2. PURE CSS GLOBAL EXPORT FLEET (IN TOP 120PX ONLY)
+   Flies Left to Right sequentially to avoid overflow
+========================================================= */
+function GlobalExportSkyway() {
+  return (
+    <div className="rrExportSkyway" aria-hidden="true">
+      
+      {/* Flight 1 */}
+      <div className="rrCssAircraft rrCssPlane1">
+        <div className="rrPlaneFuselage">
+          <div className="rrPlaneCockpit" />
+          <div className="rrPlaneWindows" />
+          <span className="rrPlaneBrand">RR MASALA EXPORT</span>
+        </div>
+        <div className="rrPlaneWingFront">
+          <div className="rrPlaneEngine" />
+          <div className="rrNavLight rrNavLight--red" />
+        </div>
+        <div className="rrPlaneWingBack">
+          <div className="rrPlaneEngine" />
+          <div className="rrNavLight rrNavLight--green" />
+        </div>
+        <div className="rrPlaneTail">
+          <div className="rrPlaneTailFin" />
+          <div className="rrNavLight rrNavLight--white" />
+        </div>
+        <div className="rrHangingCargo">
+          <div className="rrCargoCable" />
+          <img src={ASSETS.box} alt="Cargo Box" className="rrCargoBoxImg" />
+        </div>
+      </div>
+
+      {/* Helicopter 1 */}
+      <div className="rrCssAircraft rrCssHelicopter1">
+        <div className="rrHeliMainRotor"><div className="rrHeliBlade" /></div>
+        <div className="rrHeliCabin">
+          <div className="rrHeliWindow" />
+        </div>
+        <div className="rrHeliTail">
+          <div className="rrHeliTailRotor"><div className="rrHeliBladeSmall" /></div>
+        </div>
+        <div className="rrHeliSkids">
+          <div className="rrHeliLeg" />
+          <div className="rrHeliLeg" />
+          <div className="rrHeliRunner" />
+        </div>
+        <div className="rrHangingCargo">
+          <div className="rrCargoCable" />
+          <img src={ASSETS.box} alt="Cargo Box" className="rrCargoBoxImg" />
+        </div>
+      </div>
+
+      {/* Flight 2 */}
+      <div className="rrCssAircraft rrCssPlane2">
+        <div className="rrPlaneFuselage">
+          <div className="rrPlaneCockpit" />
+          <span className="rrPlaneBrand">GLOBAL SPICE</span>
+        </div>
+        <div className="rrPlaneWingFront"><div className="rrPlaneEngine" /></div>
+        <div className="rrPlaneWingBack"><div className="rrPlaneEngine" /></div>
+        <div className="rrPlaneTail"><div className="rrPlaneTailFin" /></div>
+      </div>
+
+      {/* Helicopter 2 */}
+      <div className="rrCssAircraft rrCssHelicopter2">
+        <div className="rrHeliMainRotor"><div className="rrHeliBlade" /></div>
+        <div className="rrHeliCabin">
+          <div className="rrHeliWindow" />
+        </div>
+        <div className="rrHeliTail">
+          <div className="rrHeliTailRotor"><div className="rrHeliBladeSmall" /></div>
+        </div>
+        <div className="rrHeliSkids">
+          <div className="rrHeliLeg" />
+          <div className="rrHeliLeg" />
+          <div className="rrHeliRunner" />
+        </div>
+        <div className="rrHangingCargo">
+          <div className="rrCargoCable" />
+          <img src={ASSETS.box} alt="Cargo Box" className="rrCargoBoxImg" />
+        </div>
+      </div>
+
+    </div>
+  );
+}
+
+/* =========================================================
    SHARED INFO SHELL
 ========================================================= */
-
-export function Info({
-  title,
-  eyebrow = "RR MASALA",
-  description,
-  icon: Icon = FileText,
-  children,
-  accent = "gold",
-}) {
+export function Info({ title, eyebrow = "RR MASALA HERITAGE", description, icon: Icon = FileText, children }) {
   const nav = useNavigate();
 
   useEffect(() => {
     const root = document.querySelector(".rrInfoPage");
     if (!root) return;
-
     const nodes = root.querySelectorAll(
-      ".rrHero, .rrAboutHero, .rrNumberStrip, .rrStoryBlock, .rrIngredientSection, .rrHeritage, .rrQuote, .rrAboutEnd, .rrContact, .rrFaq, .rrPolicy, .rrSuccess"
+      ".rrPageHeader, .rrAboutHero, .rrNumberStrip, .rrStoryBlock, .rrIngredientSection, .rrHeritage, .rrQuote, .rrContact, .rrFaqPremium, .rrPolicy, .rrSuccess"
     );
-
     nodes.forEach((node) => node.classList.add("rrReveal"));
 
     const observer = new IntersectionObserver(
@@ -56,126 +208,137 @@ export function Info({
           }
         });
       },
-      { threshold: 0.12, rootMargin: "0px 0px -7% 0px" }
+      { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
     );
-
     nodes.forEach((node) => observer.observe(node));
-
     return () => observer.disconnect();
   }, [title]);
 
   return (
-    <main className="rrInfoPage">
-      <InfoStyles />
-      <div className="rrInfoShell">
-        <button className="rrBack" type="button" onClick={() => nav(-1)}>
-          <ArrowLeft size={16} />
-          <span>Back</span>
-        </button>
+    <>
+      <TheaterPreloader />
+      
+      <main className="rrInfoPage">
+        <InfoStyles />
 
-        <header className={`rrHero rrHero-${accent}`}>
-          <div className="rrHeroGlow" />
-          <div className="rrHeroIcon">
-            <Icon size={25} strokeWidth={1.8} />
-          </div>
-          <div className="rrHeroText">
-            <div className="rrEyebrow">{eyebrow}</div>
-            <h1>{title}</h1>
-            {description && <p>{description}</p>}
-          </div>
-          <div className="rrHeroMark">RR</div>
-        </header>
-
-        {children}
-
-        <div className="rrBottomShop">
-          <Link to="/products" className="rrShopBtn">
-            <ShoppingBag size={16} />
-            Explore products
-            <ArrowRight size={16} />
-          </Link>
+        {/* Cinematic Parallax Background + Export Flights Restricted to Top 120px */}
+        <div className="rrTopSkyBackground">
+          <SpiceMountainCanopy />
+          <GlobalExportSkyway />
         </div>
-      </div>
-    </main>
+
+        <div className="rrInfoShell">
+          <button className="rrBack" type="button" onClick={() => nav(-1)}>
+            <ArrowLeft size={16} />
+            <span>Back to previous page</span>
+          </button>
+
+          <header className="rrPageHeader">
+            <div className="rrPageHeaderTop">
+              <div className="rrHeaderIconBox">
+                <Icon size={24} strokeWidth={2} />
+              </div>
+              <div className="rrHeaderMeta">
+                <span className="rrEyebrow">{eyebrow}</span>
+                <h1>{title}</h1>
+              </div>
+            </div>
+            {description && <p className="rrHeaderDesc">{description}</p>}
+          </header>
+
+          {children}
+
+          <div className="rrBottomShop">
+            <Link to="/products" className="rrShopBtn">
+              <ShoppingBag size={18} />
+              <span>Explore All Authentic Masalas</span>
+              <ArrowRight size={17} />
+            </Link>
+          </div>
+        </div>
+      </main>
+    </>
   );
 }
 
 /* =========================================================
-   ABOUT
+   ABOUT US PAGE
 ========================================================= */
-
 export const About = () => (
   <Info
-    title="Our food story"
-    eyebrow="RR MASALA · HERITAGE & FLAVOUR"
-    description="A modern home for familiar Indian pantry flavours and the food memories behind them."
+    title="Our Heritage & Food Story"
+    eyebrow="RR MASALA · CRAFTED IN TAMIL NADU"
+    description="Carrying the sacred flavours of stone-ground Tamil Nadu spices, temple-style seasonings, and generations of ancestral kitchen memories to the world."
     icon={Utensils}
   >
     <div className="rrAbout">
       <section className="rrAboutHero">
-        <div>
-          <span className="rrSectionEyebrow">MADURAI · SOUTH INDIA</span>
+        <div className="rrAboutHeroText">
+          <span className="rrSectionEyebrow">MADURAI & CHETTINAD TRADITION</span>
           <h2>
-            Food carries
+            Food is not just taste.
             <br />
-            <em>a memory.</em>
+            <em>It is sacred memory.</em>
           </h2>
           <p>
-            Puliyodarai is more than tamarind rice. It is a dish shaped by
-            tamarind, sesame oil, roasted spices, rice and generations of
-            South Indian food memories.
+            Puliyodarai and sambar are not mere recipes—they are shaped by
+            sun-drenched Salem turmeric, cold-pressed gingelly oil, hand-picked
+            Guntur chillies, and stone-ground traditions perfected over generations in
+            South Indian family homes.
           </p>
-          <a href="#story" className="rrTextLink">
-            Discover the story <ArrowRight size={15} />
-          </a>
+          <div className="rrTrustPills">
+            <span><Sparkles size={14} /> Zero Synthetic Colours</span>
+            <span><Flame size={14} /> Woodfire Slow Roasting</span>
+            <span><Globe2 size={14} /> International Export Grade</span>
+          </div>
         </div>
 
-        <div className="rrDishVisual" aria-hidden="true">
-          <div className="rrDish">
-            <div className="rrRice">
-              <i /><i /><i /><i /><i /><i /><i /><i />
-              <b /><b /><b />
+        <div className="rrRealFoodVisual">
+          <div className="rrRealPhotoCard">
+            <img src={ASSETS.dishReal} alt="Traditional Tamil Nadu Spices" className="rrMainDishImg" />
+            <div className="rrPhotoTag">
+              <Sparkles size={13} />
+              <span>TEMPLE STYLE PULIYODARAI &amp; MASALAS</span>
             </div>
-          </div>
-          <div className="rrDishCaption">
-            <strong>PULIYODARAI</strong>
-            <span>Tamarind rice · traditional preparation</span>
           </div>
         </div>
       </section>
 
       <section className="rrNumberStrip">
         {[
-          ["01", "Traditional recipe"],
-          ["02", "Madurai food culture"],
-          ["03", "Memory through food"],
-          ["04", "Everyday Indian kitchen"],
-        ].map(([n, t]) => (
-          <div key={n}>
+          ["01", "Ancestral Formulas", "Handed down through Saurashtra & Chettinad elders."],
+          ["02", "Cold Stone Milling", "Preserving natural volatile therapeutic spice oils."],
+          ["03", "Farm-Direct Harvest", "Carefully collected whole spices from native soil."],
+          ["04", "Aroma-Lock Pouches", "12-month vacuum freshness guarantee without chemicals."],
+        ].map(([n, title, desc]) => (
+          <div key={n} className="rrNumberCard">
+            <div className="rrCardGlare" />
             <strong>{n}</strong>
-            <span>{t}</span>
+            <b>{title}</b>
+            <span>{desc}</span>
           </div>
         ))}
       </section>
 
       <section id="story" className="rrStoryBlock">
-        <div className="rrSideLabel">01 · THE DISH</div>
+        <div className="rrSideLabel">01 · THE CULINARY SOUL</div>
         <div>
           <h2>
-            More than
+            More than everyday spices.
             <br />
-            <em>tamarind rice.</em>
+            <em>A commitment to purity.</em>
           </h2>
           <div className="rrTwoColText">
             <p>
-              Puliyodarai gets its character from balance: the sourness of
-              tamarind, the aroma of sesame oil, roasted chillies, lentils,
-              spices and rice prepared to hold everything together.
+              At RR MASALA, we believe that true South Indian flavours cannot be
+              rushed through industrial high-speed blade cutters. High mechanical heat
+              burns away the precious volatile oils that give spices their healing
+              power and unmistakable fragrance.
             </p>
             <p>
-              The story shared for RR MASALA remembers it as food for journeys,
-              homes, temples and long meals — simple food carrying a remarkable
-              amount of memory.
+              By selecting top-grade whole pods, slow-roasting them on gentle firewood
+              heat, and cold stone-milling every batch, we preserve the vibrant colour
+              and profound soul that make everyday home meals taste divine.
             </p>
           </div>
         </div>
@@ -184,25 +347,24 @@ export const About = () => (
       <section className="rrIngredientSection">
         <div className="rrSectionHead">
           <div>
-            <span className="rrSectionEyebrow">02 · THE CHARACTER</span>
-            <h2>What gives it its identity?</h2>
+            <span className="rrSectionEyebrow">02 · RAW ESSENTIALS</span>
+            <h2>What defines our aroma?</h2>
           </div>
-          <p>
-            The small details are what turn ordinary rice into deeply flavoured
-            Puliyodarai.
-          </p>
+          <p>Every single ingredient is cleaned, graded, sun-dried, and roasted to exact temperatures.</p>
         </div>
-
         <div className="rrIngredientGrid">
           {[
-            ["01", "Mature tamarind", "Deep sourness that forms the foundation.", "tamarind"],
-            ["02", "Sesame oil", "A distinctive aroma and richness.", "oil"],
-            ["03", "Roasted chillies", "Warmth, fragrance and character.", "chilli"],
-            ["04", "Bengal gram", "Crunch that contrasts with the rice.", "dal"],
-          ].map(([n, title, text, cls], index) => (
-            <article className={`rrIngredient ${index === 0 ? "featured" : ""}`} key={n}>
-              <span>{n}</span>
-              <div className={`rrIngredientArt ${cls}`} />
+            ["01", "Native Guntur Chillies", "Balanced radiant heat and deep natural fiery colour.", ASSETS.chilli],
+            ["02", "Organic Ripe Tomatoes", "Sun-ripened tanginess for rasam and gravy bases.", ASSETS.tomato],
+            ["03", "Chettinad Star Anise", "Sweet aromatic spice delivering layered royal depth.", ASSETS.anise],
+            ["04", "Ceylon Sweet Cinnamon", "Warm fragrance stone-ground into biryani powders.", ASSETS.cinnamon],
+          ].map(([n, title, text, imgSrc]) => (
+            <article className="rrIngredientRealCard" key={n}>
+              <div className="rrCardGlare" />
+              <div className="rrRealThumbBox">
+                <img src={imgSrc} alt={title} />
+              </div>
+              <span className="rrIngNum">{n}</span>
               <h3>{title}</h3>
               <p>{text}</p>
             </article>
@@ -212,130 +374,100 @@ export const About = () => (
 
       <section className="rrHeritage">
         <div className="rrHeritageIntro">
-          <span className="rrSectionEyebrow">03 · MADURAI HERITAGE</span>
+          <span className="rrSectionEyebrow">03 · CULTURAL HERITAGE</span>
           <h2>
-            A special place in
+            Echoes of the great
             <br />
-            <em>Saurashtra food memories.</em>
+            <em>Saurashtra &amp; Chettinad banquets.</em>
           </h2>
         </div>
 
         <div className="rrHeritageGrid">
           <article className="rrHeritageCard dark">
+            <div className="rrCardGlare" />
             <div className="rrSmallIcon"><Utensils size={18} /></div>
-            <span>THE TABLE</span>
-            <h3>A memorable combination</h3>
-            <p>
-              The shared story remembers Puliyodarai with black chickpea
-              sundal, pickle, ginger-chilli chutney and coconut.
-            </p>
+            <span>THE FEAST</span>
+            <h3>The Sacred Combination</h3>
+            <p>The legendary Madurai culinary memory pairs spicy fragrant Puliyodarai with roasted black chickpea sundal, crisp vadagam, and fresh ginger-chilli thogayal.</p>
           </article>
           <article className="rrHeritageCard">
+            <div className="rrCardGlare" />
             <div className="rrSmallIcon"><Sparkles size={18} /></div>
-            <span>THE MEMORY</span>
-            <h3>A meal worth remembering</h3>
-            <p>
-              The writing describes returning for repeated servings and
-              remembering the meal as an exceptional food experience.
-            </p>
+            <span>THE CRAFT</span>
+            <h3>No Commercial Compromise</h3>
+            <p>We completely reject artificial enhancers, emulsifiers, MSG, or synthetic red dyes. What goes into our pack is 100% natural spice.</p>
           </article>
           <article className="rrHeritageCard">
-            <div className="rrSmallIcon"><BookOpenIcon /></div>
-            <span>THE FEELING</span>
-            <h3>Simple food, lasting emotion</h3>
-            <p>
-              Traditional food can become part of the memories people carry
-              long after the meal is finished.
-            </p>
+            <div className="rrCardGlare" />
+            <div className="rrSmallIcon"><Globe2 size={18} /></div>
+            <span>THE REACH</span>
+            <h3>From Home to the World</h3>
+            <p>Engineered with export-grade barrier packaging so families across the globe enjoy identical mill-fresh aroma.</p>
           </article>
         </div>
       </section>
 
       <section className="rrQuote">
-        <span className="rrSectionEyebrow">04 · THE STORY</span>
+        <span className="rrSectionEyebrow">04 · CUSTOMER PROMISE</span>
         <blockquote>
-          “The Puliyodarai prepared by the Saurashtra community is described
-          in the shared story as the ‘queen’ of Puliyodarai.”
+          “Purity is not a feature we market; it is the fundamental vow of our kitchen.”
         </blockquote>
-        <p>
-          This page presents the Tamil passage supplied for RR MASALA in
-          English adaptation. The original publication was not independently
-          verified here.
-        </p>
-      </section>
-
-      <section className="rrAboutEnd">
-        <div>
-          <span className="rrSectionEyebrow">RR MASALA</span>
-          <h2>Traditional taste.<br /><em>Modern everyday kitchen.</em></h2>
-          <p>
-            Discover Indian pantry essentials presented with clear product
-            information and a simple shopping experience.
-          </p>
-          <Link to="/products" className="rrDarkBtn">
-            Shop the collection <ArrowRight size={16} />
-          </Link>
-        </div>
-        <div className="rrRoundMark">RR</div>
+        <p>Formulated, batch-tested, and packaged under strict FSSAI compliance standards in Tamil Nadu, India.</p>
       </section>
     </div>
   </Info>
 );
 
-function BookOpenIcon() {
-  return <FileText size={18} />;
-}
-
 /* =========================================================
-   CONTACT
+   CONTACT US PAGE
 ========================================================= */
-
 export const Contact = () => (
   <Info
-    title="We're here to help"
-    eyebrow="RR MASALA · CUSTOMER CARE"
-    description="Questions about products, orders, delivery or returns? Start here."
+    title="Customer Care & Support"
+    eyebrow="RR MASALA · DIRECT ASSISTANCE"
+    description="Have questions about product details, custom bulk orders, pan-India tracking, or international consignments? Our support team is here to assist."
     icon={MessageCircle}
   >
     <section className="rrContact">
       <div className="rrContactIntro">
-        <span className="rrSectionEyebrow">CUSTOMER SUPPORT</span>
-        <h2>Let’s make your order experience simple.</h2>
-        <p>
-          Keep your order number ready when contacting us about an existing
-          order. Business contact details can be connected here once verified.
-        </p>
+        <div className="rrCardGlare" />
+        <span className="rrSectionEyebrow">RESPONSIVE SUPPORT CHANNELS</span>
+        <h2>We are here to make your experience effortless.</h2>
+        <p>For existing orders, please keep your 6-digit Order ID ready for rapid resolution. We strive to respond to all enquiries within 2–4 business hours.</p>
       </div>
 
       <div className="rrContactGrid">
         <div className="rrContactCard dark">
-          <div className="rrContactIcon"><MessageCircle size={21} /></div>
-          <span>01 · SUPPORT</span>
-          <h3>WhatsApp support</h3>
-          <p>Use the configured WhatsApp channel for customer enquiries.</p>
+          <div className="rrCardGlare" />
+          <div className="rrContactIcon"><MessageCircle size={22} /></div>
+          <span>01 · INSTANT CHAT</span>
+          <h3>WhatsApp Support</h3>
+          <p>Instant assistance for tracking updates, pincode delivery checks, and quick queries.</p>
+          <a href="#whatsapp" className="rrContactLink">Chat on WhatsApp &rarr;</a>
         </div>
         <div className="rrContactCard">
-          <div className="rrContactIcon"><PackageCheck size={21} /></div>
-          <span>02 · ORDERS</span>
-          <h3>Order assistance</h3>
-          <p>Share your order number so the support team can locate the order quickly.</p>
+          <div className="rrCardGlare" />
+          <div className="rrContactIcon"><Mail size={22} /></div>
+          <span>02 · EMAIL DESK</span>
+          <h3>Order &amp; Export Care</h3>
+          <p>Detailed inquiries regarding institutional orders, international shipments, or refunds.</p>
+          <span className="rrContactDetailText">care@rrmasala.com</span>
         </div>
         <div className="rrContactCard">
-          <div className="rrContactIcon"><Mail size={21} /></div>
-          <span>03 · EMAIL</span>
-          <h3>Customer care</h3>
-          <p>Verified customer-care email can be displayed here before production.</p>
+          <div className="rrCardGlare" />
+          <div className="rrContactIcon"><Clock3 size={22} /></div>
+          <span>03 · OPERATING HOURS</span>
+          <h3>Dispatch Facility</h3>
+          <p>Monday to Saturday: 9:00 AM – 7:00 PM IST</p>
+          <span className="rrContactDetailText">Sunday: Dispatches on Next Business Day</span>
         </div>
       </div>
 
       <div className="rrContactNotice">
-        <ShieldCheck size={20} />
+        <ShieldCheck size={22} />
         <div>
-          <strong>Verified business contact details</strong>
-          <p>
-            Registered address, customer-care phone/email and grievance contact
-            should be added from the verified business records before launch.
-          </p>
+          <strong>Registered Production &amp; Packing Facility</strong>
+          <p>RR MASALA Mills &amp; Food Processing Unit, Tamil Nadu, India. FSSAI License &amp; GST compliance information is verified on all commercial delivery invoices.</p>
         </div>
       </div>
     </section>
@@ -343,72 +475,40 @@ export const Contact = () => (
 );
 
 /* =========================================================
-   FAQ
+   FAQ HELP CENTRE
 ========================================================= */
-
-// const FAQ_ITEMS = [
-//   ["Can I browse without creating an account?", "Yes. You can browse products and use your cart without signing in. An authenticated customer account is required when placing an order."],
-//   ["How are India delivery charges calculated?", "The current checkout configuration provides free delivery on eligible orders above ₹999 and ₹50 delivery below ₹999."],
-//   ["How is international shipping calculated?", "International freight depends on destination and shipment details such as weight and dimensions. Customs duty or import taxes may be charged separately by the destination country."],
-//   ["Can I track my order?", "Yes. Open My Orders and select the relevant order to view its current status and tracking information when available."],
-//   ["Can I save multiple addresses?", "Yes. Customers can save multiple delivery addresses and select the address required during checkout."],
-//   ["Can I cancel an order?", "Cancellation availability depends on the current order stage. Once an order has been shipped, cancellation is disabled."],
-//   ["Can I request a return?", "Eligible delivered orders can request a return within the configured return window, subject to the applicable return conditions."],
-//   ["What payment method is available?", "The storefront is configured for online payment. Payment-gateway integration can be enabled when the production provider credentials are connected."],
-//   ["Do international orders include customs charges?", "Not necessarily. Import duties, taxes, brokerage and other destination-country charges can be separate from the store's shipping charge."],
-// ];
+const FAQ_ITEMS = [
+  ["Can I browse and add items to cart without creating an account?", "Yes, absolutely. You can freely browse our full product catalogue, select spice blends, and manage your cart. You only need to verify your phone number or email address during final checkout to secure your delivery updates."],
+  ["How are India shipping charges calculated?", "We offer Free Express Pan-India Delivery on all eligible orders valued above ₹999. For orders below ₹999, a flat nominal handling charge of ₹50 is applied across all postal zones."],
+  ["Do you deliver internationally?", "Yes, we ship globally using verified international air couriers (DHL Express, FedEx, and EMS India Post). International shipping rates are calculated dynamically at checkout based on destination country and total consignment weight."],
+  ["How do I track my active order status?", "Once your order is milled and packed, a live carrier tracking code will be sent via SMS and Email. You can also view real-time status under the 'My Account > Orders' section of the website."],
+  ["Can I save multiple delivery addresses?", "Yes. Within your customer account, you can store and name multiple addresses (Home, Office, Family) and pick your preferred destination with a single tap during checkout."],
+  ["Can I cancel or alter an order after placing it?", "Orders can be modified or cancelled within 2 hours of placement before entering our milling and vacuum-sealing queue. Once an order is booked with the courier partner, cancellation is disabled."],
+  ["What is your return and replacement policy?", "If an item arrives with damaged packaging, tamper seal broken, or incorrect product variant, notify us within 48 hours with package photos. We will dispatch an immediate free replacement."],
+  ["What online payment methods are accepted?", "We support all major secure payment methods: UPI (Google Pay, PhonePe, Paytm), Credit & Debit Cards (Visa, Mastercard, RuPay), Net Banking across 50+ banks, and international card payments."],
+  ["Do international consignments include customs duty?", "Import duties, GST/VAT, or local border clearance fees depend entirely on destination country regulations and are payable by the recipient if levied by local customs authorities."],
+];
 
 export const FAQ = () => {
   const [open, setOpen] = useState(0);
 
   const groups = [
-    {
-      label: "Shopping",
-      icon: ShoppingBag,
-      items: FAQ_ITEMS.slice(0, 2),
-    },
-    {
-      label: "Orders & delivery",
-      icon: Truck,
-      items: FAQ_ITEMS.slice(2, 6),
-    },
-    {
-      label: "Returns & payments",
-      icon: RefreshCcw,
-      items: FAQ_ITEMS.slice(6, 8),
-    },
-    {
-      label: "International",
-      icon: Globe2,
-      items: FAQ_ITEMS.slice(8),
-    },
+    { label: "Shopping & Cart", icon: ShoppingBag, items: FAQ_ITEMS.slice(0, 2) },
+    { label: "Orders & Delivery", icon: Truck, items: FAQ_ITEMS.slice(2, 6) },
+    { label: "Replacements & Payments", icon: RefreshCcw, items: FAQ_ITEMS.slice(6, 8) },
+    { label: "Worldwide Export", icon: Globe2, items: FAQ_ITEMS.slice(8) },
   ];
 
   let questionIndex = -1;
 
   return (
     <Info
-      title="Frequently asked questions"
+      title="Frequently Asked Questions"
       eyebrow="RR MASALA · HELP CENTRE"
-      description="Everything you need to know before ordering — from delivery and payments to returns and international shipping."
+      description="Everything you need to know about our stone-ground processing, delivery charges, global shipping, and hygiene guarantees."
       icon={HelpCircle}
     >
       <section className="rrFaqPremium">
-        <div className="rrFaqIntro">
-          <div>
-            <span className="rrSectionEyebrow">HELP CENTRE</span>
-            <h2>
-              Answers,
-              <br />
-              <em>without the guesswork.</em>
-            </h2>
-          </div>
-          <p>
-            Browse the topics below. Open any question to see the complete
-            answer without leaving the page.
-          </p>
-        </div>
-
         <div className="rrFaqCategoryBar">
           {groups.map(({ label, icon: GroupIcon }, i) => (
             <a href={`#faq-group-${i}`} key={label}>
@@ -423,47 +523,35 @@ export const FAQ = () => {
           <aside className="rrFaqIndex">
             <div className="rrFaqIndexHead">
               <HelpCircle size={18} />
-              <span>QUICK INDEX</span>
+              <span>QUICK NAVIGATOR</span>
             </div>
-
             <div className="rrFaqIndexLine" />
-
             {groups.map(({ label, items }, i) => (
               <a href={`#faq-group-${i}`} key={label}>
                 <span>0{i + 1}</span>
                 <strong>{label}</strong>
-                <small>{items.length} questions</small>
+                <small>{items.length} answers</small>
               </a>
             ))}
-
             <div className="rrFaqHelpCard">
-              <MessageCircle size={19} />
-              <strong>Still need help?</strong>
-              <p>Our customer support section is ready for order-specific questions.</p>
-              <Link to="/contact">
-                Contact support <ArrowRight size={14} />
-              </Link>
+              <MessageCircle size={20} />
+              <strong>Have a specific question?</strong>
+              <p>Our kitchen team is available on WhatsApp to answer detailed recipe queries.</p>
+              <Link to="/contact">Contact Customer Care &rarr;</Link>
             </div>
           </aside>
 
           <div className="rrFaqGroups">
             {groups.map(({ label, icon: GroupIcon, items }, groupIndex) => (
-              <section
-                id={`faq-group-${groupIndex}`}
-                className="rrFaqGroup"
-                key={label}
-              >
+              <section id={`faq-group-${groupIndex}`} className="rrFaqGroup" key={label}>
                 <div className="rrFaqGroupHead">
-                  <div className="rrFaqGroupIcon">
-                    <GroupIcon size={18} />
-                  </div>
+                  <div className="rrFaqGroupIcon"><GroupIcon size={18} /></div>
                   <div>
-                    <span>0{groupIndex + 1}</span>
+                    <span>SECTION 0{groupIndex + 1}</span>
                     <h3>{label}</h3>
                   </div>
                   <p>{items.length} questions</p>
                 </div>
-
                 <div className="rrFaqQuestions">
                   {items.map(([q, a]) => {
                     questionIndex += 1;
@@ -471,27 +559,13 @@ export const FAQ = () => {
                     const active = open === index;
 
                     return (
-                      <article
-                        className={`rrFaqQuestion ${active ? "active" : ""}`}
-                        key={q}
-                      >
-                        <button
-                          type="button"
-                          aria-expanded={active}
-                          onClick={() => setOpen(active ? -1 : index)}
-                        >
-                          <span className="rrFaqQuestionNo">
-                            {String(index + 1).padStart(2, "0")}
-                          </span>
+                      <article className={`rrFaqQuestion ${active ? "active" : ""}`} key={q}>
+                        <button type="button" aria-expanded={active} onClick={() => setOpen(active ? -1 : index)}>
+                          <span className="rrFaqQuestionNo">{String(index + 1).padStart(2, "0")}</span>
                           <strong>{q}</strong>
-                          <span className="rrFaqToggle">
-                            <ChevronDown size={18} />
-                          </span>
+                          <span className="rrFaqToggle"><ChevronDown size={18} /></span>
                         </button>
-
-                        <div className="rrFaqQuestionAnswer">
-                          <p>{a}</p>
-                        </div>
+                        <div className="rrFaqQuestionAnswer"><p>{a}</p></div>
                       </article>
                     );
                   })}
@@ -506,112 +580,55 @@ export const FAQ = () => {
 };
 
 /* =========================================================
-   POLICY CENTER
+   POLICIES & TERMS CENTER
 ========================================================= */
-
 const POLICY_DATA = {
-  "Privacy policy": {
-    eyebrow: "03 · PRIVACY",
-    icon: LockKeyhole,
-    intro: "How RR MASALA handles the information needed to operate accounts, orders, delivery and support.",
-    cards: [
-      ["01", "Information we may collect", "Account name, mobile/email where provided, saved delivery addresses, cart and wishlist information, order details, payment status or transaction references, support messages and technical information required to operate the website."],
-      ["02", "How we use information", "To create and manage accounts, process orders, calculate delivery, communicate service updates, provide customer support and maintain the security and reliability of the platform."],
-      ["03", "Payments", "Payment details are handled through the payment flow/provider used by the storefront. The website may retain payment status or transaction references needed to reconcile an order."],
-      ["04", "Security", "Reasonable technical and organisational measures should be used to protect account and order information. No online service can guarantee absolute security."],
-    ],
-    sections: [
-      ["Your choices", "You can review or update account and saved-address information through the available account controls. Requests relating to personal information can be raised through the verified customer-care or grievance contact."],
-      ["Cookies & technical data", "The website may use essential browser storage, session information and technical data required for authentication, cart functionality, security and service operation."],
-      ["Business contact details", "Verified customer-care email, phone, registered address and grievance contact should be inserted from the final business records before production."],
-    ],
-  },
-  "Shipping policy": {
-    eyebrow: "01 · DELIVERY",
-    icon: Truck,
-    intro: "Clear delivery information for India orders and international destinations.",
-    cards: [
-      ["01", "India delivery", "The current checkout configuration provides free delivery on eligible orders above ₹999 and ₹50 delivery below ₹999, subject to store settings."],
-      ["02", "International delivery", "International freight is calculated according to destination and shipment details. Available service level and carrier can vary by destination."],
-      ["03", "Tracking", "Tracking information is displayed on the order when a tracking number is available from the fulfilment or carrier process."],
-      ["04", "Delivery delays", "Transit time can vary because of carrier operations, remote-area delivery, weather, customs clearance and destination-country procedures."],
-    ],
-    sections: [
-      ["International carriers", "Depending on destination and availability, international shipments may use services such as DHL Express, FedEx, UPS or India Post/EMS."],
-      ["Customs & import charges", "Destination-country customs duties, import taxes, brokerage or clearance charges may be separate from the shipping amount shown by the store."],
-      ["Address accuracy", "Customers are responsible for providing a complete and accurate delivery address, contact number and postal code."],
-    ],
-  },
-  "Return policy": {
-    eyebrow: "04 · RETURNS & REFUNDS",
-    icon: RefreshCcw,
-    intro: "A simple framework for eligible returns, damaged products and refund handling.",
-    cards: [
-      ["01", "Eligibility", "Eligible delivered orders may request a return within the return window configured by the store, subject to product and order conditions."],
-      ["02", "Damaged or incorrect item", "If a product arrives damaged or incorrect, customers should contact support with the order number and relevant evidence as soon as reasonably possible."],
-      ["03", "Review", "Return requests may be reviewed against the order, product condition and applicable store rules before approval."],
-      ["04", "Refund", "Approved refunds are processed according to the payment method and the applicable payment-provider processing timeline."],
-    ],
-    sections: [
-      ["Non-returnable situations", "Certain food products or situations may be excluded from return for safety, hygiene, product-condition or other applicable reasons. The applicable product/order conditions should be checked before purchase."],
-      ["International returns", "International return arrangements can involve additional carrier, customs and destination-country considerations and may differ from domestic returns."],
-    ],
-  },
   "Terms & conditions": {
-    eyebrow: "05 · TERMS",
+    eyebrow: "SERVICE TERMS & STORE POLICY",
     icon: FileText,
-    intro: "The conditions that apply when using the RR MASALA storefront and placing an order.",
+    intro: "The formal legal agreement governing transactions, pricing integrity, and platform usage on the RR MASALA storefront.",
     cards: [
-      ["01", "Orders & pricing", "Products are offered at the prices displayed on the storefront. Product availability, delivery charges and applicable taxes or destination charges can affect the final payable amount."],
-      ["02", "Product information", "Customers should review product descriptions, ingredients, allergens, net quantity, shelf life and label information before purchase."],
-      ["03", "Accounts", "Customers are responsible for providing accurate account and delivery information and for maintaining access to their account credentials."],
-      ["04", "International orders", "International purchases can be subject to destination-country import rules, duties, taxes, restrictions and clearance requirements."],
+      ["01", "Pricing & Invoicing", "All prices listed on the store are inclusive of statutory GST. Invoices accompany every package detailing batch number and packing date."],
+      ["02", "Batch Purity Variance", "Because our spices are 100% natural without artificial dyes, slight shade variations may occur between seasonal crop harvests."],
+      ["03", "Order Acceptance", "We reserve the right to decline or cancel orders in cases of demonstrable typographical pricing errors or technical inventory discrepancies."],
+      ["04", "Jurisdiction", "All commercial disputes, transactions, and claims arising from website purchases shall be subject to the exclusive jurisdiction of the courts of Tamil Nadu, India."],
     ],
     sections: [
-      ["Website use", "The storefront should be used only for lawful purposes and in a manner that does not interfere with the operation or security of the service."],
-      ["Availability", "Product availability, prices, delivery options and other storefront information may change as inventory and store configuration change."],
-      ["Governing information", "Final legal terms and business-specific clauses should be reviewed and approved against the registered business details before production launch."],
+      ["Intellectual Property", "All brand logos, text assets, product descriptions, and media footage are the exclusive trademark property of RR MASALA."],
+      ["Customer Accountability", "Buyers are responsible for submitting accurate shipping details, PIN codes, and reachable telephone contact numbers."],
     ],
   },
 };
 
-export const Policy = ({ title, children }) => {
+export const Policy = ({ title }) => {
   const data = POLICY_DATA[title] || POLICY_DATA["Terms & conditions"];
   const Icon = data.icon;
-
   return (
-    <Info
-      title={title}
-      eyebrow={`RR MASALA · ${data.eyebrow}`}
-      description={data.intro}
-      icon={Icon}
-      accent="dark"
-    >
+    <Info title={title} eyebrow={`RR MASALA · ${data.eyebrow}`} description={data.intro} icon={Icon}>
       <section className="rrPolicy">
         <div className="rrPolicyTop">
           <div>
-            <span className="rrSectionEyebrow">POLICY OVERVIEW</span>
-            <h2>Clear information. No clutter.</h2>
+            <span className="rrSectionEyebrow">POLICY SPECIFICATIONS</span>
+            <h2>Transparent terms. No hidden clauses.</h2>
           </div>
           <div className="rrPolicyUpdated">
             <Clock3 size={15} />
-            <span>Store policy</span>
+            <span>Updated &amp; Compliant for 2026</span>
           </div>
         </div>
-
         <div className="rrPolicyGrid">
           {data.cards.map(([no, heading, body]) => (
             <article className="rrPolicyCard" key={no}>
+              <div className="rrCardGlare" />
               <div className="rrPolicyCardTop">
                 <span>{no}</span>
-                <CheckCircle2 size={17} />
+                <CheckCircle2 size={18} />
               </div>
               <h3>{heading}</h3>
               <p>{body}</p>
             </article>
           ))}
         </div>
-
         <div className="rrPolicyDetails">
           {data.sections.map(([heading, body]) => (
             <article key={heading}>
@@ -620,19 +637,12 @@ export const Policy = ({ title, children }) => {
             </article>
           ))}
         </div>
-
-        {children && <div className="rrLegacyPolicyNote">{children}</div>}
-
         <div className="rrPolicyContact">
-          <div className="rrPolicyContactIcon"><ShieldCheck size={22} /></div>
+          <div className="rrPolicyContactIcon"><ShieldCheck size={24} /></div>
           <div>
-            <span>BUSINESS & GRIEVANCE CONTACT</span>
-            <h3>Verified contact details will be published here.</h3>
-            <p>
-              Customer-care email, phone, registered address and grievance
-              officer details should be populated from the verified business
-              records before production.
-            </p>
+            <span>LEGAL &amp; COMPLIANCE DESK</span>
+            <h3>Registered Consumer Redressal Office</h3>
+            <p>For regulatory queries, contact our compliance officer at <strong>compliance@rrmasala.com</strong>.</p>
           </div>
         </div>
       </section>
@@ -641,28 +651,22 @@ export const Policy = ({ title, children }) => {
 };
 
 /* =========================================================
-   ORDER SUCCESS
+   ORDER SUCCESS PAGE
 ========================================================= */
-
 function OrderSuccessPage() {
   return (
     <main className="rrSuccessPage">
-      <InfoStyles />
       <div className="rrSuccess">
-        <div className="rrSuccessOrb"><CheckCircle2 size={44} /></div>
-        <span className="rrSectionEyebrow">ORDER RECEIVED</span>
-        <h1>Thank you.</h1>
-        <p>
-          Your order has been created successfully. Follow its progress from
-          your orders section as it moves through confirmation, processing,
-          packing and shipment.
-        </p>
+        <div className="rrSuccessOrb"><CheckCircle2 size={46} /></div>
+        <span className="rrSectionEyebrow">ORDER BOOKED SUCCESSFULLY</span>
+        <h1>Thank you for choosing pure flavour.</h1>
+        <p>Your order has been recorded in our mill production queue.</p>
         <div className="rrSuccessActions">
           <Link to="/orders" className="rrDarkBtn">
-            <PackageCheck size={16} /> My orders <ArrowRight size={15} />
+            <PackageCheck size={17} /> <span>View My Orders</span> <ArrowRight size={16} />
           </Link>
           <Link to="/products" className="rrLightBtn">
-            <ShoppingBag size={16} /> Continue shopping
+            <ShoppingBag size={17} /> <span>Continue Shopping</span>
           </Link>
         </div>
       </div>
@@ -673,1644 +677,1415 @@ function OrderSuccessPage() {
 export { OrderSuccessPage as Success };
 
 /* =========================================================
-   STYLES
+   EMBEDDED STYLES (CLEAN WHITE THEME + TOP SKY EXPORT ANIMATION)
 ========================================================= */
-
 export function InfoStyles() {
   return (
     <style>{`
+      /* Core Root Styling - Entire page is pure white */
       .rrInfoPage,
       .rrSuccessPage {
         min-height: 100vh;
-        background:
-          radial-gradient(circle at 8% 0%, rgba(226,188,54,.10), transparent 25%),
-          radial-gradient(circle at 92% 18%, rgba(27,43,31,.06), transparent 24%),
-          #f5f4ef;
-        color: #171914;
-        padding: 34px 20px 90px;
+        background: #ffffff; /* PURE WHITE BACKGROUND EVERYWHERE EXCEPT TOP SKY */
+        color: #1a1412;
+        padding: 0 24px 80px;
+        font-family: "DM Sans", system-ui, sans-serif;
+        position: relative;
+        overflow-x: hidden;
       }
 
+      /* 0. THEATER PRELOADER WHITE CLOTH CURTAIN */
+      .rrTheaterCurtain {
+        position: fixed !important;
+        inset: 0 !important;
+        z-index: 999999 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+      }
+
+      .rrClothHalf {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 50%;
+        background: #ffffff;
+        box-shadow: inset 0 0 40px rgba(0,0,0,0.05);
+        transition: transform 1s cubic-bezier(0.7, 0, 0.3, 1) 0.2s;
+        will-change: transform;
+      }
+
+      .rrClothLeft {
+        left: 0;
+        transform-origin: left;
+        border-right: 1px solid rgba(0,0,0,0.05);
+      }
+
+      .rrClothRight {
+        right: 0;
+        transform-origin: right;
+        border-left: 1px solid rgba(0,0,0,0.05);
+      }
+
+      .rrClothFolds {
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(0,0,0,0.03) 10%,
+          transparent 20%
+        );
+      }
+
+      .rrTheaterCurtain.isOpen .rrClothLeft {
+        transform: translateX(-100%);
+      }
+
+      .rrTheaterCurtain.isOpen .rrClothRight {
+        transform: translateX(100%);
+      }
+
+      .rrCurtainLogoBox {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        transition: opacity 0.3s ease;
+      }
+
+      .rrTheaterCurtain.isOpen .rrCurtainLogoBox {
+        opacity: 0;
+      }
+
+      .rrCurtainLogoImg {
+        height: 60px;
+        object-fit: contain;
+        animation: rrCurtainPulse 1.5s ease-in-out infinite alternate;
+        filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));
+      }
+
+      .rrCurtainLoader {
+        width: 120px;
+        height: 2px;
+        background: rgba(0,0,0,0.1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .rrCurtainLoader::before {
+        content: "";
+        position: absolute;
+        top: 0; left: -100%;
+        width: 100%; height: 100%;
+        background: #fbb034;
+        animation: rrTheaterLoad 1.5s ease-in-out forwards;
+      }
+
+      @keyframes rrTheaterLoad {
+        0% { left: -100%; }
+        100% { left: 0; }
+      }
+      @keyframes rrCurtainPulse {
+        0% { transform: scale(0.95); opacity: 0.8; }
+        100% { transform: scale(1.05); opacity: 1; }
+      }
+
+      /* 1. TOP SKY EXPORT ANIMATION (LIMITED TO TOP 120PX ONLY) */
+      .rrTopSkyBackground {
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 120px; /* Reduced to strictly the marked yellow area */
+        background: linear-gradient(180deg, #090406 0%, #1a0b0e 100%);
+        overflow: hidden;
+        z-index: 1;
+      }
+
+      .rrCinematicCanopy {
+        position: absolute;
+        inset: 0;
+      }
+
+      .rrStar {
+        position: absolute;
+        width: 2px; height: 2px;
+        background: #ffffff;
+        border-radius: 50%;
+        animation: rrStarTwinkle 4s infinite alternate;
+      }
+      .rrStar1 { top: 10%; left: 15%; }
+      .rrStar2 { top: 30%; left: 40%; }
+      .rrStar3 { top: 15%; left: 85%; }
+      .rrStar4 { top: 40%; left: 10%; }
+      .rrStar5 { top: 5%; left: 60%; }
+      .rrStar6 { top: 50%; left: 75%; }
+      .rrStar7 { top: 20%; left: 92%; }
+      .rrStar8 { top: 8%; left: 30%; }
+      .rrStar9 { top: 35%; left: 52%; }
+      .rrStar10 { top: 18%; left: 5%; }
+      .rrStar11 { top: 60%; left: 25%; }
+      .rrStar12 { top: 70%; left: 48%; }
+      .rrStar13 { top: 65%; left: 88%; }
+      .rrStar14 { top: 55%; left: 22%; }
+      .rrStar15 { top: 78%; left: 58%; }
+
+      @keyframes rrStarTwinkle {
+        0% { opacity: 0.2; }
+        100% { opacity: 1; }
+      }
+
+      /* Export Skyway Flowing Left to Right */
+      .rrExportSkyway {
+        position: absolute;
+        inset: 0;
+      }
+
+      .rrCssAircraft {
+        position: absolute;
+        will-change: transform;
+        opacity: 0;
+        transform: scale(0.65); /* Scale down to fit in 120px */
+      }
+
+      .rrNavLight {
+        position: absolute;
+        width: 3px; height: 3px;
+        border-radius: 50%;
+        animation: rrBlinkNav 1s infinite;
+      }
+      .rrNavLight--red { background: #ff2a2a; }
+      .rrNavLight--green { background: #2aff2a; }
+      .rrNavLight--white { background: #ffffff; animation: rrBlinkNavFast 0.5s infinite; }
+
+      @keyframes rrBlinkNav { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+      @keyframes rrBlinkNavFast { 0%, 20% { opacity: 1; } 21%, 100% { opacity: 0; } }
+
+      .rrHangingCargo {
+        position: absolute;
+        bottom: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        animation: rrCargoSwing 2.5s ease-in-out infinite alternate;
+        transform-origin: top center;
+      }
+      .rrCargoCable {
+        width: 1px;
+        height: 16px;
+        background: rgba(255, 255, 255, 0.4);
+      }
+      .rrCargoBoxImg {
+        width: 18px;
+        height: auto;
+        object-fit: contain;
+      }
+
+      @keyframes rrCargoSwing {
+        0% { transform: translateX(-50%) rotate(-5deg); }
+        100% { transform: translateX(-50%) rotate(5deg); }
+      }
+
+      /* Base Plane Animation - All go left to right sequentially */
+      @keyframes rrFlyLeftToRight {
+        0% { transform: translateX(-150px) scale(0.65); opacity: 0; }
+        5% { opacity: 1; }
+        95% { opacity: 1; }
+        100% { transform: translateX(110vw) scale(0.65); opacity: 0; }
+      }
+
+      /* Plane 1 - Jumbo Export Cargo */
+      .rrCssPlane1 {
+        top: 10px;
+        width: 80px; height: 20px;
+        animation: rrFlyLeftToRight 24s linear infinite 0s;
+      }
+      .rrCssPlane1 .rrPlaneFuselage {
+        position: absolute;
+        top: 8px; left: 0;
+        width: 80px; height: 10px;
+        background: #ffffff;
+        border-radius: 50% 50% 40% 40% / 60% 60% 40% 40%;
+      }
+      .rrCssPlane1 .rrPlaneCockpit {
+        position: absolute;
+        top: 2px; right: 4px;
+        width: 8px; height: 4px;
+        background: #111;
+        border-radius: 2px 5px 0 0;
+      }
+      .rrCssPlane1 .rrPlaneBrand {
+        position: absolute;
+        top: 3px; left: 15px;
+        font-size: 3px; font-weight: 900; color: #9e1017;
+      }
+      .rrCssPlane1 .rrPlaneWingFront {
+        position: absolute;
+        top: 12px; left: 30px;
+        width: 25px; height: 8px;
+        background: #e6e6e6;
+        clip-path: polygon(0 0, 100% 0, 80% 100%, 20% 100%);
+        transform: rotate(-10deg);
+        z-index: 2;
+      }
+      .rrCssPlane1 .rrPlaneWingFront .rrNavLight { bottom: -1px; left: -1px; }
+      
+      .rrCssPlane1 .rrPlaneWingBack {
+        position: absolute;
+        top: 4px; left: 32px;
+        width: 20px; height: 6px;
+        background: #cccccc;
+        clip-path: polygon(0 100%, 100% 100%, 80% 0, 20% 0);
+        transform: rotate(10deg);
+        z-index: -1;
+      }
+      .rrCssPlane1 .rrPlaneWingBack .rrNavLight { top: -1px; left: -1px; }
+
+      .rrCssPlane1 .rrPlaneTail {
+        position: absolute;
+        top: 0; left: 3px;
+        width: 10px; height: 12px;
+      }
+      .rrCssPlane1 .rrPlaneTailFin {
+        position: absolute;
+        bottom: 5px; left: 0;
+        width: 8px; height: 10px;
+        background: #9e1017;
+        clip-path: polygon(0 100%, 100% 100%, 60% 0, 0 0);
+      }
+      .rrCssPlane1 .rrPlaneTail .rrNavLight { top: 1px; left: -1px; }
+
+      /* Helicopter 1 */
+      .rrCssHelicopter1 {
+        top: 25px;
+        width: 90px; height: 45px;
+        animation: rrFlyLeftToRight 24s linear infinite 6s;
+      }
+      /* Plane 2 - Fast Mid Altitude */
+      .rrCssPlane2 {
+        top: 40px;
+        width: 50px; height: 15px;
+        animation: rrFlyLeftToRight 24s linear infinite 12s;
+        z-index: 1;
+      }
+      .rrCssPlane2 .rrPlaneFuselage {
+        position: absolute;
+        top: 5px; left: 0;
+        width: 50px; height: 8px;
+        background: #d9d9d9;
+        border-radius: 50% / 60% 60% 40% 40%;
+      }
+      .rrCssPlane2 .rrPlaneCockpit {
+        position: absolute;
+        top: 1px; right: 3px;
+        width: 6px; height: 3px;
+        background: #000;
+        border-radius: 2px 4px 0 0;
+      }
+      .rrCssPlane2 .rrPlaneWingFront {
+        position: absolute;
+        top: 8px; left: 20px;
+        width: 16px; height: 6px;
+        background: #aaa;
+        clip-path: polygon(0 0, 100% 0, 70% 100%, 30% 100%);
+        transform: rotate(-10deg);
+        z-index: 2;
+      }
+      .rrCssPlane2 .rrPlaneWingBack {
+        position: absolute;
+        top: 2px; left: 22px;
+        width: 14px; height: 4px;
+        background: #777;
+        clip-path: polygon(0 100%, 100% 100%, 70% 0, 30% 0);
+        transform: rotate(10deg);
+        z-index: -1;
+      }
+      .rrCssPlane2 .rrPlaneTailFin {
+        position: absolute;
+        bottom: 6px; left: 3px;
+        width: 6px; height: 8px;
+        background: #2e7d32;
+        clip-path: polygon(0 100%, 100% 100%, 50% 0, 0 0);
+      }
+
+      /* Helicopter 2 */
+      .rrCssHelicopter2 {
+        top: 15px;
+        width: 90px; height: 45px;
+        animation: rrFlyLeftToRight 24s linear infinite 18s;
+      }
+
+      /* Shared Helicopter Parts */
+      .rrCssAircraft[class*="rrCssHeli"] .rrHeliCabin {
+        position: absolute;
+        top: 12px; left: 27px;
+        width: 38px; height: 26px;
+        background: #c41a22;
+        border-radius: 40% 60% 50% 50% / 50% 50% 40% 40%;
+        z-index: 2;
+      }
+      .rrCssAircraft[class*="rrCssHeli"] .rrHeliWindow {
+        position: absolute;
+        top: 4px; right: 4px;
+        width: 15px; height: 12px;
+        background: #aaccff;
+        border-radius: 3px 12px 3px 3px;
+        opacity: 0.8;
+      }
+      .rrCssAircraft[class*="rrCssHeli"] .rrHeliTail {
+        position: absolute;
+        top: 18px; left: 0;
+        width: 32px; height: 6px;
+        background: #9e1017;
+        border-radius: 3px 0 0 3px;
+        z-index: 1;
+      }
+      .rrCssAircraft[class*="rrCssHeli"] .rrHeliTailRotor {
+        position: absolute;
+        top: -6px; left: -3px;
+        width: 15px; height: 15px;
+        border-radius: 50%;
+        border: 1px solid rgba(255,255,255,0.2);
+        display: grid; place-items: center;
+      }
+      .rrCssAircraft[class*="rrCssHeli"] .rrHeliBladeSmall {
+        width: 1px; height: 12px; background: #fff;
+        animation: rrHeliRotorSpin 0.1s linear infinite;
+      }
+      .rrCssAircraft[class*="rrCssHeli"] .rrHeliMainRotor {
+        position: absolute;
+        top: 0; left: 30px;
+        width: 30px; height: 8px;
+        z-index: 3;
+      }
+      .rrCssAircraft[class*="rrCssHeli"] .rrHeliMainRotor::before {
+        content: ""; position: absolute;
+        bottom: 0; left: 14px;
+        width: 3px; height: 9px; background: #555;
+      }
+      .rrCssAircraft[class*="rrCssHeli"] .rrHeliBlade {
+        position: absolute;
+        top: -1px; left: -22px;
+        width: 75px; height: 1px;
+        background: rgba(255,255,255,0.8);
+        border-radius: 50%;
+        animation: rrHeliRotorSpin 0.15s linear infinite;
+      }
+      .rrCssAircraft[class*="rrCssHeli"] .rrHeliSkids {
+        position: absolute;
+        bottom: -1px; left: 30px;
+        width: 30px; height: 9px;
+        z-index: 1;
+      }
+      .rrCssAircraft[class*="rrCssHeli"] .rrHeliLeg {
+        position: absolute;
+        top: 0; width: 2px; height: 7px; background: #777;
+      }
+      .rrCssAircraft[class*="rrCssHeli"] .rrHeliLeg:nth-child(1) { left: 8px; }
+      .rrCssAircraft[class*="rrCssHeli"] .rrHeliLeg:nth-child(2) { right: 8px; }
+      .rrCssAircraft[class*="rrCssHeli"] .rrHeliRunner {
+        position: absolute;
+        bottom: 0; left: -3px;
+        width: 38px; height: 2px;
+        background: #ccc; border-radius: 1px;
+      }
+
+      @keyframes rrHeliRotorSpin { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
+
+      /* INFO SHELL Gap Fix (Directly below 120px sky) */
       .rrInfoShell {
-        width: min(1180px, 100%);
+        width: min(1280px, 100%);
         margin: 0 auto;
+        position: relative;
+        z-index: 10;
+        padding-top: 140px; 
       }
 
+      /* Clean Back Button */
       .rrBack {
-        appearance: none;
-        border: 0;
-        background: transparent;
-        padding: 8px 0;
-        margin: 0 0 18px;
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        color: #666a61;
-        font-size: 12px;
+        background: transparent;
+        border: 0;
+        color: #6a5e57;
+        font-size: 13px;
         font-weight: 800;
         cursor: pointer;
+        padding: 0 0 16px;
+        transition: color 0.2s ease, transform 0.2s ease;
+      }
+      .rrBack:hover {
+        color: #9e1017;
+        transform: translateX(-3px);
       }
 
-      .rrBack:hover { color:#171914; }
+      /* High-End Glass Header */
+      .rrPageHeader {
+        background: #ffffff;
+        border: 1px solid rgba(158, 16, 23, 0.12);
+        border-radius: 24px;
+        padding: 36px 44px;
+        box-shadow: 0 8px 30px rgba(158, 16, 23, 0.05);
+        margin-bottom: 24px;
+      }
 
-      .rrHero {
-        min-height: 235px;
-        position: relative;
-        overflow: hidden;
+      .rrPageHeaderTop {
         display: flex;
         align-items: center;
-        gap: 24px;
-        padding: 42px 46px;
-        border: 1px solid #e2dfd4;
-        border-radius: 28px;
-        background: linear-gradient(135deg,#fff,#fff9df);
-        box-shadow: 0 20px 60px rgba(29,31,23,.06);
-        isolation: isolate;
+        gap: 18px;
       }
 
-      .rrHero-dark {
-        color:#fff;
-        border-color:#24271f;
-        background: linear-gradient(135deg,#151711,#292a20);
-      }
-
-      .rrHeroGlow {
-        position:absolute;
-        width:420px;
-        height:420px;
-        right:-120px;
-        top:-190px;
-        border-radius:50%;
-        background:rgba(232,194,51,.13);
-        filter:blur(4px);
-        z-index:-1;
-      }
-
-      .rrHeroIcon {
-        width:62px;
-        height:62px;
-        flex:0 0 62px;
-        display:grid;
-        place-items:center;
-        border-radius:18px;
-        background:#fff0b6;
-        color:#6d570d;
-      }
-
-      .rrHero-dark .rrHeroIcon {
-        background:#dcbf4e;
-        color:#202118;
+      .rrHeaderIconBox {
+        width: 58px;
+        height: 58px;
+        border-radius: 16px;
+        background: #fbf3e4;
+        color: #9e1017;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(243, 146, 0, 0.3);
+        flex-shrink: 0;
       }
 
       .rrEyebrow,
       .rrSectionEyebrow {
-        color:#9b7b19;
-        font-size:11px;
-        font-weight:950;
-        letter-spacing:.18em;
+        display: block;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 2px;
+        color: #9e1017;
+        text-transform: uppercase;
       }
 
-      .rrHero h1 {
-        margin:8px 0 0;
-        font-size:clamp(38px,5vw,66px);
-        line-height:.96;
-        letter-spacing:-.065em;
+      .rrPageHeader h1 {
+        margin: 6px 0 0;
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: clamp(36px, 4.5vw, 54px);
+        line-height: 1.05;
+        font-weight: 700;
+        color: #1a1412;
+        letter-spacing: -1px;
       }
 
-      .rrHero p {
-        max-width:680px;
-        margin:15px 0 0;
-        color:#6c7066;
-        font-size:16px;
-        line-height:1.8;
+      .rrHeaderDesc {
+        margin: 14px 0 0;
+        font-size: 15px;
+        line-height: 1.7;
+        color: #5d524c;
+        max-width: 820px;
       }
 
-      .rrHero-dark p { color:#b8bbb1; }
-
-      .rrHeroMark {
-        position:absolute;
-        right:42px;
-        bottom:-35px;
-        font: 110px/1 Georgia,serif;
-        color:rgba(190,154,32,.12);
-      }
-
-      .rrBottomShop {
-        display:flex;
-        justify-content:center;
-        margin-top:30px;
-      }
-
-      .rrShopBtn,
-      .rrDarkBtn,
-      .rrLightBtn {
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
-        gap:8px;
-        min-height:44px;
-        padding:0 17px;
-        border-radius:12px;
-        text-decoration:none;
-        font-size:11px;
-        font-weight:900;
-      }
-
-      .rrShopBtn,
-      .rrDarkBtn {
-        background:#191b16;
-        color:#fff;
-        box-shadow:0 10px 25px rgba(25,27,22,.14);
-      }
-
-      .rrLightBtn {
-        background:#fff;
-        color:#252820;
-        border:1px solid #dedbd1;
-      }
-
-      /* ABOUT */
-      .rrAbout { margin-top:16px; }
-
+      /* About Section Overrides */
       .rrAboutHero {
-        min-height:550px;
-        display:grid;
-        grid-template-columns:1fr .9fr;
-        align-items:center;
-        gap:30px;
-        overflow:hidden;
-        padding:65px;
-        border-radius:28px;
-        background:#171914;
-        color:#fff;
-        box-shadow:0 25px 70px rgba(24,26,19,.16);
+        background: #ffffff;
+        border: 1px solid rgba(158, 16, 23, 0.12);
+        border-radius: 24px;
+        padding: 44px;
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 40px;
+        align-items: center;
+        box-shadow: 0 10px 30px rgba(158, 16, 23, 0.05);
       }
 
-      .rrAboutHero h2,
-      .rrStoryBlock h2,
-      .rrHeritageIntro h2,
-      .rrAboutEnd h2 {
-        margin:16px 0 20px;
-        font-size:clamp(43px,5.6vw,72px);
-        line-height:.93;
-        letter-spacing:-.065em;
+      .rrAboutHero h2 {
+        margin: 10px 0 14px;
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: clamp(36px, 4vw, 50px);
+        line-height: 1.05;
+        font-weight: 700;
       }
-
-      .rrAboutHero h2 em,
-      .rrStoryBlock h2 em,
-      .rrHeritageIntro h2 em,
-      .rrAboutEnd h2 em {
-        color:#e6c54c;
-        font-family:Georgia,serif;
-        font-weight:500;
+      .rrAboutHero h2 em {
+        color: #9e1017;
+        font-style: italic;
       }
 
       .rrAboutHero p {
-        max-width:520px;
-        color:#bfc2b8;
-        font-size:13px;
-        line-height:1.9;
+        font-size: 15px;
+        line-height: 1.8;
+        color: #5d524c;
+        margin: 0;
       }
 
-      .rrTextLink {
-        display:inline-flex;
-        align-items:center;
-        gap:8px;
-        margin-top:18px;
-        color:#fff;
-        text-decoration:none;
-        font-size:11px;
-        font-weight:900;
-        border-bottom:1px solid #806c29;
-        padding-bottom:7px;
+      .rrTrustPills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      .rrTrustPills span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 999px;
+        background: #ffffff;
+        border: 1px solid rgba(158, 16, 23, 0.12);
+        font-size: 11px;
+        font-weight: 800;
+        color: #9e1017;
       }
 
-      .rrDishVisual {
-        min-height:410px;
-        position:relative;
-        display:grid;
-        place-items:center;
+      /* Real Food Photography */
+      .rrRealFoodVisual {
+        display: grid;
+        place-items: center;
       }
 
-      .rrDish {
-        width:min(355px,75vw);
-        aspect-ratio:1;
-        padding:30px;
-        border-radius:50%;
-        background:#332f23;
-        border:13px solid #4b4533;
-        box-shadow:inset 0 0 0 4px #8d6d2a,0 28px 50px rgba(0,0,0,.4);
-        transform:rotate(-7deg);
+      .rrRealPhotoCard {
+        position: relative;
+        width: min(340px, 100%);
+        aspect-ratio: 1;
+        border-radius: 24px;
+        overflow: hidden;
+        border: 4px solid #ffffff;
+        box-shadow: 0 18px 40px rgba(158, 16, 23, 0.15);
       }
 
-      .rrRice {
-        width:100%;
-        height:100%;
-        position:relative;
-        overflow:hidden;
-        border-radius:50%;
-        background:
-          radial-gradient(circle at 28% 30%,#e1af4a 0 3px,transparent 4px),
-          radial-gradient(circle at 63% 25%,#bd8127 0 3px,transparent 4px),
-          radial-gradient(circle at 75% 62%,#d69b36 0 3px,transparent 4px),
-          radial-gradient(circle at 37% 70%,#9d641e 0 3px,transparent 4px),
-          linear-gradient(145deg,#b87920,#6b3c17);
-        box-shadow:inset 0 0 50px rgba(20,8,0,.38);
+      .rrMainDishImg {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.6s ease;
+      }
+      .rrRealPhotoCard:hover .rrMainDishImg {
+        transform: scale(1.08);
       }
 
-      .rrRice i {
-        position:absolute;
-        width:10px;height:5px;border-radius:50%;
-        background:#e3bb62;
+      .rrPhotoTag {
+        position: absolute;
+        bottom: 14px;
+        left: 14px;
+        right: 14px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(8px);
+        padding: 8px 12px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 10px;
+        font-weight: 900;
+        color: #9e1017;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       }
-      .rrRice i:nth-child(1){left:17%;top:38%;transform:rotate(20deg)}
-      .rrRice i:nth-child(2){left:35%;top:22%;transform:rotate(-18deg)}
-      .rrRice i:nth-child(3){left:58%;top:37%;transform:rotate(15deg)}
-      .rrRice i:nth-child(4){left:70%;top:51%;transform:rotate(-30deg)}
-      .rrRice i:nth-child(5){left:44%;top:54%;transform:rotate(20deg)}
-      .rrRice i:nth-child(6){left:24%;top:64%;transform:rotate(-12deg)}
-      .rrRice i:nth-child(7){left:56%;top:73%;transform:rotate(26deg)}
-      .rrRice i:nth-child(8){left:75%;top:35%;transform:rotate(12deg)}
-      .rrRice b {
-        position:absolute;
-        width:12px;height:12px;border-radius:50%;
-        background:#dca644;
-      }
-      .rrRice b:nth-last-child(3){left:32%;top:48%}
-      .rrRice b:nth-last-child(2){left:62%;top:57%}
-      .rrRice b:nth-last-child(1){left:48%;top:31%}
+      .rrPhotoTag svg { color: #f39200; }
 
-      .rrDishCaption {
-        position:absolute;
-        bottom:0;
-        left:0;
-        width:100%;
-        text-align:center;
-      }
-      .rrDishCaption strong,
-      .rrDishCaption span { display:block; }
-      .rrDishCaption strong { font-size:12px;letter-spacing:.16em; }
-      .rrDishCaption span { margin-top:4px;color:#85897e;font-size:9px; }
-
+      /* Number Strip */
       .rrNumberStrip {
-        display:grid;
-        grid-template-columns:repeat(4,1fr);
-        background:#fff;
-        border:1px solid #e1ded3;
-        border-top:0;
-        border-radius:0 0 20px 20px;
-        overflow:hidden;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin: 28px 0;
       }
 
-      .rrNumberStrip div {
-        padding:20px;
-        border-right:1px solid #e8e5dc;
+      .rrNumberCard {
+        background: #ffffff;
+        border: 1px solid rgba(158, 16, 23, 0.1);
+        border-radius: 18px;
+        padding: 24px;
+        box-shadow: 0 4px 16px rgba(158, 16, 23, 0.04);
       }
-      .rrNumberStrip div:last-child{border-right:0}
-      .rrNumberStrip strong{display:block;color:#a58119;font-size:12px}
-      .rrNumberStrip span{display:block;margin-top:5px;color:#74786f;font-size:10px}
+      .rrNumberCard strong {
+        display: block;
+        font-size: 26px;
+        font-weight: 900;
+        color: #f39200;
+      }
+      .rrNumberCard b {
+        display: block;
+        margin: 8px 0 4px;
+        font-size: 14px;
+        color: #1a1412;
+      }
+      .rrNumberCard span {
+        display: block;
+        font-size: 12px;
+        color: #6a5e57;
+        line-height: 1.5;
+      }
 
+      /* Story Block */
       .rrStoryBlock {
-        display:grid;
-        grid-template-columns:.35fr 1fr;
-        gap:55px;
-        padding:100px 5%;
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        gap: 40px;
+        padding: 50px 0;
+        border-top: 1px solid rgba(158, 16, 23, 0.1);
       }
-
       .rrSideLabel {
-        color:#979a91;
-        font-size:11px;
-        font-weight:950;
-        letter-spacing:.14em;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 2px;
+        color: #9e1017;
       }
-
-      .rrStoryBlock h2 { color:#191b16;margin-top:0; }
-      .rrStoryBlock h2 em { color:#a37b17; }
-
+      .rrStoryBlock h2 {
+        margin: 0 0 16px;
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: clamp(34px, 4vw, 46px);
+        line-height: 1.05;
+        font-weight: 700;
+      }
+      .rrStoryBlock h2 em {
+        color: #9e1017;
+        font-style: italic;
+      }
       .rrTwoColText {
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        gap:28px;
-        max-width:750px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
       }
-
       .rrTwoColText p {
-        margin:0;
-        color:#6e7268;
-        font-size:12px;
-        line-height:1.9;
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.8;
+        color: #5d524c;
       }
 
+      /* Real Ingredients Photo Grid */
       .rrIngredientSection {
-        padding:70px 0;
-        border-top:1px solid #e1ded3;
+        padding: 50px 0;
+        border-top: 1px solid rgba(158, 16, 23, 0.1);
       }
-
       .rrSectionHead {
-        display:flex;
-        justify-content:space-between;
-        align-items:end;
-        gap:30px;
-        margin-bottom:25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 26px;
       }
-
       .rrSectionHead h2 {
-        margin:8px 0 0;
-        font-size:clamp(28px,4vw,45px);
-        letter-spacing:-.05em;
+        margin: 6px 0 0;
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 38px;
+        font-weight: 700;
       }
-
       .rrSectionHead > p {
-        max-width:320px;
-        margin:0;
-        color:#777b72;
-        font-size:11px;
-        line-height:1.7;
+        margin: 0;
+        font-size: 14px;
+        color: #6a5e57;
+        max-width: 380px;
       }
 
       .rrIngredientGrid {
-        display:grid;
-        grid-template-columns:repeat(4,1fr);
-        gap:10px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
       }
 
-      .rrIngredient {
-        min-height:320px;
-        padding:20px;
-        border:1px solid #e0ddd2;
-        border-radius:18px;
-        background:#fff;
+      .rrIngredientRealCard {
+        background: #ffffff;
+        border: 1px solid rgba(158, 16, 23, 0.1);
+        border-radius: 18px;
+        padding: 18px;
+        box-shadow: 0 4px 16px rgba(158, 16, 23, 0.04);
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+      }
+      .rrIngredientRealCard:hover {
+        transform: translateY(-6px);
+        border-color: #f39200;
       }
 
-      .rrIngredient.featured {
-        color:#fff;
-        background:#1a1c17;
-        border-color:#1a1c17;
+      .rrRealThumbBox {
+        width: 100%;
+        height: 120px;
+        border-radius: 12px;
+        background: #ffffff;
+        display: grid;
+        place-items: center;
+        margin-bottom: 12px;
+        overflow: hidden;
+      }
+      .rrRealThumbBox img {
+        width: 75%;
+        height: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 6px 12px rgba(158, 16, 23, 0.2));
       }
 
-      .rrIngredient > span {
-        color:#a58119;
-        font-size:9px;
-        font-weight:950;
+      .rrIngNum {
+        font-size: 11px;
+        font-weight: 900;
+        color: #f39200;
+      }
+      .rrIngredientRealCard h3 {
+        margin: 4px 0 6px;
+        font-size: 15px;
+        font-weight: 800;
+      }
+      .rrIngredientRealCard p {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.6;
+        color: #6a5e57;
       }
 
-      .rrIngredientArt {
-        height:135px;
-        margin:17px 0;
-        border-radius:13px;
-        overflow:hidden;
-      }
-
-      .rrIngredientArt.tamarind{background:radial-gradient(circle at 50% 50%,#8e551e,#35200d)}
-      .rrIngredientArt.oil{background:linear-gradient(145deg,#8e6b18,#e5bd38)}
-      .rrIngredientArt.chilli{background:linear-gradient(145deg,#74130d,#df5224)}
-      .rrIngredientArt.dal{background:radial-gradient(circle,#d8a243 0 13%,#79501d 14% 23%,#352515 24%)}
-
-      .rrIngredient h3{margin:0 0 6px;font-size:16px}
-      .rrIngredient p{margin:0;color:#767a71;font-size:10px;line-height:1.7}
-      .rrIngredient.featured p{color:#b9bcb2}
-
+      /* Heritage Grid */
       .rrHeritage {
-        padding:80px 0;
-        border-top:1px solid #e1ded3;
+        padding: 50px 0;
+        border-top: 1px solid rgba(158, 16, 23, 0.1);
       }
-
-      .rrHeritageIntro h2 { color:#191b16; }
-      .rrHeritageIntro h2 em { color:#a37b17; }
+      .rrHeritageIntro h2 {
+        margin: 8px 0 26px;
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 38px;
+        font-weight: 700;
+      }
+      .rrHeritageIntro h2 em {
+        color: #9e1017;
+        font-style: italic;
+      }
 
       .rrHeritageGrid {
-        display:grid;
-        grid-template-columns:repeat(3,1fr);
-        gap:10px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
       }
-
       .rrHeritageCard {
-        min-height:270px;
-        padding:25px;
-        border:1px solid #e1ded3;
-        border-radius:18px;
-        background:#fff;
+        background: #ffffff;
+        border: 1px solid rgba(158, 16, 23, 0.1);
+        border-radius: 18px;
+        padding: 30px;
+        box-shadow: 0 4px 16px rgba(158, 16, 23, 0.04);
       }
-
       .rrHeritageCard.dark {
-        color:#fff;
-        background:#191b16;
-        border-color:#191b16;
+        background: #1e0907;
+        color: #ffffff;
+        border-color: #1e0907;
       }
-
+      .rrHeritageCard.dark p {
+        color: #d1c3be;
+      }
       .rrSmallIcon {
-        width:39px;height:39px;
-        display:grid;place-items:center;
-        border-radius:11px;
-        background:#fff0b5;
-        color:#6e570d;
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: #fbf3e4;
+        color: #9e1017;
+        display: grid;
+        place-items: center;
+        margin-bottom: 20px;
       }
-
       .rrHeritageCard > span {
-        display:block;
-        margin-top:45px;
-        color:#a58119;
-        font-size:8px;
-        font-weight:950;
-        letter-spacing:.16em;
+        display: block;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 1.5px;
+        color: #f39200;
+      }
+      .rrHeritageCard h3 {
+        margin: 6px 0 8px;
+        font-size: 17px;
+        font-weight: 800;
+      }
+      .rrHeritageCard p {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.7;
+        color: #6a5e57;
       }
 
-      .rrHeritageCard h3{margin:7px 0 8px;font-size:17px}
-      .rrHeritageCard p{margin:0;color:#74786f;font-size:12px;line-height:1.8}
-      .rrHeritageCard.dark p{color:#b9bcb3}
-
+      /* Quote */
       .rrQuote {
-        margin:10px 0 70px;
-        padding:75px 8%;
-        border-radius:24px;
-        background:#e9e3d0;
+        margin: 20px 0 60px;
+        padding: 44px 30px;
+        border-radius: 24px;
+        background: #fbf7ef;
+        border: 1px solid rgba(243, 146, 0, 0.25);
+        text-align: center;
       }
-
       .rrQuote blockquote {
-        max-width:900px;
-        margin:25px 0 15px;
-        font:500 clamp(26px,4vw,46px)/1.25 Georgia,serif;
-        letter-spacing:-.025em;
+        margin: 14px auto;
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: clamp(24px, 3.2vw, 34px);
+        font-weight: 600;
+        color: #1a1412;
+        max-width: 820px;
+        line-height: 1.35;
+      }
+      .rrQuote p {
+        margin: 0;
+        font-size: 13px;
+        color: #6a5e57;
       }
 
-      .rrQuote p{max-width:700px;margin:0;color:#78776d;font-size:11px;line-height:1.7}
-
-      .rrAboutEnd {
-        display:grid;
-        grid-template-columns:1fr .4fr;
-        align-items:center;
-        gap:40px;
-        padding:25px 0 70px;
+      /* Contact Section */
+      .rrContactIntro {
+        background: #ffffff;
+        border: 1px solid rgba(158, 16, 23, 0.12);
+        border-radius: 20px;
+        padding: 36px;
+        box-shadow: 0 8px 24px rgba(158, 16, 23, 0.04);
+      }
+      .rrContactIntro h2 {
+        margin: 8px 0 12px;
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 38px;
+        font-weight: 700;
+      }
+      .rrContactIntro p {
+        margin: 0;
+        font-size: 14px;
+        color: #6a5e57;
+        line-height: 1.7;
       }
 
-      .rrAboutEnd h2 { font-size:clamp(38px,5vw,60px); }
-      .rrAboutEnd h2 em { color:#a37b17; }
-      .rrAboutEnd p{max-width:540px;color:#74786e;font-size:12px;line-height:1.8}
-      .rrRoundMark {
-        width:190px;height:190px;
-        justify-self:end;
-        display:grid;place-items:center;
-        border-radius:50%;
-        border:1px solid #c7b87c;
-        background:#1a1c17;
-        color:#e6c54c;
-        font:500 55px Georgia,serif;
-        box-shadow:0 25px 50px rgba(25,27,22,.14);
+      .rrContactGrid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin: 20px 0;
+      }
+      .rrContactCard {
+        background: #ffffff;
+        border: 1px solid rgba(158, 16, 23, 0.1);
+        border-radius: 18px;
+        padding: 28px;
+      }
+      .rrContactCard.dark {
+        background: #1e0907;
+        color: #ffffff;
+        border-color: #1e0907;
+      }
+      .rrContactCard.dark p { color: #d1c3be; }
+      .rrContactIcon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: #fbf3e4;
+        color: #9e1017;
+        display: grid;
+        place-items: center;
+        margin-bottom: 16px;
+      }
+      .rrContactCard > span {
+        display: block;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 1.5px;
+        color: #f39200;
+      }
+      .rrContactCard h3 {
+        margin: 6px 0 8px;
+        font-size: 18px;
+      }
+      .rrContactCard p {
+        margin: 0 0 12px;
+        font-size: 13px;
+        line-height: 1.7;
+        color: #6a5e57;
+      }
+      .rrContactLink {
+        color: #fbb034;
+        font-size: 12px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+      .rrContactDetailText {
+        font-size: 13px;
+        font-weight: 800;
+        color: #9e1017;
+      }
+      .rrContactNotice {
+        display: flex;
+        gap: 16px;
+        background: #fbf7ef;
+        border: 1px solid rgba(243, 146, 0, 0.25);
+        border-radius: 16px;
+        padding: 22px;
+      }
+      .rrContactNotice svg {
+        color: #9e1017;
+        flex-shrink: 0;
+      }
+      .rrContactNotice strong {
+        display: block;
+        font-size: 14px;
+        margin-bottom: 4px;
+      }
+      .rrContactNotice p {
+        margin: 0;
+        font-size: 13px;
+        color: #6a5e57;
+        line-height: 1.6;
       }
 
       /* FAQ */
-      .rrFaq {
-        display:grid;
-        grid-template-columns:340px 1fr;
-        gap:15px;
-        margin-top:16px;
-      }
-
-      .rrFaqAside {
-        position:sticky;
-        top:25px;
-        align-self:start;
-        min-height:500px;
-        padding:31px;
-        border-radius:22px;
-        background:#191b16;
-        color:#fff;
-        box-shadow:0 18px 45px rgba(24,26,20,.12);
-      }
-
-      .rrFaqAsideTop {
-        display:flex;
-        align-items:center;
-        gap:9px;
-        color:#e5c64d;
-        font-size:11px;
-        font-weight:950;
-        letter-spacing:.14em;
-      }
-
-      .rrFaqAside h2 {
-        margin:55px 0 14px;
-        font-size:34px;
-        line-height:1;
-        letter-spacing:-.05em;
-      }
-
-      .rrFaqAside p{color:#c1c4bb;font-size:15px;line-height:1.8}
-
-      .rrFaqTopics {
-        display:grid;
-        gap:8px;
-        margin-top:35px;
-      }
-
-      .rrFaqTopics span {
-        display:flex;
-        align-items:center;
-        gap:9px;
-        padding:11px 12px;
-        border:1px solid rgba(255,255,255,.10);
-        border-radius:10px;
-        color:#d6d8cf;
-        font-size:14px;
-      }
-
-      .rrFaqList {
-        display:grid;
-        gap:8px;
-      }
-
-      .rrFaqItem {
-        overflow:hidden;
-        border:1px solid #e1ded3;
-        border-radius:15px;
-        background:#fff;
-        transition:.2s ease;
-      }
-
-      .rrFaqItem.active {
-        border-color:#cbb65e;
-        box-shadow:0 12px 35px rgba(33,35,26,.07);
-      }
-
-      .rrFaqItem button {
-        width:100%;
-        border:0;
-        background:transparent;
-        display:grid;
-        grid-template-columns:42px 1fr 24px;
-        align-items:center;
-        gap:10px;
-        padding:20px;
-        text-align:left;
-        cursor:pointer;
-        color:#171914;
-      }
-
-      .rrFaqNo{color:#a58119;font-size:12px;font-weight:950}
-      .rrFaqItem strong{font-size:17px;line-height:1.45}
-      .rrFaqItem svg{justify-self:end;transition:.2s}
-      .rrFaqItem svg.rotated{transform:rotate(180deg)}
-
-      .rrFaqAnswer {
-        padding:0 56px 25px 72px;
-        color:#62685f;
-        font-size:15.5px;
-        line-height:1.85;
-      }
-
-      /* POLICIES */
-      .rrPolicy { margin-top:16px; }
-
-      .rrPolicyTop {
-        display:flex;
-        align-items:end;
-        justify-content:space-between;
-        gap:20px;
-        padding:35px 4px 25px;
-      }
-
-      .rrPolicyTop h2 {
-        margin:8px 0 0;
-        font-size:clamp(28px,4vw,43px);
-        letter-spacing:-.05em;
-      }
-
-      .rrPolicyUpdated {
-        display:flex;
-        align-items:center;
-        gap:7px;
-        padding:9px 12px;
-        border:1px solid #dfdcd2;
-        border-radius:20px;
-        background:#fff;
-        color:#686c63;
-        font-size:10px;
-        font-weight:800;
-      }
-
-      .rrPolicyGrid {
-        display:grid;
-        grid-template-columns:repeat(2,1fr);
-        gap:10px;
-      }
-
-      .rrPolicyCard {
-        min-height:225px;
-        padding:27px;
-        border:1px solid #e0ddd2;
-        border-radius:19px;
-        background:#fff;
-        transition:.2s ease;
-      }
-
-      .rrPolicyCard:hover {
-        transform:translateY(-2px);
-        box-shadow:0 14px 38px rgba(28,30,23,.06);
-      }
-
-      .rrPolicyCardTop {
-        display:flex;
-        justify-content:space-between;
-        color:#a58119;
-      }
-
-      .rrPolicyCardTop span{font-size:11px;font-weight:950}
-      .rrPolicyCard h3{margin:30px 0 12px;font-size:22px;line-height:1.2}
-      .rrPolicyCard p{margin:0;color:#62675d;font-size:16px;line-height:1.85}
-
-      .rrPolicyDetails {
-        display:grid;
-        grid-template-columns:repeat(3,1fr);
-        gap:10px;
-        margin-top:10px;
-      }
-
-      .rrPolicyDetails article {
-        padding:25px;
-        border-radius:18px;
-        background:#ece8d9;
-      }
-
-      .rrPolicyDetails span {
-        color:#806719;
-        font-size:11px;
-        font-weight:950;
-        letter-spacing:.12em;
-      }
-
-      .rrPolicyDetails p{margin:12px 0 0;color:#5f655c;font-size:15.5px;line-height:1.85}
-
-      .rrPolicyContact {
-        display:flex;
-        gap:15px;
-        align-items:flex-start;
-        margin-top:12px;
-        padding:25px;
-        border-radius:18px;
-        background:#191b16;
-        color:#fff;
-      }
-
-      .rrPolicyContactIcon {
-        width:42px;height:42px;flex:0 0 42px;
-        display:grid;place-items:center;
-        border-radius:12px;
-        background:#e5c54b;
-        color:#1b1d17;
-      }
-
-      .rrPolicyContact span{color:#d7c15d;font-size:11px;font-weight:950;letter-spacing:.16em}
-      .rrPolicyContact h3{margin:8px 0 8px;font-size:22px;line-height:1.25}
-      .rrPolicyContact p{margin:0;color:#c4c7bf;font-size:15px;line-height:1.75}
-
-      .rrLegacyPolicyNote {
-        display:none;
-      }
-
-      /* CONTACT */
-      .rrContact { margin-top:16px; }
-
-      .rrContactIntro {
-        padding:42px;
-        border-radius:22px;
-        background:#fff;
-        border:1px solid #e1ded3;
-      }
-
-      .rrContactIntro h2 {
-        max-width:700px;
-        margin:10px 0 12px;
-        font-size:clamp(32px,4.5vw,52px);
-        line-height:1;
-        letter-spacing:-.055em;
-      }
-
-      .rrContactIntro p{max-width:700px;color:#74786e;font-size:15px;line-height:1.85}
-
-      .rrContactGrid {
-        display:grid;
-        grid-template-columns:repeat(3,1fr);
-        gap:10px;
-        margin-top:10px;
-      }
-
-      .rrContactCard {
-        min-height:245px;
-        padding:25px;
-        border:1px solid #e1ded3;
-        border-radius:18px;
-        background:#fff;
-      }
-
-      .rrContactCard.dark{background:#191b16;color:#fff;border-color:#191b16}
-      .rrContactIcon {
-        width:42px;height:42px;display:grid;place-items:center;
-        border-radius:12px;background:#fff0b4;color:#72590b;
-      }
-      .rrContactCard > span{display:block;margin-top:45px;color:#a58119;font-size:11px;font-weight:950;letter-spacing:.15em}
-      .rrContactCard h3{margin:7px 0 8px;font-size:17px}
-      .rrContactCard p{margin:0;color:#757970;font-size:15px;line-height:1.8}
-      .rrContactCard.dark p{color:#b8bbb2}
-
-      .rrContactNotice {
-        display:flex;
-        gap:14px;
-        margin-top:10px;
-        padding:22px;
-        border-radius:17px;
-        background:#ece8d9;
-        color:#62665d;
-      }
-      .rrContactNotice svg{color:#8a701a;flex:0 0 auto}
-      .rrContactNotice strong{display:block;color:#292c25;font-size:15px}
-      .rrContactNotice p{margin:5px 0 0;font-size:14px;line-height:1.75}
-
-
-      /* =========================================================
-         RR MASALA TYPOGRAPHY V2 — LARGE / PREMIUM / READABLE
-      ========================================================= */
-      .rrInfoPage {
-        font-size: 16px;
-      }
-
-      .rrInfoPage p,
-      .rrInfoPage li {
-        font-size: 16px;
-        line-height: 1.85;
-      }
-
-      .rrInfoPage h2 {
-        font-weight: 800;
-      }
-
-      .rrPolicy {
-        margin-top: 28px;
-      }
-
-      .rrPolicyTop {
-        padding: 34px 4px 28px;
-      }
-
-      .rrPolicyTop h2 {
-        font-size: clamp(34px, 4vw, 48px);
-        line-height: 1.05;
-      }
-
-      .rrPolicyUpdated {
-        font-size: 13px;
-        padding: 11px 15px;
-      }
-
-      .rrPolicyGrid {
-        gap: 16px;
-      }
-
-      .rrPolicyCard {
-        min-height: 255px;
-        padding: 32px;
-        border-radius: 22px;
-        box-shadow: 0 10px 35px rgba(28,30,23,.045);
-      }
-
-      .rrPolicyCardTop span {
-        font-size: 12px;
-      }
-
-      .rrPolicyCard h3 {
-        margin: 34px 0 13px;
-        font-size: 23px;
-      }
-
-      .rrPolicyCard p {
-        font-size: 16px !important;
-        line-height: 1.9 !important;
-      }
-
-      .rrPolicyDetails {
-        gap: 16px;
-        margin-top: 16px;
-      }
-
-      .rrPolicyDetails article {
-        padding: 29px;
-        border-radius: 20px;
-      }
-
-      .rrPolicyDetails span {
-        font-size: 12px;
-      }
-
-      .rrPolicyDetails p {
-        font-size: 15.5px !important;
-        line-height: 1.9 !important;
-      }
-
-      .rrPolicyContact {
-        margin-top: 16px;
-        padding: 30px;
-        border-radius: 20px;
-      }
-
-      .rrPolicyContact span {
-        font-size: 11px;
-      }
-
-      .rrPolicyContact h3 {
-        font-size: 23px;
-      }
-
-      .rrPolicyContact p {
-        font-size: 15.5px !important;
-        line-height: 1.85 !important;
-      }
-
-      .rrFaq {
-        grid-template-columns: 350px minmax(0, 1fr);
-        gap: 22px;
-        margin-top: 26px;
-      }
-
-      .rrFaqAside {
-        min-height: 520px;
-        padding: 34px;
-        border-radius: 24px;
-      }
-
-      .rrFaqAside h2 {
-        margin-top: 52px;
-        font-size: 38px;
-      }
-
-      .rrFaqAside p {
-        font-size: 15px !important;
-        line-height: 1.85 !important;
-      }
-
-      .rrFaqTopics span {
-        padding: 13px 14px;
-        font-size: 13px;
-      }
-
-      .rrFaqList {
-        gap: 12px;
-      }
-
-      .rrFaqItem {
-        border-radius: 18px;
-      }
-
-      .rrFaqItem button {
-        grid-template-columns: 48px minmax(0, 1fr) 28px;
-        gap: 14px;
-        padding: 25px 24px;
-      }
-
-      .rrFaqNo {
-        font-size: 13px;
-      }
-
-      .rrFaqItem strong {
-        font-size: 18px !important;
-        line-height: 1.45 !important;
-      }
-
-      .rrFaqAnswer {
-        padding: 0 28px 27px 86px;
-        font-size: 16px !important;
-        line-height: 1.9 !important;
-      }
-
-      .rrContactIntro p,
-      .rrContactCard p {
-        font-size: 15px !important;
-        line-height: 1.85 !important;
-      }
-
-      .rrContactCard > span {
-        font-size: 11px;
-      }
-
-      @media(max-width:900px){
-        .rrFaq {
-          grid-template-columns: 1fr;
-        }
-        .rrFaqAside {
-          min-height: auto;
-        }
-      }
-
-      @media(max-width:620px){
-        .rrInfoPage p,
-        .rrInfoPage li {
-          font-size: 15px;
-        }
-
-        .rrHero p {
-          font-size: 14px !important;
-        }
-
-        .rrPolicyCard {
-          min-height: auto;
-          padding: 25px;
-        }
-
-        .rrPolicyCard h3 {
-          font-size: 20px;
-        }
-
-        .rrPolicyCard p,
-        .rrPolicyDetails p,
-        .rrPolicyContact p {
-          font-size: 15px !important;
-        }
-
-        .rrFaqAside h2 {
-          font-size: 32px;
-        }
-
-        .rrFaqItem button {
-          grid-template-columns: 34px minmax(0,1fr) 22px;
-          padding: 20px 17px;
-        }
-
-        .rrFaqItem strong {
-          font-size: 16px !important;
-        }
-
-        .rrFaqAnswer {
-          padding: 0 18px 22px 51px;
-          font-size: 15px !important;
-        }
-      }
-
-
-      /* =========================================================
-         FAQ V3 — PREMIUM HELP CENTRE
-      ========================================================= */
-
-      .rrFaqPremium {
-        margin-top: 22px;
-      }
-
-      .rrFaqIntro {
-        display: grid;
-        grid-template-columns: 1fr 360px;
-        gap: 45px;
-        align-items: end;
-        padding: 38px 4px 30px;
-      }
-
-      .rrFaqIntro h2 {
-        margin: 10px 0 0;
-        font-size: clamp(40px, 5vw, 62px);
-        line-height: .98;
-        letter-spacing: -.06em;
-      }
-
-      .rrFaqIntro h2 em {
-        color: #9c7818;
-        font-family: Georgia, serif;
-        font-weight: 500;
-      }
-
-      .rrFaqIntro > p {
-        margin: 0 0 5px;
-        color: #676c62;
-        font-size: 16px;
-        line-height: 1.85;
-      }
-
       .rrFaqCategoryBar {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 8px;
-        margin-bottom: 18px;
+        gap: 12px;
+        margin-bottom: 24px;
       }
-
       .rrFaqCategoryBar a {
-        min-height: 58px;
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: 0 16px;
-        border: 1px solid #dfddd4;
+        background: #ffffff;
+        border: 1px solid rgba(158, 16, 23, 0.12);
         border-radius: 14px;
-        background: #fff;
-        color: #282b25;
-        text-decoration: none;
+        padding: 14px 16px;
         font-size: 13px;
         font-weight: 800;
-        transition: transform .25s cubic-bezier(.2,.8,.2,1),
-                    border-color .25s ease,
-                    box-shadow .25s ease;
+        color: #1a1412;
+        text-decoration: none;
+        transition: all 0.2s ease;
       }
-
-      .rrFaqCategoryBar a svg:first-child {
-        color: #9c7818;
-      }
-
-      .rrFaqCategoryBar a svg:last-child {
-        margin-left: auto;
-        color: #9b9e95;
-      }
-
       .rrFaqCategoryBar a:hover {
-        transform: translateY(-3px);
-        border-color: #cbb75f;
-        box-shadow: 0 12px 30px rgba(31,33,25,.07);
+        border-color: #9e1017;
+        color: #9e1017;
+        transform: translateY(-2px);
       }
+      .rrFaqCategoryBar a svg:first-child { color: #9e1017; }
+      .rrFaqCategoryBar a svg:last-child { margin-left: auto; color: #9c8e87; }
 
       .rrFaqPremiumGrid {
         display: grid;
-        grid-template-columns: 285px minmax(0, 1fr);
-        gap: 18px;
+        grid-template-columns: 280px minmax(0, 1fr);
+        gap: 24px;
         align-items: start;
       }
 
       .rrFaqIndex {
         position: sticky;
-        top: 24px;
-        padding: 25px;
+        top: 90px;
+        background: #ffffff;
+        border: 1px solid rgba(158, 16, 23, 0.12);
         border-radius: 20px;
-        background: #191b16;
-        color: #fff;
-        box-shadow: 0 18px 45px rgba(25,27,22,.14);
+        padding: 24px;
+        box-shadow: 0 8px 24px rgba(158, 16, 23, 0.04);
       }
-
       .rrFaqIndexHead {
         display: flex;
         align-items: center;
-        gap: 9px;
-        color: #e4c54c;
-        font-size: 10px;
-        font-weight: 950;
-        letter-spacing: .16em;
+        gap: 8px;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 1.5px;
+        color: #9e1017;
       }
-
       .rrFaqIndexLine {
         height: 1px;
-        margin: 20px 0 8px;
-        background: rgba(255,255,255,.12);
+        background: rgba(158, 16, 23, 0.1);
+        margin: 16px 0 10px;
       }
-
       .rrFaqIndex > a {
         display: grid;
         grid-template-columns: 28px 1fr;
-        column-gap: 10px;
-        padding: 15px 0;
-        border-bottom: 1px solid rgba(255,255,255,.09);
-        color: #fff;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(158, 16, 23, 0.06);
         text-decoration: none;
-        transition: padding-left .2s ease;
+        color: #1a1412;
       }
-
-      .rrFaqIndex > a:hover {
-        padding-left: 5px;
-      }
-
-      .rrFaqIndex > a > span {
-        color: #d4b743;
-        font-size: 10px;
+      .rrFaqIndex > a span {
+        font-size: 11px;
         font-weight: 900;
+        color: #f39200;
       }
-
       .rrFaqIndex > a strong {
         font-size: 13px;
         line-height: 1.3;
       }
-
       .rrFaqIndex > a small {
         grid-column: 2;
-        margin-top: 3px;
-        color: #9da097;
-        font-size: 10px;
+        font-size: 11px;
+        color: #6a5e57;
       }
 
       .rrFaqHelpCard {
-        margin-top: 22px;
+        margin-top: 20px;
         padding: 18px;
         border-radius: 14px;
-        background: #2a2c23;
+        background: #fbf7ef;
+        border: 1px solid rgba(243, 146, 0, 0.25);
       }
-
-      .rrFaqHelpCard > svg {
-        color: #e4c54c;
-      }
-
       .rrFaqHelpCard strong {
         display: block;
-        margin-top: 14px;
-        font-size: 15px;
+        margin: 8px 0 4px;
+        font-size: 13px;
       }
-
       .rrFaqHelpCard p {
-        margin: 7px 0 14px;
-        color: #b9bcb3;
-        font-size: 12px !important;
-        line-height: 1.7 !important;
+        margin: 0 0 10px;
+        font-size: 12px;
+        line-height: 1.5;
+        color: #6a5e57;
       }
-
       .rrFaqHelpCard a {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        color: #e7c94e;
+        font-size: 12px;
+        font-weight: 800;
+        color: #9e1017;
         text-decoration: none;
-        font-size: 11px;
-        font-weight: 900;
       }
 
       .rrFaqGroups {
         display: grid;
-        gap: 14px;
+        gap: 20px;
       }
-
       .rrFaqGroup {
-        scroll-margin-top: 25px;
-        padding: 8px;
-        border: 1px solid #dfddd4;
-        border-radius: 21px;
-        background: #fff;
+        background: #ffffff;
+        border: 1px solid rgba(158, 16, 23, 0.12);
+        border-radius: 20px;
+        padding: 10px;
+        box-shadow: 0 6px 20px rgba(158, 16, 23, 0.04);
       }
-
       .rrFaqGroupHead {
-        min-height: 76px;
         display: grid;
-        grid-template-columns: 48px 1fr auto;
-        gap: 13px;
+        grid-template-columns: 44px 1fr auto;
+        gap: 14px;
         align-items: center;
-        padding: 10px 13px;
-        border-radius: 15px;
-        background: #f5f2e8;
+        background: #fbf7ef;
+        padding: 12px 16px;
+        border-radius: 14px;
       }
-
       .rrFaqGroupIcon {
-        width: 42px;
-        height: 42px;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #9e1017;
         display: grid;
         place-items: center;
-        border-radius: 12px;
-        background: #fff0b1;
-        color: #765e0e;
       }
-
-      .rrFaqGroupHead > div:nth-child(2) span {
-        color: #a17c18;
+      .rrFaqGroupHead span {
+        display: block;
         font-size: 9px;
-        font-weight: 950;
-        letter-spacing: .15em;
+        font-weight: 900;
+        letter-spacing: 1.5px;
+        color: #9e1017;
       }
-
       .rrFaqGroupHead h3 {
         margin: 2px 0 0;
-        font-size: 19px;
-        letter-spacing: -.02em;
+        font-size: 16px;
+        font-weight: 800;
       }
-
       .rrFaqGroupHead > p {
         margin: 0;
-        color: #888c83;
-        font-size: 11px !important;
-        white-space: nowrap;
+        font-size: 12px;
+        color: #6a5e57;
       }
-
       .rrFaqQuestions {
-        padding: 8px 5px 5px;
+        padding: 8px 12px;
       }
-
       .rrFaqQuestion {
-        border-bottom: 1px solid #ebe8df;
+        border-bottom: 1px solid rgba(158, 16, 23, 0.08);
       }
-
       .rrFaqQuestion:last-child {
         border-bottom: 0;
       }
-
       .rrFaqQuestion button {
         width: 100%;
-        min-height: 78px;
+        min-height: 66px;
         display: grid;
-        grid-template-columns: 38px minmax(0, 1fr) 40px;
+        grid-template-columns: 32px 1fr 34px;
         align-items: center;
         gap: 14px;
-        padding: 12px 13px;
-        border: 0;
         background: transparent;
-        color: #191b16;
+        border: 0;
+        padding: 12px 0;
         text-align: left;
         cursor: pointer;
       }
-
       .rrFaqQuestionNo {
-        color: #a17c18;
         font-size: 11px;
-        font-weight: 950;
+        font-weight: 900;
+        color: #f39200;
       }
-
       .rrFaqQuestion button strong {
-        font-size: 17px;
-        line-height: 1.45;
+        font-size: 15px;
+        color: #1a1412;
       }
-
       .rrFaqToggle {
-        width: 36px;
-        height: 36px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #fbf7ef;
+        color: #9e1017;
         display: grid;
         place-items: center;
-        border: 1px solid #dfddd4;
-        border-radius: 50%;
-        color: #676b62;
-        transition: transform .3s cubic-bezier(.2,.8,.2,1),
-                    background .25s ease,
-                    color .25s ease;
+        transition: transform 0.3s ease;
       }
-
       .rrFaqQuestion.active .rrFaqToggle {
         transform: rotate(180deg);
-        background: #191b16;
-        color: #e4c54c;
-        border-color: #191b16;
+        background: #9e1017;
+        color: #ffffff;
       }
-
       .rrFaqQuestionAnswer {
         display: grid;
         grid-template-rows: 0fr;
-        transition: grid-template-rows .38s cubic-bezier(.2,.8,.2,1);
+        transition: grid-template-rows 0.35s ease;
       }
-
       .rrFaqQuestionAnswer p {
-        min-height: 0;
-        overflow: hidden;
         margin: 0;
-        padding: 0 67px;
-        color: #656a61;
-        font-size: 15px !important;
-        line-height: 1.9 !important;
+        overflow: hidden;
+        font-size: 14px;
+        line-height: 1.8;
+        color: #5d524c;
+        padding: 0 46px 0;
         opacity: 0;
-        transform: translateY(-5px);
-        transition: opacity .25s ease, transform .35s ease, padding .35s ease;
+        transition: opacity 0.2s ease, padding 0.3s ease;
       }
-
       .rrFaqQuestion.active .rrFaqQuestionAnswer {
         grid-template-rows: 1fr;
       }
-
       .rrFaqQuestion.active .rrFaqQuestionAnswer p {
-        padding-bottom: 24px;
+        padding-bottom: 18px;
+        opacity: 1;
+      }
+
+      /* Policies */
+      .rrPolicyTop {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 22px;
+      }
+      .rrPolicyTop h2 {
+        margin: 8px 0 0;
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 38px;
+        font-weight: 700;
+      }
+      .rrPolicyUpdated {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: #fbf7ef;
+        border: 1px solid rgba(243, 146, 0, 0.25);
+        font-size: 12px;
+        font-weight: 800;
+        color: #9e1017;
+      }
+      .rrPolicyGrid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+      .rrPolicyCard {
+        background: #ffffff;
+        border: 1px solid rgba(158, 16, 23, 0.12);
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 4px 18px rgba(158, 16, 23, 0.04);
+      }
+      .rrPolicyCardTop {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #9e1017;
+      }
+      .rrPolicyCardTop span {
+        font-size: 12px;
+        font-weight: 900;
+        color: #f39200;
+      }
+      .rrPolicyCard h3 {
+        margin: 14px 0 8px;
+        font-size: 18px;
+        font-weight: 800;
+      }
+      .rrPolicyCard p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.75;
+        color: #5d524c;
+      }
+      .rrPolicyDetails {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin: 20px 0;
+      }
+      .rrPolicyDetails article {
+        background: #fbf7ef;
+        border: 1px solid rgba(243, 146, 0, 0.2);
+        border-radius: 18px;
+        padding: 22px;
+      }
+      .rrPolicyDetails span {
+        display: block;
+        font-size: 13px;
+        font-weight: 800;
+        color: #9e1017;
+        margin-bottom: 8px;
+      }
+      .rrPolicyDetails p {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.7;
+        color: #5d524c;
+      }
+      .rrPolicyContact {
+        display: flex;
+        gap: 20px;
+        background: #ffffff;
+        border: 1px solid rgba(158, 16, 23, 0.15);
+        border-radius: 20px;
+        padding: 28px;
+        align-items: flex-start;
+      }
+      .rrPolicyContactIcon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: #fbf3e4;
+        color: #9e1017;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+      }
+      .rrPolicyContact span {
+        display: block;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 1.5px;
+        color: #9e1017;
+      }
+      .rrPolicyContact h3 {
+        margin: 4px 0 6px;
+        font-size: 17px;
+      }
+      .rrPolicyContact p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.7;
+        color: #5d524c;
+      }
+
+      /* Order Success Page */
+      .rrSuccess {
+        background: #ffffff;
+        border: 1px solid rgba(158, 16, 23, 0.12);
+        border-radius: 28px;
+        padding: 60px 40px;
+        text-align: center;
+        max-width: 650px;
+        margin: 40px auto;
+        box-shadow: 0 14px 40px rgba(158, 16, 23, 0.06);
+      }
+      .rrSuccessOrb {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: #fbf3e4;
+        color: #2e7d32;
+        display: grid;
+        place-items: center;
+        margin: 0 auto 20px;
+      }
+      .rrSuccess h1 {
+        margin: 10px 0;
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 42px;
+        font-weight: 700;
+      }
+      .rrSuccess p {
+        margin: 0 auto 30px;
+        font-size: 15px;
+        color: #5d524c;
+        line-height: 1.8;
+      }
+      .rrSuccessActions {
+        display: flex;
+        justify-content: center;
+        gap: 14px;
+      }
+
+      /* CTA Bottom Button */
+      .rrBottomShop {
+        display: flex;
+        justify-content: center;
+        margin-top: 40px;
+      }
+      .rrShopBtn,
+      .rrDarkBtn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 36px;
+        background: linear-gradient(135deg, #9e1017, #c41a22);
+        color: #ffffff;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 800;
+        text-decoration: none;
+        box-shadow: 0 8px 24px rgba(158, 16, 23, 0.3);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .rrShopBtn:hover,
+      .rrDarkBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(158, 16, 23, 0.45);
+      }
+      .rrLightBtn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 16px 30px;
+        background: #ffffff;
+        color: #1a1412;
+        border: 1px solid rgba(158, 16, 23, 0.15);
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      /* Scroll reveal animations */
+      .rrReveal {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .rrRevealVisible {
         opacity: 1;
         transform: translateY(0);
       }
 
-      .rrFaqQuestion.active {
-        background: linear-gradient(90deg, rgba(249,246,231,.65), transparent);
-        border-radius: 13px;
+      /* Responsive Rules */
+      @media (max-width: 992px) {
+        .rrInfoShell { padding-top: 130px; }
+        .rrAboutHero { grid-template-columns: 1fr; }
+        .rrNumberStrip { grid-template-columns: repeat(2, 1fr); }
+        .rrStoryBlock { grid-template-columns: 1fr; gap: 16px; }
+        .rrTwoColText { grid-template-columns: 1fr; }
+        .rrIngredientGrid { grid-template-columns: repeat(2, 1fr); }
+        .rrHeritageGrid { grid-template-columns: 1fr; }
+        .rrContactGrid { grid-template-columns: 1fr; }
+        .rrFaqCategoryBar { grid-template-columns: repeat(2, 1fr); }
+        .rrFaqPremiumGrid { grid-template-columns: 1fr; }
+        .rrFaqIndex { position: relative; top: 0; }
+        .rrPolicyGrid, .rrPolicyDetails { grid-template-columns: 1fr; }
       }
 
-      @media(max-width:900px){
-        .rrFaqIntro {
-          grid-template-columns: 1fr;
-          gap: 12px;
-        }
-
-        .rrFaqPremiumGrid {
-          grid-template-columns: 1fr;
-        }
-
-        .rrFaqIndex {
-          position: relative;
-          top: auto;
-        }
-
-        .rrFaqIndex > a {
-          grid-template-columns: 35px 1fr auto;
-        }
-
-        .rrFaqIndex > a small {
-          grid-column: 3;
-          margin-top: 0;
-        }
-      }
-
-      @media(max-width:650px){
-        .rrFaqIntro {
-          padding: 25px 3px 22px;
-        }
-
-        .rrFaqIntro h2 {
-          font-size: 42px;
-        }
-
-        .rrFaqIntro > p {
-          font-size: 15px;
-        }
-
-        .rrFaqCategoryBar {
-          grid-template-columns: 1fr 1fr;
-        }
-
-        .rrFaqCategoryBar a {
-          min-height: 52px;
-          font-size: 12px;
-          padding: 0 12px;
-        }
-
-        .rrFaqIndex {
-          padding: 20px;
-        }
-
-        .rrFaqGroupHead {
-          grid-template-columns: 42px 1fr;
-        }
-
-        .rrFaqGroupHead > p {
-          display: none;
-        }
-
-        .rrFaqQuestion button {
-          grid-template-columns: 28px minmax(0,1fr) 34px;
-          gap: 9px;
-          min-height: 72px;
-          padding: 11px 8px;
-        }
-
-        .rrFaqQuestion button strong {
-          font-size: 15px;
-        }
-
-        .rrFaqQuestionAnswer p {
-          padding: 0 43px;
-          font-size: 14px !important;
-        }
-
-        .rrFaqQuestion.active .rrFaqQuestionAnswer p {
-          padding-bottom: 20px;
-        }
-      }
-
-      /* SUCCESS */
-      .rrSuccessPage {
-        display:grid;
-        place-items:center;
-        padding:40px 18px;
-      }
-
-      .rrSuccess {
-        width:min(650px,100%);
-        padding:65px 45px;
-        text-align:center;
-        border:1px solid #e1ded3;
-        border-radius:28px;
-        background:#fff;
-        box-shadow:0 25px 75px rgba(29,31,23,.09);
-      }
-
-      .rrSuccessOrb {
-        width:86px;height:86px;
-        margin:0 auto 22px;
-        display:grid;place-items:center;
-        border-radius:50%;
-        background:#191b16;
-        color:#e5c54b;
-        box-shadow:0 12px 30px rgba(25,27,22,.16);
-      }
-
-      .rrSuccess h1{margin:10px 0;font-size:55px;letter-spacing:-.06em}
-      .rrSuccess p{color:#72766d;font-size:12px;line-height:1.85}
-      .rrSuccessActions{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-top:25px}
-
-      /* =========================================================
-         CINEMATIC MOTION SYSTEM
-         Lightweight CSS + IntersectionObserver, no animation package
-      ========================================================= */
-      .rrReveal {
-        opacity: 0;
-        transform: translate3d(0, 34px, 0) scale(.985);
-        filter: blur(4px);
-        transition:
-          opacity .85s cubic-bezier(.16,1,.3,1),
-          transform .95s cubic-bezier(.16,1,.3,1),
-          filter .85s cubic-bezier(.16,1,.3,1);
-        will-change: opacity, transform, filter;
-      }
-
-      .rrRevealVisible {
-        opacity: 1;
-        transform: translate3d(0,0,0) scale(1);
-        filter: blur(0);
-      }
-
-      .rrHero {
-        animation: rrHeroIn 1s cubic-bezier(.16,1,.3,1) both;
-      }
-
-      @keyframes rrHeroIn {
-        from { opacity:0; transform:translate3d(0,-22px,0) scale(.985); }
-        to { opacity:1; transform:translate3d(0,0,0) scale(1); }
-      }
-
-      .rrHeroIcon {
-        animation: rrIconFloat 4s ease-in-out infinite;
-      }
-
-      @keyframes rrIconFloat {
-        0%,100% { transform:translateY(0) rotate(0deg); }
-        50% { transform:translateY(-6px) rotate(-2deg); }
-      }
-
-      .rrHeroGlow {
-        animation: rrGlowMove 8s ease-in-out infinite alternate;
-      }
-
-      @keyframes rrGlowMove {
-        from { transform:translate3d(-18px,12px,0) scale(.9); opacity:.55; }
-        to { transform:translate3d(20px,-10px,0) scale(1.08); opacity:1; }
-      }
-
-      .rrHeroMark {
-        animation: rrMarkDrift 9s ease-in-out infinite alternate;
-      }
-
-      @keyframes rrMarkDrift {
-        from { transform:translate3d(0,0,0) rotate(-2deg); }
-        to { transform:translate3d(-14px,-8px,0) rotate(2deg); }
-      }
-
-      .rrPolicyCard,
-      .rrIngredient,
-      .rrHeritageCard,
-      .rrContactCard,
-      .rrFaqItem,
-      .rrPolicyDetails article {
-        transition:
-          transform .45s cubic-bezier(.16,1,.3,1),
-          box-shadow .45s cubic-bezier(.16,1,.3,1),
-          border-color .3s ease;
-      }
-
-      .rrPolicyCard:hover,
-      .rrIngredient:hover,
-      .rrHeritageCard:hover,
-      .rrContactCard:hover {
-        transform:translateY(-8px);
-        box-shadow:0 24px 55px rgba(28,30,23,.11);
-      }
-
-      .rrFaqItem:hover {
-        transform:translateX(4px);
-      }
-
-      .rrFaqItem.active {
-        animation: rrFaqOpen .45s cubic-bezier(.16,1,.3,1) both;
-      }
-
-      @keyframes rrFaqOpen {
-        from { opacity:.72; transform:translateY(5px); }
-        to { opacity:1; transform:translateY(0); }
-      }
-
-      .rrDish {
-        animation: rrDishFloat 6s ease-in-out infinite;
-      }
-
-      @keyframes rrDishFloat {
-        0%,100% { transform:translate3d(0,0,0) rotate(-7deg); }
-        50% { transform:translate3d(0,-10px,0) rotate(-4deg); }
-      }
-
-      .rrDishVisual::after {
-        content:"";
-        position:absolute;
-        width:260px;
-        height:30px;
-        bottom:42px;
-        left:50%;
-        transform:translateX(-50%);
-        border-radius:50%;
-        background:rgba(0,0,0,.28);
-        filter:blur(16px);
-        animation:rrShadowPulse 6s ease-in-out infinite;
-        z-index:0;
-      }
-
-      .rrDish { position:relative; z-index:1; }
-
-      @keyframes rrShadowPulse {
-        0%,100% { opacity:.42; transform:translateX(-50%) scale(.9); }
-        50% { opacity:.2; transform:translateX(-50%) scale(.72); }
-      }
-
-      .rrDarkBtn,
-      .rrLightBtn,
-      .rrShopBtn {
-        transition:
-          transform .35s cubic-bezier(.16,1,.3,1),
-          box-shadow .35s ease,
-          background .25s ease;
-      }
-
-      .rrDarkBtn:hover,
-      .rrShopBtn:hover {
-        transform:translateY(-3px);
-        box-shadow:0 16px 34px rgba(25,27,22,.22);
-      }
-
-      .rrLightBtn:hover {
-        transform:translateY(-3px);
-        box-shadow:0 14px 30px rgba(25,27,22,.10);
-      }
-
-      .rrTextLink svg,
-      .rrDarkBtn svg,
-      .rrLightBtn svg,
-      .rrShopBtn svg {
-        transition:transform .3s cubic-bezier(.16,1,.3,1);
-      }
-
-      .rrTextLink:hover svg,
-      .rrDarkBtn:hover svg,
-      .rrLightBtn:hover svg,
-      .rrShopBtn:hover svg {
-        transform:translateX(4px);
-      }
-
-      .rrNumberStrip div {
-        transition:background .3s ease, transform .3s ease;
-      }
-
-      .rrNumberStrip div:hover {
-        background:#fff9df;
-        transform:translateY(-2px);
+      @media (max-width: 600px) {
+        .rrInfoPage { padding: 14px 16px 70px; }
+        .rrPageHeader { padding: 24px; border-radius: 20px; }
+        .rrPageHeader h1 { font-size: 32px; }
+        .rrAboutHero { padding: 24px; border-radius: 20px; }
+        .rrNumberStrip { grid-template-columns: 1fr; }
+        .rrIngredientGrid { grid-template-columns: 1fr; }
+        .rrSectionHead { flex-direction: column; align-items: flex-start; gap: 8px; }
+        .rrPolicyTop { flex-direction: column; align-items: flex-start; gap: 10px; }
+        .rrPolicyContact { flex-direction: column; }
+        .rrSuccess { padding: 40px 20px; }
+        .rrSuccessActions { flex-direction: column; }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        .rrReveal,
-        .rrHero,
-        .rrHeroIcon,
-        .rrHeroGlow,
-        .rrHeroMark,
-        .rrDish,
-        .rrDishVisual::after {
-          animation:none !important;
-          transition:none !important;
+        *, *::before, *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
         }
-        .rrReveal {
-          opacity:1 !important;
-          transform:none !important;
-          filter:none !important;
-        }
-        .rrPolicyCard:hover,
-        .rrIngredient:hover,
-        .rrHeritageCard:hover,
-        .rrContactCard:hover,
-        .rrFaqItem:hover {
-          transform:none;
-        }
-      }
-
-      @media(max-width:900px){
-        .rrAboutHero{grid-template-columns:1fr;padding:45px 35px}
-        .rrFaq{grid-template-columns:1fr}
-        .rrFaqAside{position:relative;top:auto;min-height:auto}
-        .rrPolicyGrid{grid-template-columns:1fr}
-        .rrPolicyDetails{grid-template-columns:1fr}
-        .rrContactGrid{grid-template-columns:1fr}
-        .rrIngredientGrid{grid-template-columns:1fr 1fr}
-        .rrHeritageGrid{grid-template-columns:1fr}
-        .rrAboutEnd{grid-template-columns:1fr}
-        .rrRoundMark{justify-self:start}
-      }
-
-      @media(max-width:620px){
-        .rrInfoPage,.rrSuccessPage{padding:16px 10px 55px}
-        .rrHero{padding:28px 22px;min-height:205px;border-radius:20px}
-        .rrHeroIcon{width:50px;height:50px;flex-basis:50px}
-        .rrHeroMark{right:20px;font-size:75px}
-        .rrHero h1{font-size:34px}
-        .rrHero p{font-size:11px}
-        .rrAboutHero{padding:34px 23px;border-radius:20px}
-        .rrAboutHero h2{font-size:49px}
-        .rrDishVisual{min-height:300px}
-        .rrDish{width:270px}
-        .rrNumberStrip{grid-template-columns:1fr 1fr}
-        .rrNumberStrip div{border-bottom:1px solid #e8e5dc}
-        .rrStoryBlock{grid-template-columns:1fr;gap:22px;padding:65px 4%}
-        .rrTwoColText{grid-template-columns:1fr}
-        .rrSectionHead{display:block}
-        .rrSectionHead > p{margin-top:10px}
-        .rrIngredientGrid{grid-template-columns:1fr}
-        .rrHeritage{padding:55px 0}
-        .rrQuote{padding:55px 24px;margin-bottom:50px}
-        .rrAboutEnd{padding-bottom:50px}
-        .rrFaqAside{padding:25px}
-        .rrFaqAside h2{margin-top:35px}
-        .rrFaqItem button{grid-template-columns:30px 1fr 20px;padding:17px}
-        .rrFaqAnswer{padding:0 20px 19px 47px}
-        .rrPolicyTop{display:block;padding:28px 2px 20px}
-        .rrPolicyUpdated{width:max-content;margin-top:15px}
-        .rrPolicyCard{min-height:auto;padding:22px}
-        .rrContactIntro{padding:28px 23px}
-        .rrContactGrid{grid-template-columns:1fr}
-        .rrSuccess{padding:50px 24px}
-        .rrSuccess h1{font-size:45px}
       }
     `}</style>
   );

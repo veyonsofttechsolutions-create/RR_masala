@@ -4,9 +4,10 @@ import {
   Minus,
   Plus,
   ShoppingBag,
+  ArrowUpRight,
+  Sparkles,
 } from "lucide-react";
 import { useState } from "react";
-
 import { useCart } from "../context/CartContext.jsx";
 import { useWishlist } from "../context/WishlistContext.jsx";
 
@@ -14,17 +15,9 @@ const PLACEHOLDER = "/products/placeholder.svg";
 
 function getStockState(product) {
   if (!product) return false;
-
-  if (
-    product.inStock !== undefined ||
-    product.stockStatus !== undefined
-  ) {
-    return (
-      product.inStock === true ||
-      product.stockStatus === "in_stock"
-    );
+  if (product.inStock !== undefined || product.stockStatus !== undefined) {
+    return product.inStock === true || product.stockStatus === "in_stock";
   }
-
   const stock = Number(product.stock);
   return Number.isFinite(stock) && stock > 0;
 }
@@ -47,9 +40,7 @@ function getProductImage(product) {
   }
 
   return (
-    (typeof firstImage === "string" && firstImage.trim()
-      ? firstImage
-      : "") ||
+    (typeof firstImage === "string" && firstImage.trim() ? firstImage : "") ||
     product?.thumbnail ||
     product?.image ||
     product?.imageUrl ||
@@ -57,39 +48,42 @@ function getProductImage(product) {
   );
 }
 
-export default function ProductCard({ product }) {
-  const {
-    getQty,
-    setQty,
-  } = useCart();
+function getCategoryName(category) {
+  if (!category) return "PANTRY ESSENTIAL";
+  if (typeof category === "string") return category;
+  return category.name || category.title || "PANTRY ESSENTIAL";
+}
 
+export default function ProductCard({ product, index = 0 }) {
+  const { getQty, setQty } = useCart();
   const { has, toggle } = useWishlist();
   const [busy, setBusy] = useState(false);
 
   const inStock = getStockState(product);
   const current = getQty(product);
+  const image = getProductImage(product);
+  const liked = has(product);
 
-  const img = getProductImage(product);
+  const price = Number(product?.price) || 0;
+  const compareAtPrice = Number(product?.compareAtPrice) || 0;
+  const suppliedDiscount = Number(product?.discountPercentage) || 0;
 
   const discount =
-    Number(product?.discountPercentage) || 0;
+    suppliedDiscount > 0
+      ? Math.round(suppliedDiscount)
+      : compareAtPrice > price
+      ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100)
+      : 0;
 
-  const price =
-    Number(product?.price) || 0;
+  const category = getCategoryName(product?.category);
 
-  const compareAtPrice =
-    Number(product?.compareAtPrice) || 0;
-
-  const changeCartQuantity = async (next) => {
-    if (!inStock || busy) return;
-
+  const changeQuantity = async (next) => {
+    if (!inStock || busy || next < 0) return;
     try {
       setBusy(true);
       await setQty(product, next);
     } catch (error) {
-      window.alert(
-        error?.message || "Could not update cart."
-      );
+      window.alert(error?.message || "Could not update cart.");
     } finally {
       setBusy(false);
     }
@@ -98,7 +92,6 @@ export default function ProductCard({ product }) {
   const handleWishlist = async (event) => {
     event.preventDefault();
     event.stopPropagation();
-
     try {
       await toggle(product);
     } catch {
@@ -107,123 +100,111 @@ export default function ProductCard({ product }) {
   };
 
   return (
-    <article className="productCard">
+    <article
+      className={`rrProductCard ${!inStock ? "isOutOfStock" : ""}`}
+      style={{ "--card-index": index }}
+    >
       <Link
-        className="productVisual"
-        to={`/product/${product.slug}`}
+        className="rrProductVisual"
+        to={`/product/${product?.slug || ""}`}
+        aria-label={`View ${product?.name || "product"}`}
       >
         <img
-          src={img}
-          alt={product?.name || "Product"}
-          loading="lazy"
+          src={image}
+          alt={product?.name || "RR MASALA product"}
+          loading={index < 4 ? "eager" : "lazy"}
           onError={(event) => {
-            if (
-              event.currentTarget.src.includes(
-                PLACEHOLDER
-              )
-            ) {
-              return;
+            if (!event.currentTarget.src.includes(PLACEHOLDER)) {
+              event.currentTarget.src = PLACEHOLDER;
             }
-
-            event.currentTarget.src = PLACEHOLDER;
           }}
         />
 
-        {discount > 0 && (
-          <span className="discount">
-            {Math.round(discount)}% OFF
-          </span>
-        )}
+        <div className="rrProductTopRow">
+          {discount > 0 ? (
+            <span className="rrDiscountBadge">-{discount}% OFF</span>
+          ) : (
+            <span className="rrCollectionBadge">RR AUTHENTIC</span>
+          )}
+
+          <button
+            type="button"
+            className={`rrWishButton ${liked ? "isLiked" : ""}`}
+            onClick={handleWishlist}
+            aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
+          >
+            <Heart size={16} fill={liked ? "currentColor" : "none"} />
+          </button>
+        </div>
 
         {product?.isBestSeller && (
-          <span className="bestSeller">
+          <span className="rrBestSeller">
+            <Sparkles size={11} />
             BESTSELLER
           </span>
         )}
 
-        <button
-          type="button"
-          className={`wishButton ${
-            has(product) ? "liked" : ""
-          }`}
-          aria-label={
-            has(product)
-              ? "Remove from wishlist"
-              : "Add to wishlist"
-          }
-          onClick={handleWishlist}
-        >
-          <Heart
-            size={17}
-            fill={
-              has(product)
-                ? "currentColor"
-                : "none"
-            }
-          />
-        </button>
+        <span className="rrViewProduct">
+          View Details
+          <ArrowUpRight size={14} />
+        </span>
+
+        {!inStock && (
+          <div className="rrOutOfStockOverlay">
+            <span>Currently Unavailable</span>
+          </div>
+        )}
       </Link>
 
-      <div className="productBody">
-        <div className="productMeta">
-          <span>
-            {product?.category?.name ||
-              product?.category ||
-              "Pantry essential"}
-          </span>
-
-          <span>
-            {product?.weight
-              ? `${product.weight} ${
-                  product.weightUnit || ""
-                }`
-              : "100 g"}
-          </span>
+      <div className="rrProductBody">
+        <div className="rrProductMeta">
+          <span>{category}</span>
+          {product?.weight && (
+            <span>
+              {product.weight}
+              {product.weightUnit || "g"}
+            </span>
+          )}
         </div>
 
         <Link
-          className="productName"
-          to={`/product/${product.slug}`}
+          to={`/product/${product?.slug || ""}`}
+          className="rrProductName"
+          title={product?.name || "RR MASALA Product"}
         >
-          {product?.name}
+          {product?.name || "RR MASALA Product"}
         </Link>
 
-        <p className="productDesc">
+        <p className="rrProductDescription">
           {product?.shortDescription ||
-            "Traditional flavour for everyday cooking."}
+            product?.description ||
+            "Traditional Indian pantry essential, stone-ground and packed fresh for pure everyday flavour."}
         </p>
 
-        <div className="productBuy">
-          <div>
-            <strong>
-              ₹{price.toFixed(0)}
-            </strong>
-
+        <div className="rrProductBottom">
+          <div className="rrPriceBlock">
+            <strong>₹{price.toLocaleString("en-IN")}</strong>
             {compareAtPrice > price && (
-              <del>
-                ₹{compareAtPrice.toFixed(0)}
-              </del>
+              <del>₹{compareAtPrice.toLocaleString("en-IN")}</del>
             )}
           </div>
 
           {!inStock ? (
-            <span className="outStock">
-              Out of stock
-            </span>
+            <span className="rrUnavailablePill">Out of Stock</span>
           ) : current > 0 ? (
             <div
-              className="productQtyControl"
-              aria-label={`Quantity for ${product?.name}`}
+              className="rrQtyControl"
+              aria-label={`Quantity for ${product?.name || "product"}`}
             >
               <button
                 type="button"
                 disabled={busy}
-                aria-label="Decrease quantity"
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  changeCartQuantity(current - 1);
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  changeQuantity(current - 1);
                 }}
+                aria-label="Decrease quantity"
               >
                 <Minus size={14} />
               </button>
@@ -233,12 +214,12 @@ export default function ProductCard({ product }) {
               <button
                 type="button"
                 disabled={busy}
-                aria-label="Increase quantity"
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  changeCartQuantity(current + 1);
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  changeQuantity(current + 1);
                 }}
+                aria-label="Increase quantity"
               >
                 <Plus size={14} />
               </button>
@@ -246,80 +227,30 @@ export default function ProductCard({ product }) {
           ) : (
             <button
               type="button"
-              className="addButton"
+              className="rrAddButton"
               disabled={busy}
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                changeCartQuantity(1);
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                changeQuantity(1);
               }}
-              aria-label={`Add ${product?.name || "product"} to cart`}
             >
               <ShoppingBag size={15} />
-              <span>ADD</span>
+              <span>{busy ? "ADDING" : "ADD"}</span>
             </button>
           )}
         </div>
 
         <div
-          className={`productStockStatus ${
-            inStock
-              ? "available"
-              : "unavailable"
-          }`}
+          className={`rrStockStatus ${inStock ? "isAvailable" : "isUnavailable"}`}
           aria-live="polite"
         >
-          <span className="stockDot" />
-
+          <span className="rrStockDot" />
           <span>
-            {inStock
-              ? "In stock & ready to ship"
-              : "Currently unavailable"}
+            {inStock ? "In stock · Ready to dispatch" : "Currently unavailable"}
           </span>
         </div>
       </div>
-
-      <style>{`
-        .productQtyControl {
-          display: inline-flex;
-          align-items: center;
-          justify-content: space-between;
-          min-width: 94px;
-          height: 38px;
-          border: 1px solid #e4d8cd;
-          border-radius: 10px;
-          overflow: hidden;
-          background: #fff;
-        }
-
-        .productQtyControl button {
-          width: 31px;
-          height: 100%;
-          border: 0;
-          background: transparent;
-          color: #4b2113;
-          display: grid;
-          place-items: center;
-          cursor: pointer;
-        }
-
-        .productQtyControl button:hover:not(:disabled) {
-          background: #f7eee6;
-        }
-
-        .productQtyControl button:disabled {
-          opacity: .45;
-          cursor: not-allowed;
-        }
-
-        .productQtyControl strong {
-          min-width: 27px;
-          text-align: center;
-          color: #2c160d;
-          font-size: 13px;
-          font-weight: 900;
-        }
-      `}</style>
     </article>
   );
 }
