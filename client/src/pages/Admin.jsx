@@ -22,7 +22,7 @@ import {
 
 /* BRAND LOGO ASSET FROM INFO PAGE */
 const ASSETS = {
-  logo: "/WhatsApp Image 2026-09-17 at 3.09.40 AM.jpeg"
+  logo: "/logo.png"
 };
 
 /* WHITE CLOTH THEATER PRELOADER FROM INFO PAGE */
@@ -48,19 +48,20 @@ function TheaterPreloader() {
   if (!render) return null;
 
   return (
-    <div className={`rrTheaterCurtain ${!loading ? "isOpen" : ""}`} aria-hidden="true">
-      <div className="rrClothHalf rrClothLeft">
-        <div className="rrClothFolds" />
-      </div>
-      <div className="rrClothHalf rrClothRight">
-        <div className="rrClothFolds" />
-      </div>
+    // <div className={`rrTheaterCurtain ${!loading ? "isOpen" : ""}`} aria-hidden="true">
+    //   <div className="rrClothHalf rrClothLeft">
+    //     <div className="rrClothFolds" />
+    //   </div>
+    //   <div className="rrClothHalf rrClothRight">
+    //     <div className="rrClothFolds" />
+    //   </div>
+    //   <div className="rrCurtainLogoBox">
+    //    <img src={ASSETS.logo} alt="RR MASALA" className="rrCurtainLogoImg" />
+    //    <div className="rrCurtainLoader" />
+    //   </div>
       
-      <div className="rrCurtainLogoBox">
-        <img src={ASSETS.logo} alt="RR MASALA" className="rrCurtainLogoImg" />
-        <div className="rrCurtainLoader" />
-      </div>
-    </div>
+    // </div>
+    <div></div>
   );
 }
 
@@ -478,12 +479,12 @@ export default function Admin() {
     return (
       <main className="adminLoadingPage">
         <TheaterPreloader />
-        <div className="adminLoadingCard">
-          <img src={ASSETS.logo} alt="RR MASALA" className="adminLoadingLogoImg" />
-          <div className="spinner" />
-          <strong>Loading control center</strong>
-          <span>Preparing your store analytics...</span>
-        </div>
+        {/* <div className="adminLoadingCard"> */}
+          {/* <img src={ASSETS.logo} alt="RR MASALA" className="adminLoadingLogoImg" /> */}
+          {/* <div className="spinner" /> */}
+          {/* <strong>Loading control center</strong> */}
+          {/* <span>Preparing your store analytics...</span> */}
+        {/* </div> */}
       </main>
     );
   }
@@ -949,12 +950,12 @@ export default function Admin() {
         .recentAmountModern span { display: block; font-size: 11px; font-weight: 700; color: #2e7d32; text-transform: capitalize; margin-top: 2px; }
 
         /* LOADING PAGE & LOGO */
-        .adminLoadingPage {
-          min-height: 100vh;
-          display: grid;
-          place-items: center;
-          background: #ffffff;
-        }
+        // .adminLoadingPage {
+        //   min-height: 100vh;
+        //   display: grid;
+        //   place-items: center;
+        //   background: #ffffff;
+        // }
 
         .adminLoadingCard {
           display: flex;
