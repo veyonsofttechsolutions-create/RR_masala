@@ -740,6 +740,7 @@ function CheckoutStyles() {
         .stickTotal strong { display: block; font-size: 20px; font-weight: 900; color: #140d0b; }
         .rrPlaceOrderBtn { width: auto; margin-top: 0; padding: 14px 28px; font-size: 14px; border-radius: 12px; }
       }
+        
     `}</style>
   );
 }
