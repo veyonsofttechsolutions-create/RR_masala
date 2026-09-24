@@ -1,48 +1,72 @@
-import { useState } from "react";
-import { useAuth } from "../context/AuthContext.jsx";
-import { Link, useNavigate } from "react-router-dom";
-import {
-  ShieldCheck,
-  Mail,
-  LockKeyhole,
-  Eye,
-  EyeOff,
-  ArrowLeft,
-  Loader2,
-  Store,
-} from "lucide-react";
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { API } from "../api/http.js";
+import { ArrowLeft, ShieldCheck, CheckCircle2, Mail, Lock, ArrowRight } from "lucide-react";
+
+/* BRAND LOGO ASSET */
+const ASSETS = {
+  logo: "/WhatsApp Image 2026-09-17 at 3.09.40 AM.jpeg"
+};
+
+/* THEATER PRELOADER */
+function TheaterPreloader() {
+  const [loading, setLoading] = useState(true);
+  const [render, setRender] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 800);
+    const removeTimer = setTimeout(() => setRender(false), 2000);
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(removeTimer);
+    };
+  }, []);
+
+  if (!render) return null;
+
+  return (
+    <div className={`rrTheaterCurtain ${!loading ? "isOpen" : ""}`} aria-hidden="true">
+      <div className="rrClothHalf rrClothLeft">
+        <div className="rrClothFolds" />
+      </div>
+      <div className="rrClothHalf rrClothRight">
+        <div className="rrClothFolds" />
+      </div>
+      <div className="rrCurtainLogoBox">
+        <img src={ASSETS.logo} alt="RR MASALA" className="rrCurtainLogoImg" />
+        <div className="rrCurtainLoader" />
+      </div>
+    </div>
+  );
+}
 
 export default function AdminLogin() {
-  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const nav = useNavigate();
 
-  const [f, setF] = useState({
-    email: "admin@RRMASALA.com",
-    password: "Admin@12345",
-  });
-
-  const [err, setErr] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const go = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setErr("");
-    setLoading(true);
+    if (!email || !password) {
+      setError("Please enter both email and password.");
+      return;
+    }
 
     try {
-      const u = await login(f);
-
-      if (u.role !== "ADMIN" && u.role !== "STAFF") {
-        throw Error("Admin access only");
+      setError("");
+      setLoading(true);
+      
+const res = await API.post("/api/login", { email, password });      
+      if (res.data?.token) {
+        localStorage.setItem("adminToken", res.data.token);
       }
-
       nav("/admin");
-    } catch (e) {
-      setErr(
-        e.response?.data?.message ||
-          e.message ||
-          "Unable to sign in. Please check your credentials."
+    } catch (err) {
+      setError(
+        err.response?.data?.message || 
+        "Invalid credentials or server error."
       );
     } finally {
       setLoading(false);
@@ -50,644 +74,374 @@ export default function AdminLogin() {
   };
 
   return (
-    <main className="adminLoginPage">
-      <div className="adminLoginShell">
-        {/* LEFT BRAND PANEL */}
-        <section className="adminLoginVisual">
-          <div className="visualTop">
-            <div className="visualBrand">
-              <div className="visualLogo">RR</div>
+    <main className="splitLoginLayout">
+      <TheaterPreloader />
+      
+      <style>{`
+        .splitLoginLayout {
+          min-height: 100vh;
+          display: flex;
+          font-family: 'DM Sans', sans-serif;
+          background: #f8f9fa;
+        }
 
-              <div>
-                <strong>RR MASALA</strong>
-                <span>TRADITIONAL FOOD STORE</span>
-              </div>
-            </div>
+        /* PRELOADER STYLES */
+        .rrTheaterCurtain { position: fixed !important; inset: 0 !important; z-index: 999999 !important; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+        .rrClothHalf { position: absolute; top: 0; bottom: 0; width: 50%; background: #ffffff; box-shadow: inset 0 0 40px rgba(0,0,0,0.05); transition: transform 1s cubic-bezier(0.7, 0, 0.3, 1) 0.1s; will-change: transform; }
+        .rrClothLeft { left: 0; transform-origin: left; border-right: 1px solid rgba(0,0,0,0.05); }
+        .rrClothRight { right: 0; transform-origin: right; border-left: 1px solid rgba(0,0,0,0.05); }
+        .rrClothFolds { position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.03) 10%, transparent 20%); }
+        .rrTheaterCurtain.isOpen .rrClothLeft { transform: translateX(-100%); }
+        .rrTheaterCurtain.isOpen .rrClothRight { transform: translateX(100%); }
+        .rrCurtainLogoBox { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 15px; transition: opacity 0.3s ease; }
+        .rrTheaterCurtain.isOpen .rrCurtainLogoBox { opacity: 0; }
+        .rrCurtainLogoImg { height: 60px; object-fit: contain; animation: rrCurtainPulse 1.5s ease-in-out infinite alternate; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1)); }
+        .rrCurtainLoader { width: 120px; height: 2px; background: rgba(0,0,0,0.1); position: relative; overflow: hidden; }
+        .rrCurtainLoader::before { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: #fbb034; animation: rrTheaterLoad 1s ease-in-out forwards; }
+        @keyframes rrTheaterLoad { 0% { left: -100%; } 100% { left: 0; } }
+        @keyframes rrCurtainPulse { 0% { transform: scale(0.95); opacity: 0.8; } 100% { transform: scale(1.05); opacity: 1; } }
 
-            <div className="secureBadge">
-              <ShieldCheck size={14} />
-              Secure access
-            </div>
+        /* SPLIT SCREEN LAYOUT */
+        .loginLeft {
+          flex: 1;
+          background: linear-gradient(145deg, #140d0b 0%, #2a080a 100%);
+          color: #ffffff;
+          padding: 60px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .loginLeft::after {
+          content: "";
+          position: absolute;
+          bottom: -20%;
+          right: -10%;
+          width: 500px;
+          height: 500px;
+          background: radial-gradient(circle, rgba(158,16,23,0.15) 0%, transparent 70%);
+          border-radius: 50%;
+          pointer-events: none;
+        }
+
+        .brandTop {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+        
+        .brandActualLogo {
+          width: 56px;
+          height: 56px;
+          border-radius: 12px;
+          object-fit: cover;
+          background: #fff; /* White background highlight for logo contrast */
+          padding: 4px;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .brandTopText strong { display: block; font-size: 16px; letter-spacing: 0.5px; }
+        .brandTopText span { display: block; font-size: 12px; color: rgba(255,255,255,0.6); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+
+        .leftContent h1 {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(40px, 5vw, 56px);
+          font-weight: 700;
+          line-height: 1.1;
+          margin-bottom: 24px;
+          max-width: 500px;
+        }
+
+        .leftContent p {
+          color: rgba(255,255,255,0.7);
+          font-size: 16px;
+          line-height: 1.6;
+          max-width: 420px;
+          margin-bottom: 40px;
+        }
+
+        .featureList {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .featureList li {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 14px;
+          font-weight: 700;
+          color: rgba(255,255,255,0.9);
+        }
+
+        .featureList li svg {
+          color: #f39200;
+        }
+
+        .leftFooter {
+          font-size: 12px;
+          color: rgba(255,255,255,0.4);
+        }
+
+        /* RIGHT SIDE FORM */
+        .loginRight {
+          flex: 1;
+          background: #ffffff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 40px;
+        }
+
+        .formContainer {
+          width: 100%;
+          max-width: 420px;
+        }
+
+        .backLink {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          color: #5e514c;
+          text-decoration: none;
+          font-size: 13px;
+          font-weight: 750;
+          margin-bottom: 40px;
+          transition: color 0.2s;
+        }
+
+        .backLink:hover { color: #9e1017; }
+
+        .formHeader { margin-bottom: 32px; }
+        
+        .securityIcon {
+          width: 48px;
+          height: 48px;
+          background: #fbf7ef;
+          color: #c41a22;
+          border-radius: 14px;
+          display: grid;
+          place-items: center;
+          margin-bottom: 24px;
+        }
+
+        .eyebrow {
+          display: block;
+          font-size: 11px;
+          font-weight: 900;
+          letter-spacing: 1.5px;
+          color: #5e514c;
+          text-transform: uppercase;
+          margin-bottom: 8px;
+        }
+
+        .formHeader h2 {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 36px;
+          font-weight: 700;
+          color: #140d0b;
+          margin: 0 0 8px 0;
+        }
+
+        .formHeader p {
+          color: #8a7c75;
+          font-size: 14px;
+          margin: 0;
+        }
+
+        .errorBox {
+          background: #fff0f1;
+          color: #9e1017;
+          padding: 12px 16px;
+          border-radius: 12px;
+          font-size: 13px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 24px;
+          border: 1px solid rgba(158, 16, 23, 0.15);
+        }
+
+        .inputGroup { margin-bottom: 20px; }
+        .inputGroup label { display: block; font-size: 13px; font-weight: 750; color: #140d0b; margin-bottom: 8px; }
+        
+        .inputWrapper { position: relative; display: flex; align-items: center; }
+        .inputIcon { position: absolute; left: 16px; color: #8a7c75; pointer-events: none; }
+        
+        .styledInput {
+          width: 100%;
+          height: 52px;
+          background: #faf9f4;
+          border: 1px solid rgba(0,0,0,0.06);
+          border-radius: 14px;
+          padding: 0 16px 0 48px;
+          font-size: 15px;
+          font-family: inherit;
+          color: #140d0b;
+          transition: all 0.2s ease;
+        }
+
+        .styledInput:focus {
+          outline: none;
+          background: #ffffff;
+          border-color: #f39200;
+          box-shadow: 0 0 0 4px rgba(243, 146, 0, 0.1);
+        }
+
+        .submitBtn {
+          width: 100%;
+          height: 52px;
+          background: #140d0b;
+          color: #ffffff;
+          border: none;
+          border-radius: 14px;
+          font-size: 15px;
+          font-weight: 800;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          margin-top: 32px;
+          transition: all 0.2s ease;
+        }
+
+        .submitBtn:hover:not(:disabled) {
+          background: #c41a22;
+          box-shadow: 0 6px 20px rgba(158, 16, 23, 0.25);
+        }
+
+        .submitBtn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .spinner { animation: adminSpin 1s linear infinite; }
+        @keyframes adminSpin { to { transform: rotate(360deg); } }
+
+        .formFooter {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-top: 24px;
+          color: #8a7c75;
+          font-size: 12px;
+        }
+
+        @media (max-width: 900px) {
+          .splitLoginLayout { flex-direction: column; }
+          .loginLeft { display: none; }
+          .loginRight { padding: 30px 20px; }
+        }
+      `}</style>
+
+      {/* LEFT SIDE - BRANDING */}
+      <div className="loginLeft">
+        <div className="brandTop">
+          {/* INTHA EDATHULA THAAN ACTUAL LOGO CHANGE PANNIRUKEN */}
+          <img src={ASSETS.logo} alt="RR MASALA Logo" className="brandActualLogo" />
+          <div className="brandTopText">
+            <strong>RR MASALA</strong>
+            <span>Traditional Food Store</span>
           </div>
+        </div>
 
-          <div className="visualContent">
-            <span className="visualEyebrow">
-              ADMINISTRATION
-            </span>
+        <div className="leftContent">
+          <span style={{ display: 'block', color: '#f39200', fontSize: 12, fontWeight: 800, letterSpacing: '1px', marginBottom: 16 }}>ADMINISTRATION</span>
+          <h1>Everything you need<br />to run your store.</h1>
+          <p>Manage products, orders, customers, inventory and your complete RR MASALA storefront from one place.</p>
+          
+          <ul className="featureList">
+            <li><CheckCircle2 size={18} /> Order management</li>
+            <li><CheckCircle2 size={18} /> Inventory control</li>
+            <li><CheckCircle2 size={18} /> Store analytics</li>
+          </ul>
+        </div>
 
-            <h1>
-              Everything you need
-              <br />
-              to run your store.
-            </h1>
-
-            <p>
-              Manage products, orders, customers, inventory
-              and your complete RR MASALA storefront from one
-              place.
-            </p>
-
-            <div className="visualFeatures">
-              <div>
-                <span>01</span>
-                <strong>Order management</strong>
-              </div>
-
-              <div>
-                <span>02</span>
-                <strong>Inventory control</strong>
-              </div>
-
-              <div>
-                <span>03</span>
-                <strong>Store analytics</strong>
-              </div>
-            </div>
-          </div>
-
-          <div className="visualBottom">
-            <Store size={14} />
-            <span>RR MASALA Commerce Platform</span>
-          </div>
-        </section>
-
-        {/* LOGIN PANEL */}
-        <section className="adminLoginFormPanel">
-          <div className="adminLoginCard">
-            <Link to="/" className="backStore">
-              <ArrowLeft size={15} />
-              Back to storefront
-            </Link>
-
-            <div className="mobileBrand">
-              <div className="mobileLogo">RR</div>
-
-              <div>
-                <strong>RR MASALA</strong>
-                <span>ADMIN</span>
-              </div>
-            </div>
-
-            <div className="loginIcon">
-              <ShieldCheck size={23} />
-            </div>
-
-            <span className="eyebrow">
-              SECURE ADMIN ACCESS
-            </span>
-
-            <h2>Welcome back.</h2>
-
-            <p className="loginSubtitle">
-              Sign in to access your store control center.
-            </p>
-
-            <form className="adminLoginForm" onSubmit={go}>
-              <label>
-                <span>Email address</span>
-
-                <div className="inputWrap">
-                  <Mail size={17} />
-
-                  <input
-                    type="email"
-                    autoComplete="email"
-                    value={f.email}
-                    onChange={(e) =>
-                      setF({
-                        ...f,
-                        email: e.target.value,
-                      })
-                    }
-                    placeholder="admin@example.com"
-                    required
-                  />
-                </div>
-              </label>
-
-              <label>
-                <span>Password</span>
-
-                <div className="inputWrap">
-                  <LockKeyhole size={17} />
-
-                  <input
-                    type={
-                      showPassword ? "text" : "password"
-                    }
-                    autoComplete="current-password"
-                    value={f.password}
-                    onChange={(e) =>
-                      setF({
-                        ...f,
-                        password: e.target.value,
-                      })
-                    }
-                    placeholder="Enter your password"
-                    required
-                  />
-
-                  <button
-                    type="button"
-                    className="passwordToggle"
-                    onClick={() =>
-                      setShowPassword(!showPassword)
-                    }
-                    aria-label={
-                      showPassword
-                        ? "Hide password"
-                        : "Show password"
-                    }
-                  >
-                    {showPassword ? (
-                      <EyeOff size={16} />
-                    ) : (
-                      <Eye size={16} />
-                    )}
-                  </button>
-                </div>
-              </label>
-
-              {err && (
-                <div className="adminLoginError">
-                  <ShieldCheck size={15} />
-                  <span>{err}</span>
-                </div>
-              )}
-
-              <button
-                className="adminLoginButton"
-                type="submit"
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <Loader2
-                      size={17}
-                      className="loginSpinner"
-                    />
-                    Signing in...
-                  </>
-                ) : (
-                  <>
-                    Sign in to admin
-                    <ArrowLeft
-                      size={16}
-                      className="loginArrow"
-                    />
-                  </>
-                )}
-              </button>
-            </form>
-
-            <div className="loginSecurity">
-              <ShieldCheck size={14} />
-
-              <span>
-                Protected admin area. Only authorised
-                administrators and staff can continue.
-              </span>
-            </div>
-          </div>
-        </section>
+        <div className="leftFooter">
+          RR MASALA E-Commerce Platform © {new Date().getFullYear()}
+        </div>
       </div>
 
-      <style>
-        {`
-          .adminLoginPage {
-            min-height: 100vh;
-            background: #f5f5ef;
-            display: grid;
-            place-items: center;
-            padding: 25px;
-          }
+      {/* RIGHT SIDE - FORM */}
+      <div className="loginRight">
+        <div className="formContainer">
+          <Link to="/" className="backLink">
+            <ArrowLeft size={16} /> Back to storefront
+          </Link>
 
-          .adminLoginShell {
-            width: min(1050px, 100%);
-            min-height: 650px;
-            background: #fff;
-            border: 1px solid var(--line);
-            border-radius: 22px;
-            overflow: hidden;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            box-shadow: 0 25px 70px rgba(0,0,0,.08);
-          }
+          <div className="formHeader">
+            <div className="securityIcon">
+              <ShieldCheck size={24} />
+            </div>
+            <span className="eyebrow">SECURE ADMIN ACCESS</span>
+            <h2>Welcome back.</h2>
+            <p>Sign in to access your store control center.</p>
+          </div>
 
-          /* LEFT */
+          {error && (
+            <div className="errorBox">
+              <ShieldCheck size={18} />
+              <span>{error}</span>
+            </div>
+          )}
 
-          .adminLoginVisual {
-            background: #171714;
-            color: #fff;
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-          }
+          <form onSubmit={handleLogin}>
+            <div className="inputGroup">
+              <label>Email address</label>
+              <div className="inputWrapper">
+                <Mail size={18} className="inputIcon" />
+                <input
+                  type="email"
+                  className="styledInput"
+                  placeholder="admin@rrmasala.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  required
+                />
+              </div>
+            </div>
 
-          .adminLoginVisual::before {
-            content: "";
-            position: absolute;
-            width: 350px;
-            height: 350px;
-            border-radius: 50%;
-            border: 1px solid rgba(244,196,0,.13);
-            right: -170px;
-            bottom: -130px;
-          }
+            <div className="inputGroup">
+              <label>Password</label>
+              <div className="inputWrapper">
+                <Lock size={18} className="inputIcon" />
+                <input
+                  type="password"
+                  className="styledInput"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                  required
+                />
+              </div>
+            </div>
 
-          .adminLoginVisual::after {
-            content: "";
-            position: absolute;
-            width: 220px;
-            height: 220px;
-            border-radius: 50%;
-            border: 1px solid rgba(244,196,0,.08);
-            right: -90px;
-            bottom: -65px;
-          }
+            <button type="submit" className="submitBtn" disabled={loading}>
+              {loading ? (
+                <>
+                  <div style={{ width: 18, height: 18, border: "2px solid #fff", borderTopColor: "transparent", borderRadius: "50%" }} className="spinner" />
+                  Authenticating...
+                </>
+              ) : (
+                <>
+                  Sign in to admin <ArrowRight size={18} />
+                </>
+              )}
+            </button>
+          </form>
 
-          .visualTop {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            position: relative;
-            z-index: 2;
-          }
-
-          .visualBrand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-          }
-
-          .visualLogo {
-            width: 39px;
-            height: 39px;
-            border-radius: 11px;
-            background: #f4c400;
-            color: #171714;
-            display: grid;
-            place-items: center;
-            font-size: 12px;
-            font-weight: 1000;
-          }
-
-          .visualBrand strong {
-            display: block;
-            font-size: 11px;
-            letter-spacing: .3px;
-          }
-
-          .visualBrand span {
-            display: block;
-            margin-top: 3px;
-            color: #85857d;
-            font-size: 7px;
-            letter-spacing: 1px;
-            font-weight: 800;
-          }
-
-          .secureBadge {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: #bcbcb5;
-            border: 1px solid rgba(255,255,255,.1);
-            border-radius: 20px;
-            padding: 7px 9px;
-            font-size: 8px;
-            font-weight: 800;
-          }
-
-          .visualContent {
-            margin: auto 0;
-            position: relative;
-            z-index: 2;
-            max-width: 400px;
-          }
-
-          .visualEyebrow {
-            color: #f4c400;
-            font-size: 8px;
-            font-weight: 900;
-            letter-spacing: 1.6px;
-          }
-
-          .visualContent h1 {
-            margin: 12px 0 15px;
-            font-size: clamp(30px, 4vw, 44px);
-            line-height: 1.08;
-            letter-spacing: -.8px;
-          }
-
-          .visualContent p {
-            color: #aaa9a1;
-            font-size: 11px;
-            line-height: 1.7;
-            max-width: 350px;
-            margin: 0;
-          }
-
-          .visualFeatures {
-            display: grid;
-            gap: 9px;
-            margin-top: 30px;
-          }
-
-          .visualFeatures div {
-            display: flex;
-            align-items: center;
-            gap: 11px;
-          }
-
-          .visualFeatures span {
-            color: #77776f;
-            font-size: 8px;
-            font-weight: 900;
-          }
-
-          .visualFeatures strong {
-            font-size: 10px;
-            color: #dddcd4;
-          }
-
-          .visualBottom {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #707069;
-            font-size: 8px;
-            position: relative;
-            z-index: 2;
-          }
-
-          /* FORM */
-
-          .adminLoginFormPanel {
-            display: grid;
-            place-items: center;
-            padding: 35px clamp(25px, 5vw, 60px);
-          }
-
-          .adminLoginCard {
-            width: 100%;
-            max-width: 360px;
-          }
-
-          .backStore {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--muted);
-            text-decoration: none;
-            font-size: 9px;
-            font-weight: 800;
-            margin-bottom: 35px;
-          }
-
-          .backStore:hover {
-            color: var(--text);
-          }
-
-          .mobileBrand {
-            display: none;
-          }
-
-          .loginIcon {
-            width: 47px;
-            height: 47px;
-            border-radius: 14px;
-            background: #f8f4d9;
-            color: #7a6300;
-            display: grid;
-            place-items: center;
-            margin-bottom: 17px;
-          }
-
-          .adminLoginCard h2 {
-            margin: 7px 0 5px;
-            font-size: 29px;
-            letter-spacing: -.5px;
-          }
-
-          .loginSubtitle {
-            color: var(--muted);
-            font-size: 10px;
-            line-height: 1.5;
-            margin: 0 0 25px;
-          }
-
-          .adminLoginForm {
-            display: grid;
-            gap: 16px;
-          }
-
-          .adminLoginForm label > span {
-            display: block;
-            font-size: 9px;
-            font-weight: 850;
-            margin-bottom: 7px;
-          }
-
-          .inputWrap {
-            height: 45px;
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            padding: 0 12px;
-            border: 1px solid var(--line);
-            border-radius: 10px;
-            background: #fafaf7;
-            transition: .18s ease;
-          }
-
-          .inputWrap:focus-within {
-            border-color: #aaa36d;
-            background: #fff;
-            box-shadow: 0 0 0 3px rgba(244,196,0,.09);
-          }
-
-          .inputWrap > svg {
-            color: #9a9a91;
-            flex-shrink: 0;
-          }
-
-          .inputWrap input {
-            border: 0;
-            outline: 0;
-            background: transparent;
-            width: 100%;
-            min-width: 0;
-            font: inherit;
-            font-size: 11px;
-            color: var(--text);
-          }
-
-          .inputWrap input::placeholder {
-            color: #aaa9a0;
-          }
-
-          .passwordToggle {
-            border: 0;
-            background: transparent;
-            color: #999890;
-            display: grid;
-            place-items: center;
-            padding: 3px;
-            cursor: pointer;
-          }
-
-          .passwordToggle:hover {
-            color: var(--text);
-          }
-
-          .adminLoginError {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            padding: 10px 11px;
-            border-radius: 9px;
-            background: #fff0ee;
-            color: #a33d32;
-            font-size: 9px;
-            line-height: 1.45;
-          }
-
-          .adminLoginError svg {
-            flex-shrink: 0;
-            margin-top: 1px;
-          }
-
-          .adminLoginButton {
-            height: 46px;
-            border: 0;
-            border-radius: 10px;
-            background: #171714;
-            color: #fff;
-            font-size: 10px;
-            font-weight: 900;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: .18s ease;
-            margin-top: 2px;
-          }
-
-          .adminLoginButton:hover:not(:disabled) {
-            background: #292925;
-            transform: translateY(-1px);
-          }
-
-          .adminLoginButton:disabled {
-            opacity: .65;
-            cursor: not-allowed;
-          }
-
-          .loginArrow {
-            transform: rotate(180deg);
-          }
-
-          .loginSpinner {
-            animation: adminSpin .8s linear infinite;
-          }
-
-          @keyframes adminSpin {
-            to {
-              transform: rotate(360deg);
-            }
-          }
-
-          .loginSecurity {
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid var(--line);
-            display: flex;
-            gap: 7px;
-            color: var(--muted);
-            font-size: 8px;
-            line-height: 1.5;
-          }
-
-          .loginSecurity svg {
-            flex-shrink: 0;
-          }
-
-          @media (max-width: 760px) {
-            .adminLoginPage {
-              padding: 0;
-            }
-
-            .adminLoginShell {
-              min-height: 100vh;
-              border: 0;
-              border-radius: 0;
-              grid-template-columns: 1fr;
-              box-shadow: none;
-            }
-
-            .adminLoginVisual {
-              display: none;
-            }
-
-            .adminLoginFormPanel {
-              padding: 25px 20px;
-              place-items: center;
-            }
-
-            .mobileBrand {
-              display: flex;
-              align-items: center;
-              gap: 9px;
-              margin-bottom: 35px;
-            }
-
-            .mobileLogo {
-              width: 38px;
-              height: 38px;
-              border-radius: 10px;
-              background: #f4c400;
-              color: #171714;
-              display: grid;
-              place-items: center;
-              font-size: 11px;
-              font-weight: 1000;
-            }
-
-            .mobileBrand strong {
-              display: block;
-              font-size: 11px;
-            }
-
-            .mobileBrand span {
-              display: block;
-              color: var(--muted);
-              font-size: 7px;
-              font-weight: 850;
-              letter-spacing: 1px;
-              margin-top: 2px;
-            }
-
-            .backStore {
-              margin-bottom: 25px;
-            }
-          }
-
-          @media (max-width: 400px) {
-            .adminLoginFormPanel {
-              padding: 22px 16px;
-            }
-
-            .adminLoginCard h2 {
-              font-size: 26px;
-            }
-          }
-        `}
-      </style>
+          <div className="formFooter">
+            <ShieldCheck size={14} />
+            Protected admin area. Only authorized administrators can continue.
+          </div>
+        </div>
+      </div>
     </main>
   );
 }
