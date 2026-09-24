@@ -12,6 +12,11 @@ import {
   MapPinned,
   CheckCircle2,
   Save,
+  User,
+  Phone,
+  Building,
+  Map,
+  Navigation,
 } from "lucide-react";
 
 export default function Addresses() {
@@ -93,542 +98,417 @@ export default function Addresses() {
   };
 
   const getTypeIcon = (type) => {
-    if (type === "Work") {
-      return <BriefcaseBusiness size={18} />;
-    }
+    if (type === "Work") return <BriefcaseBusiness size={20} />;
+    if (type === "Other") return <MapPinned size={20} />;
+    return <Home size={20} />;
+  };
 
-    if (type === "Other") {
-      return <MapPinned size={18} />;
-    }
+  // Common Input Style for cleaner code
+  const inputStyle = {
+    width: "100%",
+    height: 50,
+    paddingLeft: 46,
+    paddingRight: 16,
+    borderRadius: 14,
+    border: "1px solid #ddd",
+    background: "#faf9f4",
+    fontSize: 14,
+    outline: "none",
+    color: "#140d0b",
+    boxSizing: "border-box",
+  };
 
-    return <Home size={18} />;
+  const labelStyle = {
+    display: "block",
+    fontSize: 13,
+    fontWeight: 800,
+    marginBottom: 8,
+    color: "#140d0b",
+  };
+
+  const iconWrapperStyle = {
+    position: "absolute",
+    left: 16,
+    top: "50%",
+    transform: "translateY(-50%)",
+    color: "#8a7c75",
+    pointerEvents: "none",
   };
 
   return (
-    <main className="accountPage" style={{ paddingTop: 32 }}>
-      {/* BACK */}
-      <button
-        type="button"
-        onClick={() => nav(-1)}
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: 8,
-          border: "1px solid var(--line)",
-          background: "#fff",
-          borderRadius: 10,
-          padding: "10px 14px",
-          fontWeight: 800,
-          fontSize: 12,
-          cursor: "pointer",
-          marginBottom: 22,
-        }}
-      >
-        <ArrowLeft size={16} />
-        Back
-      </button>
-
-      {/* ACCOUNT NAV */}
-      <div
-        className="accountNav"
-        style={{
-          marginBottom: 20,
-          overflowX: "auto",
-          whiteSpace: "nowrap",
-        }}
-      >
-        <Link to="/profile">Profile</Link>
-
-        <Link className="active" to="/addresses">
-          Addresses
-        </Link>
-
-        <Link to="/orders">Orders</Link>
-
-        <Link to="/wishlist">Wishlist</Link>
-      </div>
-
-      {/* PAGE HEADER */}
-      <section
-        className="panel"
-        style={{
-          marginBottom: 18,
-          background:
-            "linear-gradient(135deg, #ffffff 0%, #faf9f3 65%, #fff8d6 100%)",
-        }}
-      >
-        <span className="eyebrow">ACCOUNT</span>
-
-        <div
+    <main className="accountPage" style={{ paddingTop: 32, paddingBottom: 60, background: "#fbf7ef", minHeight: "100vh" }}>
+      <div style={{ width: "min(1200px, 92%)", margin: "0 auto" }}>
+        
+        {/* BACK */}
+        <button
+          type="button"
+          onClick={() => nav(-1)}
           style={{
-            display: "flex",
-            justifyContent: "space-between",
+            display: "inline-flex",
             alignItems: "center",
-            gap: 20,
-            flexWrap: "wrap",
-            marginTop: 7,
+            gap: 8,
+            border: "1px solid var(--rr-border, #e5b900)",
+            background: "#fff",
+            borderRadius: 10,
+            padding: "10px 16px",
+            fontWeight: 800,
+            fontSize: 12,
+            cursor: "pointer",
+            marginBottom: 22,
+            boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+            transition: "all 0.3s ease",
           }}
         >
-          <div>
-            <h1
-              style={{
-                margin: 0,
-                fontSize: "clamp(26px, 4vw, 36px)",
-              }}
-            >
-              Saved addresses
-            </h1>
+          <ArrowLeft size={16} />
+          Back
+        </button>
 
-            <p
-              style={{
-                margin: "8px 0 0",
-                color: "var(--muted)",
-                fontSize: 12,
-                lineHeight: 1.6,
-              }}
-            >
+        {/* ACCOUNT NAV */}
+        <div
+          className="accountNav"
+          style={{
+            display: "flex",
+            gap: 12,
+            marginBottom: 24,
+            overflowX: "auto",
+            whiteSpace: "nowrap",
+            paddingBottom: 6,
+          }}
+        >
+          <Link to="/profile" style={{ padding: "10px 20px", background: "#fff", color: "#140d0b", border: "1px solid var(--rr-border, #e5b900)", borderRadius: 30, fontWeight: 800, fontSize: 13, textDecoration: "none" }}>Profile</Link>
+          <Link className="active" to="/addresses" style={{ padding: "10px 20px", background: "var(--rr-maroon, #9e1017)", color: "#fff", borderRadius: 30, fontWeight: 800, fontSize: 13, textDecoration: "none" }}>Addresses</Link>
+          <Link to="/orders" style={{ padding: "10px 20px", background: "#fff", color: "#140d0b", border: "1px solid var(--rr-border, #e5b900)", borderRadius: 30, fontWeight: 800, fontSize: 13, textDecoration: "none" }}>Orders</Link>
+          <Link to="/wishlist" style={{ padding: "10px 20px", background: "#fff", color: "#140d0b", border: "1px solid var(--rr-border, #e5b900)", borderRadius: 30, fontWeight: 800, fontSize: 13, textDecoration: "none" }}>Wishlist</Link>
+        </div>
+
+        {/* PAGE HEADER */}
+        <div style={{ marginBottom: 24, display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 16 }}>
+          <div>
+            <h1 style={{ margin: 0, fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(26px, 4vw, 36px)", fontWeight: 700, color: "#140d0b" }}>
+              Saved Addresses
+            </h1>
+            <p style={{ margin: "6px 0 0", color: "#5e514c", fontSize: 13 }}>
               Manage your delivery addresses for faster checkout.
             </p>
           </div>
-
           <button
             type="button"
-            className="primary"
             onClick={add}
             style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
+              display: "inline-flex", alignItems: "center", gap: 8, background: "#fff", color: "#9e1017", padding: "12px 20px", borderRadius: 14, fontWeight: 800, fontSize: 13, border: "2px solid #9e1017", cursor: "pointer", transition: "all 0.2s"
             }}
           >
-            <Plus size={17} />
-            Add address
+            <Plus size={16} /> Add New Address
           </button>
         </div>
-      </section>
 
-      {/* EMPTY STATE */}
-      {addresses.length === 0 && (
-        <section
-          className="panel"
-          style={{
-            textAlign: "center",
-            padding: "55px 25px",
-          }}
-        >
-          <div
-            style={{
-              width: 62,
-              height: 62,
-              borderRadius: "50%",
-              background: "#fff7d6",
-              display: "grid",
-              placeItems: "center",
-              margin: "0 auto 16px",
-            }}
-          >
-            <MapPin size={28} />
-          </div>
-
-          <h2
-            style={{
-              margin: "0 0 8px",
-              fontSize: 20,
-            }}
-          >
-            No saved addresses
-          </h2>
-
-          <p
-            style={{
-              color: "var(--muted)",
-              fontSize: 12,
-              margin: "0 auto 20px",
-              maxWidth: 420,
-              lineHeight: 1.6,
-            }}
-          >
-            Add your delivery address now so checkout becomes quicker and
-            easier.
-          </p>
-
-          <button
-            type="button"
-            className="primary"
-            onClick={add}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
-            <Plus size={16} />
-            Add your first address
-          </button>
-        </section>
-      )}
-
-      {/* ADDRESS LIST */}
-      <div
-        style={{
-          display: "grid",
-          gap: 16,
-        }}
-      >
-        {addresses.map((address, index) => (
+        {/* EMPTY STATE */}
+        {addresses.length === 0 && (
           <section
-            className="panel"
-            key={index}
             style={{
-              position: "relative",
-              overflow: "hidden",
-              border:
-                address.isDefault
-                  ? "1.5px solid rgba(103,162,94,.45)"
-                  : undefined,
+              textAlign: "center",
+              padding: "60px 20px",
+              background: "#fff",
+              borderRadius: 24,
+              boxShadow: "0 10px 30px rgba(0,0,0,0.04)",
+              border: "1px solid rgba(158, 16, 23, 0.08)"
             }}
           >
-            {/* DEFAULT TOP LINE */}
-            {address.isDefault && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: 3,
-                  background: "var(--green)",
-                }}
-              />
-            )}
-
-            {/* CARD HEADER */}
             <div
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: 15,
-                marginBottom: 20,
-                flexWrap: "wrap",
+                width: 72, height: 72, borderRadius: "50%", background: "#fff0f1", color: "#9e1017", display: "grid", placeItems: "center", margin: "0 auto 20px",
               }}
             >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 11,
-                }}
-              >
-                <div
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 11,
-                    background: "#f7f4df",
-                    display: "grid",
-                    placeItems: "center",
-                  }}
-                >
-                  {getTypeIcon(address.type)}
-                </div>
-
-                <div>
-                  <strong
-                    style={{
-                      display: "block",
-                      fontSize: 15,
-                    }}
-                  >
-                    {address.type || "Address"}
-                  </strong>
-
-                  <span
-                    style={{
-                      display: "block",
-                      marginTop: 3,
-                      color: "var(--muted)",
-                      fontSize: 10,
-                    }}
-                  >
-                    Delivery address #{index + 1}
-                  </span>
-                </div>
-
-                {address.isDefault && (
-                  <span
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 5,
-                      background: "#edf7f1",
-                      color: "var(--green)",
-                      borderRadius: 8,
-                      padding: "6px 9px",
-                      fontSize: 9,
-                      fontWeight: 900,
-                    }}
-                  >
-                    <CheckCircle2 size={12} />
-                    DEFAULT
-                  </span>
-                )}
-              </div>
-
-              <button
-                type="button"
-                onClick={() => removeAddress(index)}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 6,
-                  border: "1px solid #f0caca",
-                  color: "#b42318",
-                  background: "#fff7f7",
-                  borderRadius: 9,
-                  padding: "8px 11px",
-                  fontSize: 10,
-                  fontWeight: 800,
-                  cursor: "pointer",
-                }}
-              >
-                <Trash2 size={14} />
-                Remove
-              </button>
+              <MapPin size={32} />
             </div>
-
-            {/* ADDRESS FORM */}
-            <div
+            <h2 style={{ margin: "0 0 10px", fontSize: 22, fontFamily: "'Cormorant Garamond', serif", color: "#140d0b" }}>
+              No saved addresses
+            </h2>
+            <p style={{ color: "#5e514c", fontSize: 14, margin: "0 auto 24px", maxWidth: 420, lineHeight: 1.6 }}>
+              Add your delivery address now so checkout becomes quicker and easier for your next spice order.
+            </p>
+            <button
+              type="button"
+              onClick={add}
               style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                gap: 14,
+                display: "inline-flex", alignItems: "center", gap: 8, background: "linear-gradient(135deg, var(--rr-maroon, #9e1017), #c41a22)", color: "#fff", padding: "14px 28px", borderRadius: 14, fontWeight: 800, fontSize: 14, border: "none", cursor: "pointer", boxShadow: "0 8px 20px rgba(158, 16, 23, 0.25)"
               }}
             >
-              <label>
-                Full name
-                <input
-                  value={address.fullName || ""}
-                  onChange={(e) =>
-                    updateAddress(index, "fullName", e.target.value)
-                  }
-                  placeholder="Full name"
-                />
-              </label>
+              <Plus size={18} /> Add Your First Address
+            </button>
+          </section>
+        )}
 
-              <label>
-                Mobile number
-                <input
-                  value={address.mobile || ""}
-                  onChange={(e) =>
-                    updateAddress(
-                      index,
-                      "mobile",
-                      e.target.value.replace(/\D/g, "").slice(0, 10)
-                    )
-                  }
-                  placeholder="10 digit mobile number"
-                  inputMode="numeric"
-                  maxLength={10}
-                />
-              </label>
+        {/* ADDRESS LIST */}
+        <div style={{ display: "grid", gap: 24 }}>
+          {addresses.map((address, index) => (
+            <section
+              key={index}
+              style={{
+                background: "#fff",
+                borderRadius: 24,
+                padding: "clamp(20px, 4vw, 32px)",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.04)",
+                border: address.isDefault ? "2px solid #2e7d32" : "1px solid rgba(158, 16, 23, 0.08)",
+                position: "relative",
+                overflow: "hidden"
+              }}
+            >
+              {/* CARD HEADER */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, paddingBottom: 20, borderBottom: "1px solid #eee", flexWrap: "wrap", gap: 16 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                  <div style={{ width: 48, height: 48, borderRadius: 16, background: address.isDefault ? "#edf7f1" : "#fff0f1", display: "grid", placeItems: "center", color: address.isDefault ? "#2e7d32" : "#9e1017" }}>
+                    {getTypeIcon(address.type)}
+                  </div>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: "#140d0b" }}>
+                      {address.type || "Address"}
+                      <span style={{ fontWeight: 500, fontSize: 12, color: "#8a7c75", marginLeft: 8 }}>#{index + 1}</span>
+                    </h3>
+                    {address.isDefault && (
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 900, color: "#2e7d32", marginTop: 4 }}>
+                        <CheckCircle2 size={14} /> DEFAULT ADDRESS
+                      </span>
+                    )}
+                  </div>
+                </div>
 
-              <label>
-                House / Door number
-                <input
-                  value={address.house || ""}
-                  onChange={(e) =>
-                    updateAddress(index, "house", e.target.value)
-                  }
-                  placeholder="House / Door No."
-                />
-              </label>
-
-              <label>
-                Street
-                <input
-                  value={address.street || ""}
-                  onChange={(e) =>
-                    updateAddress(index, "street", e.target.value)
-                  }
-                  placeholder="Street name"
-                />
-              </label>
-
-              <label>
-                Area
-                <input
-                  value={address.area || ""}
-                  onChange={(e) =>
-                    updateAddress(index, "area", e.target.value)
-                  }
-                  placeholder="Area / Locality"
-                />
-              </label>
-
-              <label>
-                City
-                <input
-                  value={address.city || ""}
-                  onChange={(e) =>
-                    updateAddress(index, "city", e.target.value)
-                  }
-                  placeholder="City"
-                />
-              </label>
-
-              <label>
-                District
-                <input
-                  value={address.district || ""}
-                  onChange={(e) =>
-                    updateAddress(index, "district", e.target.value)
-                  }
-                  placeholder="District"
-                />
-              </label>
-
-              <label>
-                State
-                <input
-                  value={address.state || "Tamil Nadu"}
-                  onChange={(e) =>
-                    updateAddress(index, "state", e.target.value)
-                  }
-                  placeholder="State"
-                />
-              </label>
-
-              <label>
-                Pincode
-                <input
-                  value={address.pincode || ""}
-                  onChange={(e) =>
-                    updateAddress(
-                      index,
-                      "pincode",
-                      e.target.value.replace(/\D/g, "").slice(0, 6)
-                    )
-                  }
-                  placeholder="6 digit pincode"
-                  inputMode="numeric"
-                  maxLength={6}
-                />
-              </label>
-
-              <label>
-                Landmark
-                <input
-                  value={address.landmark || ""}
-                  onChange={(e) =>
-                    updateAddress(index, "landmark", e.target.value)
-                  }
-                  placeholder="Nearby landmark"
-                />
-              </label>
-
-              {/* TYPE */}
-              <label>
-                Address type
-
-                <select
-                  value={address.type || "Home"}
-                  onChange={(e) =>
-                    updateAddress(index, "type", e.target.value)
-                  }
-                >
-                  <option value="Home">Home</option>
-                  <option value="Work">Work</option>
-                  <option value="Other">Other</option>
-                </select>
-              </label>
-
-              {/* DEFAULT */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "flex-end",
-                }}
-              >
                 <button
                   type="button"
-                  className={
-                    address.isDefault ? "secondary" : "secondary"
-                  }
-                  onClick={() => setDefault(index)}
-                  disabled={address.isDefault}
-                  style={{
-                    width: "100%",
-                    minHeight: 42,
-                    opacity: address.isDefault ? 0.65 : 1,
-                  }}
+                  onClick={() => removeAddress(index)}
+                  style={{ display: "flex", alignItems: "center", gap: 6, color: "#d32f2f", background: "#fff7f7", border: "1px solid #f0caca", padding: "8px 14px", borderRadius: 10, fontSize: 12, fontWeight: 800, cursor: "pointer", transition: "all 0.2s" }}
                 >
-                  {address.isDefault
-                    ? "✓ Default address"
-                    : "Set as default"}
+                  <Trash2 size={14} /> Remove
                 </button>
               </div>
-            </div>
-          </section>
-        ))}
-      </div>
 
-      {/* BOTTOM ACTIONS */}
-      {addresses.length > 0 && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            gap: 10,
-            marginTop: 18,
-            flexWrap: "wrap",
-          }}
-        >
-          <button
-            type="button"
-            className="secondary"
-            onClick={add}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 7,
-            }}
-          >
-            <Plus size={16} />
-            Add another
-          </button>
+              {/* ADDRESS FORM */}
+              <div className="address-grid" style={{ display: "grid", gap: 20 }}>
+                
+                {/* Full name */}
+                <div>
+                  <label style={labelStyle}>Full Name</label>
+                  <div style={{ position: "relative" }}>
+                    <div style={iconWrapperStyle}><User size={18} /></div>
+                    <input
+                      value={address.fullName || ""}
+                      onChange={(e) => updateAddress(index, "fullName", e.target.value)}
+                      placeholder="Enter full name"
+                      style={inputStyle}
+                    />
+                  </div>
+                </div>
 
-          <button
-            type="button"
-            className="primary"
-            onClick={save}
-            disabled={saving}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 7,
-            }}
-          >
-            <Save size={16} />
-            {saving ? "Saving..." : "Save addresses"}
-          </button>
+                {/* Mobile */}
+                <div>
+                  <label style={labelStyle}>Mobile Number</label>
+                  <div style={{ position: "relative" }}>
+                    <div style={iconWrapperStyle}><Phone size={18} /></div>
+                    <input
+                      value={address.mobile || ""}
+                      onChange={(e) => updateAddress(index, "mobile", e.target.value.replace(/\D/g, "").slice(0, 10))}
+                      placeholder="10 digit mobile number"
+                      inputMode="numeric"
+                      maxLength={10}
+                      style={inputStyle}
+                    />
+                  </div>
+                </div>
+
+                {/* House/Door No */}
+                <div>
+                  <label style={labelStyle}>House / Door Number</label>
+                  <div style={{ position: "relative" }}>
+                    <div style={iconWrapperStyle}><Home size={18} /></div>
+                    <input
+                      value={address.house || ""}
+                      onChange={(e) => updateAddress(index, "house", e.target.value)}
+                      placeholder="House / Door No."
+                      style={inputStyle}
+                    />
+                  </div>
+                </div>
+
+                {/* Street */}
+                <div>
+                  <label style={labelStyle}>Street Name</label>
+                  <div style={{ position: "relative" }}>
+                    <div style={iconWrapperStyle}><Navigation size={18} /></div>
+                    <input
+                      value={address.street || ""}
+                      onChange={(e) => updateAddress(index, "street", e.target.value)}
+                      placeholder="Street name"
+                      style={inputStyle}
+                    />
+                  </div>
+                </div>
+
+                {/* Area */}
+                <div>
+                  <label style={labelStyle}>Area / Locality</label>
+                  <div style={{ position: "relative" }}>
+                    <div style={iconWrapperStyle}><MapPin size={18} /></div>
+                    <input
+                      value={address.area || ""}
+                      onChange={(e) => updateAddress(index, "area", e.target.value)}
+                      placeholder="Area / Locality"
+                      style={inputStyle}
+                    />
+                  </div>
+                </div>
+
+                {/* City */}
+                <div>
+                  <label style={labelStyle}>City</label>
+                  <div style={{ position: "relative" }}>
+                    <div style={iconWrapperStyle}><Building size={18} /></div>
+                    <input
+                      value={address.city || ""}
+                      onChange={(e) => updateAddress(index, "city", e.target.value)}
+                      placeholder="City"
+                      style={inputStyle}
+                    />
+                  </div>
+                </div>
+
+                {/* District */}
+                <div>
+                  <label style={labelStyle}>District</label>
+                  <div style={{ position: "relative" }}>
+                    <div style={iconWrapperStyle}><Building size={18} /></div>
+                    <input
+                      value={address.district || ""}
+                      onChange={(e) => updateAddress(index, "district", e.target.value)}
+                      placeholder="District"
+                      style={inputStyle}
+                    />
+                  </div>
+                </div>
+
+                {/* State */}
+                <div>
+                  <label style={labelStyle}>State</label>
+                  <div style={{ position: "relative" }}>
+                    <div style={iconWrapperStyle}><Map size={18} /></div>
+                    <input
+                      value={address.state || "Tamil Nadu"}
+                      onChange={(e) => updateAddress(index, "state", e.target.value)}
+                      placeholder="State"
+                      style={inputStyle}
+                    />
+                  </div>
+                </div>
+
+                {/* Pincode */}
+                <div>
+                  <label style={labelStyle}>Pincode</label>
+                  <div style={{ position: "relative" }}>
+                    <div style={iconWrapperStyle}><MapPin size={18} /></div>
+                    <input
+                      value={address.pincode || ""}
+                      onChange={(e) => updateAddress(index, "pincode", e.target.value.replace(/\D/g, "").slice(0, 6))}
+                      placeholder="6 digit pincode"
+                      inputMode="numeric"
+                      maxLength={6}
+                      style={inputStyle}
+                    />
+                  </div>
+                </div>
+
+                {/* Landmark */}
+                <div>
+                  <label style={labelStyle}>Landmark</label>
+                  <div style={{ position: "relative" }}>
+                    <div style={iconWrapperStyle}><Navigation size={18} /></div>
+                    <input
+                      value={address.landmark || ""}
+                      onChange={(e) => updateAddress(index, "landmark", e.target.value)}
+                      placeholder="Nearby landmark"
+                      style={inputStyle}
+                    />
+                  </div>
+                </div>
+
+                {/* Address Type Select */}
+                <div>
+                  <label style={labelStyle}>Address Type</label>
+                  <div style={{ position: "relative" }}>
+                    <select
+                      value={address.type || "Home"}
+                      onChange={(e) => updateAddress(index, "type", e.target.value)}
+                      style={{ ...inputStyle, paddingLeft: 16, cursor: "pointer", appearance: "auto" }}
+                    >
+                      <option value="Home">Home</option>
+                      <option value="Work">Work</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Set Default Button */}
+                <div style={{ display: "flex", alignItems: "flex-end" }}>
+                  <button
+                    type="button"
+                    onClick={() => setDefault(index)}
+                    disabled={address.isDefault}
+                    style={{
+                      width: "100%", height: 50, borderRadius: 14, fontWeight: 800, fontSize: 13, cursor: address.isDefault ? "default" : "pointer",
+                      background: address.isDefault ? "#edf7f1" : "#fff",
+                      color: address.isDefault ? "#2e7d32" : "#140d0b",
+                      border: address.isDefault ? "none" : "1px solid #ddd",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    {address.isDefault ? "✓ Currently Default" : "Set as Default Address"}
+                  </button>
+                </div>
+
+              </div>
+            </section>
+          ))}
         </div>
-      )}
 
-      {/* MOBILE */}
-      <style>
-        {`
-          @media (max-width: 700px) {
-            .accountPage {
-              padding-top: 22px !important;
-            }
+        {/* BOTTOM ACTIONS */}
+        {addresses.length > 0 && (
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 16, marginTop: 24, flexWrap: "wrap", position: "sticky", bottom: 20, zIndex: 10 }}>
+            
+            <button
+              type="button"
+              onClick={add}
+              style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#fff", color: "#140d0b", padding: "14px 24px", borderRadius: 14, fontWeight: 800, fontSize: 14, border: "1px solid #ddd", cursor: "pointer", boxShadow: "0 4px 15px rgba(0,0,0,0.05)" }}
+            >
+              <Plus size={18} /> Add Another
+            </button>
 
-            .accountPage .panel > div[style*="grid-template-columns"] {
-              grid-template-columns: 1fr !important;
+            <button
+              type="button"
+              onClick={save}
+              disabled={saving}
+              style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "linear-gradient(135deg, var(--rr-maroon, #9e1017), #c41a22)", color: "#fff", padding: "14px 28px", borderRadius: 14, fontWeight: 800, fontSize: 14, border: "none", cursor: saving ? "not-allowed" : "pointer", boxShadow: "0 8px 25px rgba(158, 16, 23, 0.3)", opacity: saving ? 0.8 : 1 }}
+            >
+              <Save size={18} />
+              {saving ? "Saving Changes..." : "Save Addresses"}
+            </button>
+          </div>
+        )}
+
+        {/* MOBILE RESPONSIVE CSS */}
+        <style>
+          {`
+            .address-grid {
+              grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             }
-          }
-        `}
-      </style>
+            @media (max-width: 600px) {
+              .accountNav {
+                padding-bottom: 12px !important;
+              }
+              .address-grid {
+                grid-template-columns: 1fr !important;
+              }
+            }
+          `}
+        </style>
+      </div>
     </main>
   );
 }
