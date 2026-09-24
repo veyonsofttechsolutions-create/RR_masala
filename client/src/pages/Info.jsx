@@ -64,19 +64,20 @@ function TheaterPreloader() {
   if (!render) return null;
 
   return (
-    <div className={`rrTheaterCurtain ${!loading ? "isOpen" : ""}`} aria-hidden="true">
-      <div className="rrClothHalf rrClothLeft">
-        <div className="rrClothFolds" />
-      </div>
-      <div className="rrClothHalf rrClothRight">
-        <div className="rrClothFolds" />
-      </div>
+    // <div className={`rrTheaterCurtain ${!loading ? "isOpen" : ""}`} aria-hidden="true">
+    //   <div className="rrClothHalf rrClothLeft">
+    //     <div className="rrClothFolds" />
+    //   </div>
+    //   <div className="rrClothHalf rrClothRight">
+    //     <div className="rrClothFolds" />
+    //   </div>
       
-      <div className="rrCurtainLogoBox">
-        <img src={ASSETS.logo} alt="RR MASALA" className="rrCurtainLogoImg" />
-        <div className="rrCurtainLoader" />
-      </div>
-    </div>
+    //   <div className="rrCurtainLogoBox">
+    //     <img src={ASSETS.logo} alt="RR MASALA" className="rrCurtainLogoImg" />
+    //     <div className="rrCurtainLoader" />
+    //   </div>
+    // </div>
+    <div></div>
   );
 }
 

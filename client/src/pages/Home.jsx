@@ -34,7 +34,6 @@ const categoryConfig = [
   { name: "Podi Varieties", subtitle: "Ellu / Karuveppilai / Paruppu", slug: "idly-podi" },
   { name: "Paruppu Podi", subtitle: "Ghee Rice Perfection", slug: "paruppu-podi" },
   { name: "Pure Asafoetida", subtitle: "Natural Compounded", slug: "perungayam" },
-
 ];
 
 function getProductImage(product) {
@@ -53,68 +52,70 @@ function getProductImage(product) {
    WHITE CLOTH THEATER PRELOADER WITH AUDIO GREETING
 ========================================================= */
 function TheaterPreloader() {
-  const [loading, setLoading] = useState(true);
-  const [render, setRender] = useState(true);
+  // 1. Check if user is visiting for the first time in this browser session
+  const [isFirstVisit] = useState(() => !sessionStorage.getItem("rr_home_visited"));
+  const [isOpen, setIsOpen] = useState(false);
+  const [render, setRender] = useState(isFirstVisit);
 
   useEffect(() => {
-    // --- AUDIO & VOICE GREETING LOGIC ---
+    // If not first visit, exit immediately. No delay, no sound.
+    if (!isFirstVisit) {
+      setRender(false);
+      return;
+    }
+
+    // Set storage so next time it skips
+    sessionStorage.setItem("rr_home_visited", "true");
+
+    // --- SAFE AUDIO & VOICE GREETING LOGIC ---
     try {
-      // 1. Mild Online Background Music (Ambient)
       const bgMusic = new Audio("https://cdn.pixabay.com/download/audio/2021/08/04/audio_0625c1539c.mp3?filename=ambient-piano-amp-strings-10711.mp3");
-      bgMusic.volume = 0.2; // Mild volume
+      bgMusic.volume = 0.2; 
       const playPromise = bgMusic.play();
       
-      // Handle browser autoplay policy gracefully
       if (playPromise !== undefined) {
-        playPromise.catch((error) => {
-          console.log("Browser blocked autoplay music. User interaction needed first.", error);
-        });
+        playPromise.catch((error) => console.log("Autoplay blocked:", error));
       }
 
-      // 2. Mass/Deep Tamil Male Voice Greeting (Vijay style vibe)
-      const speakGreeting = () => {
-        const greeting = new SpeechSynthesisUtterance("wellcome to RR Masala@");
-        
-        // Fetch voices from browser
-        const voices = window.speechSynthesis.getVoices();
-        
-        // Search for a Tamil voice or Indian Male voice
-        const massVoice = voices.find(v => 
-          v.lang === 'ta-IN' || // Tamil (India)
-          v.name.includes('Valluvar') || // Windows Tamil Male
-          v.name.includes('Ravi') || // Windows Indian English Male
-          (v.lang === 'en-IN' && v.name.includes('Male'))
-        );
+      // Voice Greeting
+      if ('speechSynthesis' in window) {
+        const speakGreeting = () => {
+          const greeting = new SpeechSynthesisUtterance("Welcome to R R Masala da!");
+          const voices = window.speechSynthesis.getVoices();
+          const massVoice = voices.find(v => 
+            v.lang === 'ta-IN' || 
+            v.name.includes('Valluvar') || 
+            v.name.includes('Ravi') || 
+            (v.lang === 'en-IN' && v.name.includes('Male'))
+          );
 
-        if (massVoice) {
-          greeting.voice = massVoice;
+          if (massVoice) greeting.voice = massVoice;
+          greeting.volume = 1;
+          greeting.rate = 0.85; 
+          greeting.pitch = 0.6; 
+          
+          window.speechSynthesis.speak(greeting);
+        };
+
+        if (window.speechSynthesis.getVoices().length > 0) {
+          speakGreeting();
+        } else {
+          window.speechSynthesis.onvoiceschanged = speakGreeting;
         }
-
-        greeting.volume = 1;
-        greeting.rate = 0.85; // Steady, confident delivery
-        greeting.pitch = 0.6; // Lower pitch for a deep, "mass" hero tone
-        
-        window.speechSynthesis.speak(greeting);
-      };
-
-      // Browsers load voices asynchronously, so we wait if they aren't ready
-      if (window.speechSynthesis.getVoices().length > 0) {
-        speakGreeting();
-      } else {
-        window.speechSynthesis.onvoiceschanged = speakGreeting;
       }
 
-      // Stop music after 4.5 seconds (when preloader ends)
       setTimeout(() => {
         bgMusic.pause();
+        bgMusic.currentTime = 0;
       }, 4500);
     } catch (err) {
-      console.log("Audio/Speech failed to initialize", err);
+      console.log("Audio init failed, skipping...", err);
     }
-    // --- END AUDIO LOGIC ---
+    // --- END SAFE AUDIO LOGIC ---
 
-    const timer = setTimeout(() => {
-      setLoading(false);
+    // Timers for curtain animation
+    const openTimer = setTimeout(() => {
+      setIsOpen(true);
     }, 1500);
 
     const removeTimer = setTimeout(() => {
@@ -122,16 +123,19 @@ function TheaterPreloader() {
     }, 2800);
 
     return () => {
-      clearTimeout(timer);
+      clearTimeout(openTimer);
       clearTimeout(removeTimer);
-      window.speechSynthesis.onvoiceschanged = null; // cleanup
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = null;
+      }
     };
-  }, []);
+  }, [isFirstVisit]);
 
+  // If not rendering, return null immediately (Zero delay for returning users)
   if (!render) return null;
 
   return (
-    <div className={`rrTheaterCurtain ${!loading ? "isOpen" : ""}`} aria-hidden="true">
+    <div className={`rrTheaterCurtain ${isOpen ? "isOpen" : ""}`} aria-hidden="true">
       <div className="rrClothHalf rrClothLeft">
         <div className="rrClothFolds" />
       </div>
