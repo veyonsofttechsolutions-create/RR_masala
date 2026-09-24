@@ -33,7 +33,7 @@ const ASSETS = {
   cinnamon: "/hero-cinnamon.webp",
   dishReal: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80",
   box: "/box.png", // Hanging cargo box
-  logo: "/WhatsApp Image 2026-09-17 at 3.09.40 AM.jpeg" // Brand Logo
+  logo: "/logo.png" // Brand Logo
 };
 
 /* =========================================================
@@ -762,7 +762,7 @@ export function InfoStyles() {
       }
 
       .rrCurtainLogoImg {
-        height: 60px;
+        height: 190px;
         object-fit: contain;
         animation: rrCurtainPulse 1.5s ease-in-out infinite alternate;
         filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));

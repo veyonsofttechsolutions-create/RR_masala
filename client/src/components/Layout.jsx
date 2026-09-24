@@ -18,7 +18,7 @@ import { useWishlist } from "../context/WishlistContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useEffect, useState } from "react";
 
-const LOGO_SRC = "/WhatsApp Image 2026-09-17 at 3.09.40 AM.jpeg";
+const LOGO_SRC = "/logo.png";
 
 const PRODUCT_LINKS = [
   ["/products", "All Products"],
@@ -75,8 +75,6 @@ export function Layout() {
 
   return (
     <div className="rrApp">
-      {/* Red Announcement Header is completely omitted as requested */}
-
       {/* Modern High-End Clean Header */}
       <header className={`rrHeader ${scrolled ? "isScrolled" : ""}`}>
         <div className="rrHeaderInner">
@@ -259,7 +257,7 @@ export function Layout() {
         <Outlet />
       </main>
 
-      {/* World-Class Footer with Tamil Nadu Quality Stamp */}
+      {/* Footer without FAQ link */}
       <footer className="rrFooter">
         <div className="rrFooterTop">
           <div className="rrFooterBrand">
@@ -299,7 +297,6 @@ export function Layout() {
 
           <div className="rrFooterColumn">
             <h4>Customer Care</h4>
-            <Link to="/faq">Frequently Asked Questions</Link>
             <Link to="/shipping-policy">Shipping & Delivery</Link>
             <Link to="/return-policy">Returns & Refunds</Link>
             <Link to="/contact">Direct Support</Link>

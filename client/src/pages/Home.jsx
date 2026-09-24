@@ -16,12 +16,6 @@ import { useEffect, useRef, useState } from "react";
 import { API } from "../api/http.js";
 import ProductGrid from "../components/ProductGrid.jsx";
 
-// Public folder-la irukka ungaloda 4 real images
-const LOCAL_CHILLI = "/hero-chilli.webp";
-const LOCAL_TOMATO = "/hero-tomoto.png";
-const LOCAL_ANISE = "/hero-anise.png";
-const LOCAL_CINNAMON = "/hero-cinnamon.webp";
-
 const CINEMATIC_SCENES = [
   { src: "/video-1.mp4", label: "TEMPLE" },
   { src: "/video-2.mp4", label: "SPICE FIELDS" },
@@ -32,7 +26,6 @@ const CINEMATIC_SCENES = [
 
 const CINEMATIC_SCENE_MS = 4200;
 
-
 const categoryConfig = [
   { name: "Non-Veg Masala", subtitle: "Mutton / Chicken / Meen", slug: "non-veg-masala" },
   { name: "Biryani Masala", subtitle: "Royal Ambur & Dindigul", slug: "biryani-masala" },
@@ -41,8 +34,7 @@ const categoryConfig = [
   { name: "Podi Varieties", subtitle: "Ellu / Karuveppilai / Paruppu", slug: "idly-podi" },
   { name: "Paruppu Podi", subtitle: "Ghee Rice Perfection", slug: "paruppu-podi" },
   { name: "Pure Asafoetida", subtitle: "Natural Compounded", slug: "perungayam" },
-  { name: "Crispy Fry Powder", subtitle: "Golden Crunch Batter", slug: "chicken-fry-corn-powder" },
-  { name: "Puliyotharai Paste", subtitle: "Temple Feast Tamarind", slug: "puliyotharai-paste" },
+
 ];
 
 function getProductImage(product) {
@@ -57,6 +49,89 @@ function getProductImage(product) {
   );
 }
 
+/* =========================================================
+   WHITE CLOTH THEATER PRELOADER
+========================================================= */
+function TheaterPreloader() {
+  const [loading, setLoading] = useState(true);
+  const [render, setRender] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+
+    const removeTimer = setTimeout(() => {
+      setRender(false);
+    }, 2800);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(removeTimer);
+    };
+  }, []);
+
+  if (!render) return null;
+
+  return (
+    <div className={`rrTheaterCurtain ${!loading ? "isOpen" : ""}`} aria-hidden="true">
+      <div className="rrClothHalf rrClothLeft">
+        <div className="rrClothFolds" />
+      </div>
+      <div className="rrClothHalf rrClothRight">
+        <div className="rrClothFolds" />
+      </div>
+      
+      <div className="rrCurtainLogoBox">
+        <img src="/logo.png" alt="RR MASALA" className="rrCurtainLogoImg" />
+        <div className="rrCurtainLoader" />
+      </div>
+
+      <style>{`
+        .rrTheaterCurtain {
+          position: fixed !important;
+          inset: 0 !important;
+          z-index: 999999 !important;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          pointer-events: none;
+        }
+        .rrClothHalf {
+          position: absolute;
+          top: 0; bottom: 0; width: 50%;
+          background: #ffffff;
+          box-shadow: inset 0 0 40px rgba(0,0,0,0.05);
+          transition: transform 1.2s cubic-bezier(0.7, 0, 0.3, 1) 0.4s;
+          will-change: transform;
+        }
+        .rrClothLeft { left: 0; transform-origin: left; border-right: 1px solid rgba(0,0,0,0.05); }
+        .rrClothRight { right: 0; transform-origin: right; border-left: 1px solid rgba(0,0,0,0.05); }
+        .rrClothFolds {
+          position: absolute; inset: 0;
+          background: repeating-linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.03) 10%, transparent 20%);
+        }
+        .rrTheaterCurtain.isOpen .rrClothLeft { transform: translateX(-100%); }
+        .rrTheaterCurtain.isOpen .rrClothRight { transform: translateX(100%); }
+        .rrCurtainLogoBox {
+          position: relative; z-index: 2;
+          display: flex; flex-direction: column; align-items: center; gap: 15px;
+          transition: opacity 0.4s ease;
+        }
+        .rrTheaterCurtain.isOpen .rrCurtainLogoBox { opacity: 0; }
+        .rrCurtainLogoImg { height: 190px; object-fit: contain; }
+        .rrCurtainLoader { width: 120px; height: 2px; background: rgba(0,0,0,0.1); position: relative; overflow: hidden; }
+        .rrCurtainLoader::before {
+          content: ""; position: absolute; top: 0; left: -100%;
+          width: 100%; height: 100%; background: #fbb034;
+          animation: rrTheaterLoad 1.5s ease-in-out forwards;
+        }
+        @keyframes rrTheaterLoad { 0% { left: -100%; } 100% { left: 0; } }
+      `}</style>
+    </div>
+  );
+}
+
 export default function Home() {
   const [products, setProducts] = useState([]);
   const [categoryImages, setCategoryImages] = useState({});
@@ -64,7 +139,6 @@ export default function Home() {
   const [error, setError] = useState("");
   const [cinematicScene, setCinematicScene] = useState(0);
   const cinematicVideoRefs = useRef([]);
-
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -99,7 +173,7 @@ export default function Home() {
       })
       .catch(() => {
         if (!active) return;
-        setError("Live productgalannu load maadalagilla. Backend-annu check maadi.");
+        setError("Live products could not be loaded.");
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -153,15 +227,17 @@ export default function Home() {
 
   return (
     <div className="rrHome">
+      <TheaterPreloader />
+
       {/* ================================================================
-          1. CINEMATIC HD HERO — 5 REAL VIDEO SCENES
+          1. CINEMATIC HD HERO — 5 REAL VIDEO SCENES (CLEANED)
       ================================================================ */}
       <section className="rrMultiRainHero">
         <div className="rrCinematicSequence" aria-hidden="true">
           {CINEMATIC_SCENES.map((scene, index) => (
             <div
               className={`rrCinematicFrame ${index === cinematicScene ? "isActive" : ""}`}
-              key={scene.desktop}
+              key={scene.label}
             >
               <video
                 ref={(node) => {
@@ -172,77 +248,17 @@ export default function Home() {
                 playsInline
                 loop
                 preload={index === 0 ? "auto" : "metadata"}
-                poster={index === 0 ? "/hero-chilli.webp" : undefined}
               >
                 <source src={scene.src} type="video/mp4" />
               </video>
             </div>
           ))}
 
-          {/* Only a controlled dark readability layer — no blur layer. */}
           <div className="rrCinematicSceneTint" />
           <div className="rrCinematicWarmLight" />
           <div className="rrCinematicVignette" />
           <div className="rrCinematicEdgeFade" />
         </div>
-
-        {/* Kinetic Heat & Glow Layers */}
-        <div className="rrKineticAura rrKineticAura--one" />
-        <div className="rrKineticAura rrKineticAura--two" />
-        <div className="rrAromaDustCloud" />
-
-        {/* Dense Rain Drops of All 4 Assets: Chilli, Tomato, Anise, Cinnamon */}
-        <div className="rrRainDrop rrDrop--chilli1">
-          <img src={LOCAL_CHILLI} alt="Guntur Chilli" />
-        </div>
-        <div className="rrRainDrop rrDrop--tomato1">
-          <img src={LOCAL_TOMATO} alt="Fresh Tomato" />
-        </div>
-        <div className="rrRainDrop rrDrop--anise1">
-          <img src={LOCAL_ANISE} alt="Star Anise" />
-        </div>
-        <div className="rrRainDrop rrDrop--cinnamon1">
-          <img src={LOCAL_CINNAMON} alt="Ceylon Cinnamon" />
-        </div>
-
-        <div className="rrRainDrop rrDrop--chilli2">
-          <img src={LOCAL_CHILLI} alt="Guntur Chilli" />
-        </div>
-        <div className="rrRainDrop rrDrop--tomato2">
-          <img src={LOCAL_TOMATO} alt="Fresh Tomato" />
-        </div>
-        <div className="rrRainDrop rrDrop--anise2">
-          <img src={LOCAL_ANISE} alt="Star Anise" />
-        </div>
-        <div className="rrRainDrop rrDrop--cinnamon2">
-          <img src={LOCAL_CINNAMON} alt="Ceylon Cinnamon" />
-        </div>
-
-        <div className="rrRainDrop rrDrop--chilli3">
-          <img src={LOCAL_CHILLI} alt="Guntur Chilli" />
-        </div>
-        <div className="rrRainDrop rrDrop--tomato3">
-          <img src={LOCAL_TOMATO} alt="Fresh Tomato" />
-        </div>
-        <div className="rrRainDrop rrDrop--anise3">
-          <img src={LOCAL_ANISE} alt="Star Anise" />
-        </div>
-        <div className="rrRainDrop rrDrop--cinnamon3">
-          <img src={LOCAL_CINNAMON} alt="Ceylon Cinnamon" />
-        </div>
-
-        {/* Masala Podi Splashes / Ground Impact Bursts */}
-        <div className="rrImpactBurst rrBurst1" />
-        <div className="rrImpactBurst rrBurst2" />
-        <div className="rrImpactBurst rrBurst3" />
-        <div className="rrImpactBurst rrBurst4" />
-
-        {/* Flame Spark Embers */}
-        <div className="rrFireSpark rrSpark1" />
-        <div className="rrFireSpark rrSpark2" />
-        <div className="rrFireSpark rrSpark3" />
-        <div className="rrFireSpark rrSpark4" />
-        <div className="rrFireSpark rrSpark5" />
 
         <div className="rrHeroInner">
           <div className="rrHeroContent">
