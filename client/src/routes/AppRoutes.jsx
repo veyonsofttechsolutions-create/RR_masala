@@ -16,6 +16,7 @@ import OrderDetails from "../pages/OrderDetails.jsx";
 import TrackOrder from "../pages/TrackOrder.jsx";
 import Profile from "../pages/Profile.jsx";
 import Addresses from "../pages/Addresses.jsx";
+import NotFound from "../pages/NotFound.jsx";
 
 import {
   About,
@@ -542,6 +543,7 @@ export function AppRoutes() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/faq" element={<StoreFAQ />} />
+        <Route path="*" element={<NotFound />} />
 
         {/* Legal centre */}
         <Route path="/legal" element={<LegalCenter />} />

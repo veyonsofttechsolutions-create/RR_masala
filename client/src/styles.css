@@ -122,7 +122,7 @@ button {
 }
 
 .rrBrand img {
-  height: 64px;
+  height: 94px;
   width: auto;
   object-fit: contain;
   transition: transform var(--rr-duration) var(--rr-ease);
@@ -1561,7 +1561,7 @@ button {
 }
 
 .rrFooterLogo img {
-  height: 64px;
+  height: 134px;
   width: auto;
   object-fit: contain;
   margin-bottom: 18px;
@@ -1848,6 +1848,12 @@ button {
     grid-template-columns: 1fr;
     gap: 20px;
   }
+  .rrBrand img {
+  height: 74px;
+  width: auto;
+  object-fit: contain;
+  transition: transform var(--rr-duration) var(--rr-ease);
+}
 
   .rrFooterTop {
     grid-template-columns: 1fr;
