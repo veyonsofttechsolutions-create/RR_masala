@@ -20,8 +20,12 @@ const app = express();
 app.set("trust proxy", 1);
 app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(cors({ origin(origin, cb){ if(!origin || env.clientUrls.includes(origin)) return cb(null,true); return cb(new Error("CORS origin not allowed")); }, credentials:true }));
-app.use(express.json({ limit: "5mb" }));
-app.use(express.urlencoded({ extended: true, limit: "2mb" }));
+// Pazhaya line-ai thedi kandupudiyunga:
+// app.use(express.json());
+
+// Adhukku badhila idha podunga:
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(rateLimit({ windowMs:15*60*1000, max:500, standardHeaders:true, legacyHeaders:false }));

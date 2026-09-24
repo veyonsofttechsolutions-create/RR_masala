@@ -1,18 +1,30 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
+
 export async function profile(req, res, next) {
   try {
-    const { name, mobile } = req.body;
-    const u = await User.findByIdAndUpdate(
-      req.user._id,
-      { name, mobile },
-      { new: true, runValidators: true },
-    );
-    res.json({ success: true, data: { user: u } });
+    const { name, mobile, avatar } = req.body;
+    
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    user.name = name;
+    user.mobile = mobile;
+    
+    // Ippo avatar-la correct-ana URL direct-a frontend-la irunthu varum
+    if (avatar) {
+      user.avatar = avatar; 
+    }
+
+    await user.save();
+    res.json({ success: true, data: { user } });
   } catch (e) {
     next(e);
   }
 }
+
 export async function password(req, res, next) {
   try {
     const u = await User.findById(req.user._id).select("+password");
@@ -27,6 +39,7 @@ export async function password(req, res, next) {
     next(e);
   }
 }
+
 export async function addresses(req, res, next) {
   try {
     const u = await User.findById(req.user._id);
@@ -37,6 +50,7 @@ export async function addresses(req, res, next) {
     next(e);
   }
 }
+
 export async function adminList(req, res, next) {
   try {
     const users = await User.find().select("-password").sort({ createdAt: -1 });
@@ -45,6 +59,7 @@ export async function adminList(req, res, next) {
     next(e);
   }
 }
+
 export async function toggle(req, res, next) {
   try {
     const u = await User.findById(req.params.id);

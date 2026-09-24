@@ -17,6 +17,7 @@ const addressSchema = new mongoose.Schema(
   },
   { _id: true },
 );
+// models/User.js - Itha apdiye replace pannu
 const schema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
@@ -36,7 +37,7 @@ const schema = new mongoose.Schema(
       index: true,
     },
     isActive: { type: Boolean, default: true },
-    avatar: String,
+    avatar: { type: String, default: "" }, // Itha mattum vachiko!
     addresses: [addressSchema],
   },
   { timestamps: true },

@@ -87,21 +87,11 @@ export default function Orders() {
 
     if (user) {
       socket.emit("join:user", user.id);
-
       socket.on("order:statusChanged", ({ order }) => {
-        setOrders((current) =>
-          current.map((item) =>
-            item._id === order._id ? order : item
-          )
-        );
+        setOrders((current) => current.map((item) => item._id === order._id ? order : item));
       });
-
       socket.on("order:cancelled", (order) => {
-        setOrders((current) =>
-          current.map((item) =>
-            item._id === order._id ? order : item
-          )
-        );
+        setOrders((current) => current.map((item) => item._id === order._id ? order : item));
       });
     }
 
@@ -118,8 +108,7 @@ export default function Orders() {
       year: "numeric",
     });
 
-  const formatStatus = (status = "") =>
-    status.replaceAll("_", " ");
+  const formatStatus = (status = "") => status.replaceAll("_", " ");
 
   const getStatusClass = (status = "") => {
     const value = status.toLowerCase();
@@ -132,21 +121,17 @@ export default function Orders() {
   };
 
   return (
-    <main className="bkOrdersPage">
+    <main className="accountPage rrOrdersPage">
       <TheaterPreloader />
-      <div className="bkOrdersContainer">
+      <div className="rrOrdersContainer">
         
         {/* BACK BUTTON */}
-        <button
-          type="button"
-          onClick={() => nav(-1)}
-          className="bkBackBtn"
-        >
+        <button type="button" onClick={() => nav(-1)} className="rrBackBtn">
           <ArrowLeft size={16} /> Back
         </button>
 
-        {/* ACCOUNT NAV */}
-        <div className="accountNav" style={{ marginBottom: 20, overflowX: "auto", whiteSpace: "nowrap" }}>
+        {/* ACCOUNT NAV (SMOOTH HORIZONTAL SCROLL) */}
+        <div className="rrAccountNavList">
           <Link to="/profile">Profile</Link>
           <Link to="/addresses">Addresses</Link>
           <Link className="active" to="/orders">Orders</Link>
@@ -154,40 +139,36 @@ export default function Orders() {
         </div>
 
         {/* PAGE HEADER */}
-        <section className="panel" style={{ marginBottom: 18, background: "linear-gradient(135deg, #ffffff 0%, #faf9f3 65%, #fff8d6 100%)" }}>
-          <span className="eyebrow">ACCOUNT</span>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20, flexWrap: "wrap", marginTop: 7 }}>
-            <div>
-              <h1 style={{ margin: 0, fontSize: "clamp(26px, 4vw, 36px)" }}>My orders</h1>
-              <p style={{ margin: "8px 0 0", color: "var(--muted)", fontSize: 12 }}>
-                View your purchases and track delivery status in real time.
-              </p>
-            </div>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 7, background: "#edf7f1", color: "var(--green)", borderRadius: 9, padding: "8px 11px", fontSize: 9, fontWeight: 900 }}>
-              <RefreshCw size={13} /> REALTIME UPDATES
-            </div>
+        <section className="rrPageHeaderCard">
+          <div>
+            <span className="rrEyebrow">ACCOUNT</span>
+            <h1 className="rrPageTitle">My Orders</h1>
+            <p className="rrPageSubText">
+              View your purchases and track delivery status in real time.
+            </p>
+          </div>
+          <div className="rrUpdateBadge">
+            <RefreshCw size={14} /> REALTIME UPDATES
           </div>
         </section>
 
         {/* LOADING */}
         {loading && (
-          <section className="panel" style={{ textAlign: "center", padding: "55px 20px" }}>
-            <RefreshCw size={26} style={{ animation: "ordersSpin 1s linear infinite" }} />
-            <p style={{ margin: "14px 0 0", color: "var(--muted)", fontSize: 12 }}>Loading your orders...</p>
+          <section className="rrLoadingCard">
+            <RefreshCw size={26} className="rrSpinIcon" />
+            <p>Loading your orders...</p>
           </section>
         )}
 
-        {/* EMPTY */}
+        {/* EMPTY STATE */}
         {!loading && orders.length === 0 && (
-          <section className="panel" style={{ textAlign: "center", padding: "65px 25px" }}>
-            <div style={{ width: 68, height: 68, borderRadius: "50%", background: "#fff7d6", display: "grid", placeItems: "center", margin: "0 auto 17px" }}>
-              <ShoppingBag size={30} />
+          <section className="rrEmptyCard">
+            <div className="rrEmptyIconBox">
+              <ShoppingBag size={30} color="var(--rr-maroon, #9e1017)" />
             </div>
-            <h2 style={{ margin: "0 0 8px", fontSize: 21 }}>No orders yet</h2>
-            <p style={{ maxWidth: 390, margin: "0 auto 22px", color: "var(--muted)", fontSize: 12, lineHeight: 1.6 }}>
-              You haven't placed any orders yet. Explore our collection and discover your favourite traditional foods.
-            </p>
-            <Link to="/products" className="primary" style={{ display: "inline-flex", alignItems: "center", gap: 7 }}>
+            <h2>No orders yet</h2>
+            <p>You haven't placed any orders yet. Explore our collection and discover your favourite traditional foods.</p>
+            <Link to="/products" className="rrShopNowBtn">
               <ShoppingBag size={16} /> Shop now
             </Link>
           </section>
@@ -195,12 +176,12 @@ export default function Orders() {
 
         {/* ORDERS LIST */}
         {!loading && orders.length > 0 && (
-          <div style={{ display: "grid", gap: 16 }}>
+          <div className="rrOrdersListGrid">
             {orders.map((order) => {
               const statusClass = getStatusClass(order.orderStatus);
 
               return (
-                <article className="panel bkOrderCardItem" key={order._id}>
+                <article className="bkOrderCardItem" key={order._id}>
                   
                   {/* TOP HEADER */}
                   <div className="cardTopRow">
@@ -223,7 +204,7 @@ export default function Orders() {
                     ))}
                   </div>
 
-                  {/* MILESTONE JOURNEY TIMELINE (RESTORED EXACTLY) */}
+                  {/* MILESTONE JOURNEY TIMELINE */}
                   <div className="timelineSectionBox">
                     <OrderTimeline status={order.orderStatus} />
                   </div>
@@ -253,37 +234,76 @@ export default function Orders() {
       </div>
 
       <style>{`
-        .bkOrdersPage { min-height: 85vh; background: #f3f4f6; padding: 24px 16px 80px; font-family: "DM Sans", sans-serif; }
-        .bkOrdersContainer { max-width: 800px; margin: 0 auto; }
-        .bkBackBtn { display: inline-flex; align-items: center; gap: 6px; background: #fff; border: 1px solid #e5e7eb; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; margin-bottom: 20px; }
+        .rrOrdersPage { padding-top: 32px; padding-bottom: 60px; background: #fbf7ef; min-height: 100vh; font-family: "DM Sans", sans-serif; }
+        .rrOrdersContainer { width: min(1200px, 92%); margin: 0 auto; }
         
-        .bkOrderCardItem { background: #fff; border-radius: 20px; padding: 24px !important; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e5e7eb; margin-bottom: 16px; }
-        .cardTopRow { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; border-bottom: 1px solid #f3f4f6; padding-bottom: 14px; }
-        .orderNumberText { display: block; font-weight: 800; font-size: 16px; color: #111827; }
-        .orderDateText { font-size: 12px; color: #6b7280; margin-top: 2px; display: block; }
+        .rrBackBtn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--rr-border, #e5b900); background: #fff; border-radius: 10px; padding: 10px 16px; font-weight: 800; font-size: 12px; cursor: pointer; margin-bottom: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: all 0.3s ease; }
+        
+        /* HORIZONTAL SCROLL NAV TABS FIX */
+        .rrAccountNavList { display: flex; gap: 12px; margin-bottom: 24px; overflow-x: auto; white-space: nowrap; padding-bottom: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .rrAccountNavList::-webkit-scrollbar { display: none; }
+        .rrAccountNavList a { flex-shrink: 0; padding: 10px 20px; background: #fff; color: #140d0b; border: 1px solid var(--rr-border, #e5b900); border-radius: 30px; font-weight: 800; font-size: 13px; text-decoration: none; transition: all 0.2s ease; }
+        .rrAccountNavList a.active { background: var(--rr-maroon, #9e1017); color: #fff; border-color: var(--rr-maroon, #9e1017); }
+
+        /* HEADER CARD */
+        .rrPageHeaderCard { background: #fff; border-radius: 24px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid rgba(158, 16, 23, 0.08); margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
+        .rrEyebrow { font-size: 11px; font-weight: 900; letter-spacing: 1.5px; color: var(--rr-maroon, #9e1017); display: block; }
+        .rrPageTitle { margin: 6px 0 4px; font-family: 'Cormorant Garamond', serif; font-size: clamp(26px, 4vw, 36px); font-weight: 700; color: #140d0b; }
+        .rrPageSubText { margin: 0; color: #5e514c; font-size: 13px; }
+        .rrUpdateBadge { display: inline-flex; align-items: center; gap: 8px; background: #edf7f1; color: #2e7d32; padding: 8px 14px; border-radius: 20px; font-size: 11px; font-weight: 900; letter-spacing: 0.5px; }
+
+        .rrLoadingCard { background: #fff; border-radius: 24px; padding: 55px 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid rgba(158, 16, 23, 0.08); }
+        .rrSpinIcon { color: var(--rr-maroon, #9e1017); animation: ordersSpin 1s linear infinite; }
+        .rrLoadingCard p { margin: 14px 0 0; color: #5e514c; font-size: 13px; }
+
+        .rrEmptyCard { background: #fff; border-radius: 24px; padding: 65px 25px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid rgba(158, 16, 23, 0.08); }
+        .rrEmptyIconBox { width: 68px; height: 68px; border-radius: 50%; background: #fdf3e8; display: grid; place-items: center; margin: 0 auto 17px; }
+        .rrEmptyCard h2 { margin: 0 0 8px; font-size: 21px; font-family: 'Cormorant Garamond', serif; font-weight: 700; color: #140d0b; }
+        .rrEmptyCard p { max-width: 390px; margin: 0 auto 22px; color: #5e514c; font-size: 13px; line-height: 1.6; }
+        .rrShopNowBtn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, var(--rr-maroon, #9e1017), #c41a22); color: #fff; border-radius: 14px; font-weight: 800; font-size: 14px; padding: 12px 24px; text-decoration: none; box-shadow: 0 8px 20px rgba(158, 16, 23, 0.25); transition: transform 0.2s ease; }
+        .rrShopNowBtn:hover { transform: translateY(-2px); }
+
+        .rrOrdersListGrid { display: grid; gap: 20px; }
+
+        /* Order Card Styling */
+        .bkOrderCardItem { background: #fff; border-radius: 24px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid rgba(158, 16, 23, 0.08); }
+        .cardTopRow { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 1px solid #f3f4f6; padding-bottom: 16px; }
+        .orderNumberText { display: block; font-weight: 800; font-size: 18px; color: #140d0b; }
+        .orderDateText { font-size: 13px; color: #5e514c; margin-top: 4px; display: block; }
         
         .statusPillBadge { padding: 6px 14px; border-radius: 99px; font-size: 11px; font-weight: 800; text-transform: uppercase; background: #fef3c7; color: #d97706; }
-        .statusPillBadge.delivered { background: #dcfce7; color: #16a34a; }
+        .statusPillBadge.delivered { background: #edf7f1; color: #2e7d32; }
         .statusPillBadge.cancelled { background: #fee2e2; color: #dc2626; }
         .statusPillBadge.shipping { background: #e0f2fe; color: #0284c7; }
         .statusPillBadge.packed { background: #ede9fe; color: #7c3aed; }
 
-        .cardItemsSection { display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: #4b5563; margin-bottom: 16px; background: #f9fafb; padding: 14px; border-radius: 14px; border: 1px solid #f3f4f6; }
-        .itemRowPreview { display: flex; justify-content: space-between; font-weight: 600; font-size: 13px; color: #374151; }
+        .cardItemsSection { display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #4b5563; margin-bottom: 20px; background: #faf9f4; padding: 16px; border-radius: 14px; border: 1px solid #eee; }
+        .itemRowPreview { display: flex; justify-content: space-between; font-weight: 600; font-size: 13px; color: #140d0b; }
         
-        .timelineSectionBox { margin: 20px 0; overflow-x: auto; }
+        .timelineSectionBox { margin: 24px 0; overflow-x: auto; }
 
-        .cardBottomFooter { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f3f4f6; padding-top: 16px; flex-wrap: wrap; gap: 12px; }
-        .amtBlock span { display: block; font-size: 11px; color: #6b7280; text-transform: uppercase; font-weight: 700; }
-        .amtBlock strong { font-size: 20px; color: #111827; font-weight: 900; }
+        .cardBottomFooter { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f3f4f6; padding-top: 20px; flex-wrap: wrap; gap: 16px; }
+        .amtBlock span { display: block; font-size: 11px; color: #8a7c75; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
+        .amtBlock strong { font-size: 22px; color: #140d0b; font-weight: 900; }
         
-        .actionButtonsGroup { display: flex; gap: 10px; }
-        .secondaryBtnItem { padding: 10px 20px; background: #f3f4f6; color: #374151; border-radius: 12px; font-weight: 700; font-size: 13px; text-decoration: none; transition: background 0.2s; }
-        .secondaryBtnItem:hover { background: #e5e7eb; }
-        .primaryBtnItem { padding: 10px 20px; background: #9e1017; color: #fff; border-radius: 12px; font-weight: 700; font-size: 13px; text-decoration: none; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
-        .primaryBtnItem:hover { background: #7a0c12; }
+        .actionButtonsGroup { display: flex; gap: 12px; }
+        .secondaryBtnItem { padding: 12px 24px; background: #faf9f4; border: 1px solid #ddd; color: #140d0b; border-radius: 12px; font-weight: 800; font-size: 13px; text-decoration: none; transition: background 0.2s; }
+        .secondaryBtnItem:hover { background: #f0eee9; }
+        .primaryBtnItem { padding: 12px 24px; background: linear-gradient(135deg, var(--rr-maroon, #9e1017), #c41a22); color: #fff; border-radius: 12px; font-weight: 800; font-size: 13px; text-decoration: none; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(158, 16, 23, 0.2); transition: transform 0.2s; border: none; }
+        .primaryBtnItem:hover { transform: translateY(-2px); }
 
         @keyframes ordersSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* Responsive Fixes */
+        @media (max-width: 600px) {
+          .rrOrdersContainer { width: 95%; }
+          .rrPageHeaderCard { padding: 24px; flex-direction: column; align-items: flex-start; gap: 14px; }
+          .bkOrderCardItem { padding: 24px; }
+          .cardTopRow { flex-direction: column; gap: 12px; }
+          .cardBottomFooter { flex-direction: column; align-items: flex-start; }
+          .actionButtonsGroup { width: 100%; display: flex; }
+          .actionButtonsGroup a { flex: 1; justify-content: center; }
+        }
       `}</style>
     </main>
   );

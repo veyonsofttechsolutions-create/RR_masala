@@ -469,7 +469,7 @@ export default function ProductDetails() {
               <div className="rrpd-rating-placeholder">
                 <span className="rrpd-dot" />
                 <span>
-                  Authentic pantry essential from the RR MASALA collection[cite: 1]
+                  Authentic pantry essential from the RR MASALA collection
                 </span>
               </div>
 
@@ -843,34 +843,6 @@ const styles = `
     top: 18px;
   }
 
-  .rrpd-main-image {
-    position: relative;
-    aspect-ratio: 1 / 1;
-    border: 1px solid var(--rrpd-line);
-    border-radius: 28px;
-    background:
-      radial-gradient(circle at 50% 35%, #fff, #f4ede3 72%);
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .rrpd-main-photo {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: center;
-    padding: 0;
-    margin: 0;
-    display: block;
-    transition: transform .35s ease;
-  }
-
-  .rrpd-main-image:hover .rrpd-main-photo {
-    transform: scale(1.025);
-  }
-
   .rrpd-sale-badge {
     position: absolute;
     top: 18px;
@@ -941,7 +913,7 @@ const styles = `
   .rrpd-thumb img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     border-radius: 9px;
   }
 
@@ -1424,6 +1396,8 @@ const styles = `
     color: inherit;
     text-decoration: none;
     transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    display: flex;
+    flex-direction: column;
   }
 
   .rrpd-related-card:hover {
@@ -1436,13 +1410,15 @@ const styles = `
     aspect-ratio: 1 / 1;
     background: #f7f1e9;
     overflow: hidden;
+    width: 100%;
   }
 
+  /* RELATED IMAGE FIX - ALWAYS COVER */
   .rrpd-related-image img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    padding: 18px;
+    object-fit: cover !important;
+    padding: 0 !important;
     transition: transform .3s ease;
   }
 
@@ -1452,6 +1428,9 @@ const styles = `
 
   .rrpd-related-body {
     padding: 14px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
   }
 
   .rrpd-related-body > span {
@@ -1474,6 +1453,7 @@ const styles = `
     font-size: 12px;
     line-height: 1.4;
     font-weight: 900;
+    flex-grow: 1;
   }
 
   .rrpd-related-body > div {
@@ -1929,12 +1909,23 @@ const styles = `
     box-shadow:0 25px 75px rgba(46,20,12,.08)!important;
     background:#fff!important;
   }
+
+  /* MAIN IMAGE OVERRIDES */
   .rrpd-main-image{
-    min-height:620px!important;
+    aspect-ratio: 1 / 1 !important;
+    width: 100% !important;
+    height: auto !important;
     border-radius:24px!important;
     background:linear-gradient(145deg,#fff,#f8f4ed)!important;
   }
-  .rrpd-main-photo{max-height:590px!important;object-fit:contain!important}
+  .rrpd-main-photo{
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important; /* Changed from contain to cover */
+    padding: 0 !important; /* Removed padding so image spans entire box */
+    border-radius: 24px !important;
+  }
+
   .rrpd-sale-badge{font-size:12px!important;padding:10px 13px!important}
   .rrpd-productInfo h1{
     font-size:clamp(42px,5vw,68px)!important;
@@ -1968,16 +1959,15 @@ const styles = `
   .rrpd-compliance-grid span{font-size:10px!important}
   .rrpd-compliance-grid b{font-size:14px!important}
   .rrpd-related h2{font-size:42px!important}
+  
   @media(max-width:850px){
     .rrpd-product{padding:20px!important;gap:25px!important}
-    .rrpd-main-image{min-height:450px!important}
-    .rrpd-main-photo{max-height:420px!important}
   }
   @media(max-width:600px){
     .rrpd-page{padding:18px 11px 65px!important}
     .rrpd-product{border-radius:19px!important;padding:14px!important}
-    .rrpd-main-image{min-height:350px!important;border-radius:16px!important}
-    .rrpd-main-photo{max-height:330px!important}
+    .rrpd-main-image{border-radius:16px!important}
+    .rrpd-main-photo{border-radius: 16px !important}
     .rrpd-productInfo h1{font-size:39px!important}
     .rrpd-description,.rrpd-productInfo p{font-size:14px!important}
     .rrpd-price,.rrpd-current-price{font-size:31px!important}
