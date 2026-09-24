@@ -29,30 +29,31 @@ function TheaterPreloader() {
   if (!render) return null;
 
   return (
-    <div className={`rrTheaterCurtain ${!loading ? "isOpen" : ""}`} aria-hidden="true">
-      <div className="rrClothHalf rrClothLeft"><div className="rrClothFolds" /></div>
-      <div className="rrClothHalf rrClothRight"><div className="rrClothFolds" /></div>
-      <div className="rrCurtainLogoBox">
-        <img src="/logo.png" alt="RR MASALA" className="rrCurtainLogoImg" />
-        <div className="rrCurtainLoader" />
-      </div>
+    // <div className={`rrTheaterCurtain ${!loading ? "isOpen" : ""}`} aria-hidden="true">
+    //   <div className="rrClothHalf rrClothLeft"><div className="rrClothFolds" /></div>
+    //   <div className="rrClothHalf rrClothRight"><div className="rrClothFolds" /></div>
+    //   <div className="rrCurtainLogoBox">
+    //     <img src="/logo.png" alt="RR MASALA" className="rrCurtainLogoImg" />
+    //     <div className="rrCurtainLoader" />
+    //   </div>
 
-      <style>{`
-        .rrTheaterCurtain { position: fixed !important; inset: 0 !important; z-index: 999999 !important; display: flex; align-items: center; justify-content: center; pointer-events: none; }
-        .rrClothHalf { position: absolute; top: 0; bottom: 0; width: 50%; background: #ffffff; box-shadow: inset 0 0 40px rgba(0,0,0,0.05); transition: transform 1s cubic-bezier(0.7, 0, 0.3, 1) 0.3s; will-change: transform; }
-        .rrClothLeft { left: 0; transform-origin: left; border-right: 1px solid rgba(0,0,0,0.05); }
-        .rrClothRight { right: 0; transform-origin: right; border-left: 1px solid rgba(0,0,0,0.05); }
-        .rrClothFolds { position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.03) 10%, transparent 20%); }
-        .rrTheaterCurtain.isOpen .rrClothLeft { transform: translateX(-100%); }
-        .rrTheaterCurtain.isOpen .rrClothRight { transform: translateX(100%); }
-        .rrCurtainLogoBox { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 15px; transition: opacity 0.3s ease; }
-        .rrTheaterCurtain.isOpen .rrCurtainLogoBox { opacity: 0; }
-        .rrCurtainLogoImg { height: 190px; object-fit: contain; }
-        .rrCurtainLoader { width: 120px; height: 2px; background: rgba(0,0,0,0.1); position: relative; overflow: hidden; }
-        .rrCurtainLoader::before { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: #fbb034; animation: rrTheaterLoad 1.2s ease-in-out forwards; }
-        @keyframes rrTheaterLoad { 0% { left: -100%; } 100% { left: 0; } }
-      `}</style>
-    </div>
+    //   <style>{`
+    //     .rrTheaterCurtain { position: fixed !important; inset: 0 !important; z-index: 999999 !important; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+    //     .rrClothHalf { position: absolute; top: 0; bottom: 0; width: 50%; background: #ffffff; box-shadow: inset 0 0 40px rgba(0,0,0,0.05); transition: transform 1s cubic-bezier(0.7, 0, 0.3, 1) 0.3s; will-change: transform; }
+    //     .rrClothLeft { left: 0; transform-origin: left; border-right: 1px solid rgba(0,0,0,0.05); }
+    //     .rrClothRight { right: 0; transform-origin: right; border-left: 1px solid rgba(0,0,0,0.05); }
+    //     .rrClothFolds { position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.03) 10%, transparent 20%); }
+    //     .rrTheaterCurtain.isOpen .rrClothLeft { transform: translateX(-100%); }
+    //     .rrTheaterCurtain.isOpen .rrClothRight { transform: translateX(100%); }
+    //     .rrCurtainLogoBox { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 15px; transition: opacity 0.3s ease; }
+    //     .rrTheaterCurtain.isOpen .rrCurtainLogoBox { opacity: 0; }
+    //     .rrCurtainLogoImg { height: 190px; object-fit: contain; }
+    //     .rrCurtainLoader { width: 120px; height: 2px; background: rgba(0,0,0,0.1); position: relative; overflow: hidden; }
+    //     .rrCurtainLoader::before { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: #fbb034; animation: rrTheaterLoad 1.2s ease-in-out forwards; }
+    //     @keyframes rrTheaterLoad { 0% { left: -100%; } 100% { left: 0; } }
+    //   `}</style>
+    // </div>
+    <div></div>
   );
 }
 

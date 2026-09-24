@@ -41,7 +41,7 @@ function TheaterPreloader() {
       <div className="rrClothHalf rrClothLeft"><div className="rrClothFolds" /></div>
       <div className="rrClothHalf rrClothRight"><div className="rrClothFolds" /></div>
       <div className="rrCurtainLogoBox">
-        <img src="/WhatsApp Image 2026-09-17 at 3.09.40 AM.jpeg" alt="RR MASALA" className="rrCurtainLogoImg" />
+        <img src="/logo.png" alt="RR MASALA" className="rrCurtainLogoImg" />
         <div className="rrCurtainLoader" />
       </div>
 
