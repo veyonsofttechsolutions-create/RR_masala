@@ -80,7 +80,7 @@ function TheaterPreloader() {
       // Voice Greeting
       if ('speechSynthesis' in window) {
         const speakGreeting = () => {
-          const greeting = new SpeechSynthesisUtterance("Welcome to R R Masala da!");
+          const greeting = new SpeechSynthesisUtterance("welcome RR masala.... !");
           const voices = window.speechSynthesis.getVoices();
           const massVoice = voices.find(v => 
             v.lang === 'ta-IN' || 
