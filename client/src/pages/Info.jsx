@@ -24,7 +24,7 @@ import {
 import { useEffect, useState } from "react";
 
 /* =========================================================
-   REAL SPICE PHOTOGRAPHY ASSETS
+   REAL SPICE PHOTOGRAPHY ASSETS (ENCODED FOR BROWSER URLS)
 ========================================================= */
 const ASSETS = {
   chilli: "/hero-chilli.webp",
@@ -32,156 +32,69 @@ const ASSETS = {
   anise: "/hero-anise.png",
   cinnamon: "/hero-cinnamon.webp",
   dishReal: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80",
-  box: "/box.png", // Hanging cargo box
-  logo: "/logo.png" // Brand Logo
+  box: "/box.png",
+  logo: "/logo.png",
+  idliPodi: encodeURI("/2-Minute Idli Podi Recipe _ Spicy South Indian Chutney Powder 🌶️.jpg"),
+  puttu: encodeURI("/15 Platos de Sri Lanka_ Sabores y Recetas Emblemáticas.jpg"),
+  ariUnda: encodeURI("/Ari unda.jpg"),
+  biryaniMasala: encodeURI("/Biryani Masala.jpg"),
+  chickenFry: encodeURI("/Delhi Jama Masjid Style Chicken Fry _ दिल्ली जैसा फ्राइड चिकन _ Shaadi Wala Chicken Fry.jpg"),
+  spiceThali: encodeURI("/download.jpg"),
+  sambarPodi: encodeURI("/download (2).jpg"),
+  paruppuPodi: encodeURI("/download (3).jpg"),
+  moringaPodi: encodeURI("/download (4).jpg"),
+  sujatha: encodeURI("/WhatsApp Image 2026-09-18 at 9.48.35 AM.jpeg"),
 };
 
 /* =========================================================
-   0. WHITE CLOTH THEATER PRELOADER
-   (No Black Screen, Proper Cloth Folds)
+   0. PRELOADER
 ========================================================= */
 function TheaterPreloader() {
-  const [loading, setLoading] = useState(true);
-  const [render, setRender] = useState(true);
-
-  useEffect(() => {
-    // 1.5 seconds loading state
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-
-    // Remove from DOM after transition completes
-    const removeTimer = setTimeout(() => {
-      setRender(false);
-    }, 2800);
-
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(removeTimer);
-    };
-  }, []);
-
-  if (!render) return null;
-
-  return (
-    // <div className={`rrTheaterCurtain ${!loading ? "isOpen" : ""}`} aria-hidden="true">
-    //   <div className="rrClothHalf rrClothLeft">
-    //     <div className="rrClothFolds" />
-    //   </div>
-    //   <div className="rrClothHalf rrClothRight">
-    //     <div className="rrClothFolds" />
-    //   </div>
-      
-    //   <div className="rrCurtainLogoBox">
-    //     <img src={ASSETS.logo} alt="RR MASALA" className="rrCurtainLogoImg" />
-    //     <div className="rrCurtainLoader" />
-    //   </div>
-    // </div>
-    <div></div>
-  );
+  return <div></div>;
 }
 
 /* =========================================================
-   1. PURE CSS MOUNTAINS & STARS CANOPY
+   1. PRODUCT NEWS TICKER / SLIDER (WITH YOUR IMAGES & FALLBACK)
 ========================================================= */
-function SpiceMountainCanopy() {
+const TICKER_PRODUCTS = [
+  { name: "Madurai Idli Podi", img: ASSETS.idliPodi, fallback: ASSETS.idliPodi, tag: "TRADITIONAL RECIPE" },
+  { name: "Chettinad Biryani Masala", img: ASSETS.biryaniMasala, fallback: ASSETS.anise, tag: "ROYAL AROMA" },
+  { name: "Saurashtra Sambar Podi", img: ASSETS.sambarPodi, fallback: ASSETS.chilli, tag: "STONE GROUND" },
+  { name: "Crispy Fry Masala", img: ASSETS.chickenFry, fallback: ASSETS.tomato, tag: "CHETTI HEAT" },
+  { name: "Heritage Paruppu Podi", img: ASSETS.paruppuPodi, fallback: ASSETS.cinnamon, tag: "PURE NATIVE" },
+  { name: "Organic Moringa Podi", img: ASSETS.moringaPodi, fallback: ASSETS.dishReal, tag: "FARM FRESH" },
+  { name: "Traditional Ari Unda", img: ASSETS.ariUnda, fallback: ASSETS.box, tag: "VILLAGE SWEET" },
+  { name: "Traditional Puttu Podi", img: ASSETS.puttu, fallback: ASSETS.dishReal, tag: "HOMESTYLE" },
+  { name: "Tamil Nadu Spice Blend", img: ASSETS.spiceThali, fallback: ASSETS.anise, tag: "WHOLE SPICES" },
+];
+
+function ProductTickerSkyway() {
+  const marqueeItems = [...TICKER_PRODUCTS, ...TICKER_PRODUCTS];
+
   return (
-    <div className="rrCinematicCanopy" aria-hidden="true">
-      <div className="rrSkyBackdrop">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <div key={i} className={`rrStar rrStar${i + 1}`} />
+    <div className="rrTopSkyBackground" aria-label="Featured Spices Showcase">
+      <div className="rrTickerTrack">
+        {marqueeItems.map((item, idx) => (
+          <div className="rrTickerItem" key={idx}>
+            <div className="rrTickerImgBox">
+              <img
+                src={item.img}
+                alt={item.name}
+                loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = item.fallback;
+                }}
+              />
+            </div>
+            <div className="rrTickerInfo">
+              <span className="rrTickerTag">{item.tag}</span>
+              <span className="rrTickerName">{item.name}</span>
+            </div>
+            <span className="rrTickerDot">•</span>
+          </div>
         ))}
       </div>
-      <div className="rrMountainLayer rrMountainLayer--distant" />
-      <div className="rrMountainLayer rrMountainLayer--mid" />
-    </div>
-  );
-}
-
-/* =========================================================
-   2. PURE CSS GLOBAL EXPORT FLEET (IN TOP 120PX ONLY)
-   Flies Left to Right sequentially to avoid overflow
-========================================================= */
-function GlobalExportSkyway() {
-  return (
-    <div className="rrExportSkyway" aria-hidden="true">
-      
-      {/* Flight 1 */}
-      <div className="rrCssAircraft rrCssPlane1">
-        <div className="rrPlaneFuselage">
-          <div className="rrPlaneCockpit" />
-          <div className="rrPlaneWindows" />
-          <span className="rrPlaneBrand">RR MASALA EXPORT</span>
-        </div>
-        <div className="rrPlaneWingFront">
-          <div className="rrPlaneEngine" />
-          <div className="rrNavLight rrNavLight--red" />
-        </div>
-        <div className="rrPlaneWingBack">
-          <div className="rrPlaneEngine" />
-          <div className="rrNavLight rrNavLight--green" />
-        </div>
-        <div className="rrPlaneTail">
-          <div className="rrPlaneTailFin" />
-          <div className="rrNavLight rrNavLight--white" />
-        </div>
-        <div className="rrHangingCargo">
-          <div className="rrCargoCable" />
-          <img src={ASSETS.box} alt="Cargo Box" className="rrCargoBoxImg" />
-        </div>
-      </div>
-
-      {/* Helicopter 1 */}
-      <div className="rrCssAircraft rrCssHelicopter1">
-        <div className="rrHeliMainRotor"><div className="rrHeliBlade" /></div>
-        <div className="rrHeliCabin">
-          <div className="rrHeliWindow" />
-        </div>
-        <div className="rrHeliTail">
-          <div className="rrHeliTailRotor"><div className="rrHeliBladeSmall" /></div>
-        </div>
-        <div className="rrHeliSkids">
-          <div className="rrHeliLeg" />
-          <div className="rrHeliLeg" />
-          <div className="rrHeliRunner" />
-        </div>
-        <div className="rrHangingCargo">
-          <div className="rrCargoCable" />
-          <img src={ASSETS.box} alt="Cargo Box" className="rrCargoBoxImg" />
-        </div>
-      </div>
-
-      {/* Flight 2 */}
-      <div className="rrCssAircraft rrCssPlane2">
-        <div className="rrPlaneFuselage">
-          <div className="rrPlaneCockpit" />
-          <span className="rrPlaneBrand">GLOBAL SPICE</span>
-        </div>
-        <div className="rrPlaneWingFront"><div className="rrPlaneEngine" /></div>
-        <div className="rrPlaneWingBack"><div className="rrPlaneEngine" /></div>
-        <div className="rrPlaneTail"><div className="rrPlaneTailFin" /></div>
-      </div>
-
-      {/* Helicopter 2 */}
-      <div className="rrCssAircraft rrCssHelicopter2">
-        <div className="rrHeliMainRotor"><div className="rrHeliBlade" /></div>
-        <div className="rrHeliCabin">
-          <div className="rrHeliWindow" />
-        </div>
-        <div className="rrHeliTail">
-          <div className="rrHeliTailRotor"><div className="rrHeliBladeSmall" /></div>
-        </div>
-        <div className="rrHeliSkids">
-          <div className="rrHeliLeg" />
-          <div className="rrHeliLeg" />
-          <div className="rrHeliRunner" />
-        </div>
-        <div className="rrHangingCargo">
-          <div className="rrCargoCable" />
-          <img src={ASSETS.box} alt="Cargo Box" className="rrCargoBoxImg" />
-        </div>
-      </div>
-
     </div>
   );
 }
@@ -196,7 +109,7 @@ export function Info({ title, eyebrow = "RR MASALA HERITAGE", description, icon:
     const root = document.querySelector(".rrInfoPage");
     if (!root) return;
     const nodes = root.querySelectorAll(
-      ".rrPageHeader, .rrAboutHero, .rrNumberStrip, .rrStoryBlock, .rrIngredientSection, .rrHeritage, .rrQuote, .rrContact, .rrFaqPremium, .rrPolicy, .rrSuccess"
+      ".rrPageHeader, .rrAboutHero, .rrNumberStrip, .rrStoryBlock, .rrSujathaStory, .rrIngredientSection, .rrHeritage, .rrQuote, .rrContact, .rrFaqPremium, .rrPolicy, .rrSuccess"
     );
     nodes.forEach((node) => node.classList.add("rrReveal"));
 
@@ -222,11 +135,8 @@ export function Info({ title, eyebrow = "RR MASALA HERITAGE", description, icon:
       <main className="rrInfoPage">
         <InfoStyles />
 
-        {/* Cinematic Parallax Background + Export Flights Restricted to Top 120px */}
-        <div className="rrTopSkyBackground">
-          <SpiceMountainCanopy />
-          <GlobalExportSkyway />
-        </div>
+        {/* Top 120px Smooth Continuous Product News Slide */}
+        <ProductTickerSkyway />
 
         <div className="rrInfoShell">
           <button className="rrBack" type="button" onClick={() => nav(-1)}>
@@ -263,7 +173,7 @@ export function Info({ title, eyebrow = "RR MASALA HERITAGE", description, icon:
 }
 
 /* =========================================================
-   ABOUT US PAGE
+   ABOUT US PAGE (POSITIVE PHRASING & SUJATHA PHOTO + ARTICLE)
 ========================================================= */
 export const About = () => (
   <Info
@@ -277,18 +187,17 @@ export const About = () => (
         <div className="rrAboutHeroText">
           <span className="rrSectionEyebrow">MADURAI & CHETTINAD TRADITION</span>
           <h2>
-            Food is not just taste.
+            Food is pure emotion.
             <br />
             <em>It is sacred memory.</em>
           </h2>
           <p>
-            Puliyodarai and sambar are not mere recipes—they are shaped by
-            sun-drenched Salem turmeric, cold-pressed gingelly oil, hand-picked
-            Guntur chillies, and stone-ground traditions perfected over generations in
-            South Indian family homes.
+            Puliyodarai and sambar are shaped by sun-drenched Salem turmeric,
+            cold-pressed gingelly oil, hand-picked Guntur chillies, and stone-ground
+            traditions perfected over generations in South Indian family homes.
           </p>
           <div className="rrTrustPills">
-            <span><Sparkles size={14} /> Zero Synthetic Colours</span>
+            <span><Sparkles size={14} /> 100% Natural Colours</span>
             <span><Flame size={14} /> Woodfire Slow Roasting</span>
             <span><Globe2 size={14} /> International Export Grade</span>
           </div>
@@ -310,7 +219,7 @@ export const About = () => (
           ["01", "Ancestral Formulas", "Handed down through Saurashtra & Chettinad elders."],
           ["02", "Cold Stone Milling", "Preserving natural volatile therapeutic spice oils."],
           ["03", "Farm-Direct Harvest", "Carefully collected whole spices from native soil."],
-          ["04", "Aroma-Lock Pouches", "12-month vacuum freshness guarantee without chemicals."],
+          ["04", "Aroma-Lock Pouches", "12-month vacuum freshness guarantee with pure ingredients."],
         ].map(([n, title, desc]) => (
           <div key={n} className="rrNumberCard">
             <div className="rrCardGlare" />
@@ -325,16 +234,15 @@ export const About = () => (
         <div className="rrSideLabel">01 · THE CULINARY SOUL</div>
         <div>
           <h2>
-            More than everyday spices.
+            Everyday spices crafted with care.
             <br />
             <em>A commitment to purity.</em>
           </h2>
           <div className="rrTwoColText">
             <p>
-              At RR MASALA, we believe that true South Indian flavours cannot be
-              rushed through industrial high-speed blade cutters. High mechanical heat
-              burns away the precious volatile oils that give spices their healing
-              power and unmistakable fragrance.
+              At RR MASALA, we believe that true South Indian flavours thrive through
+              patient, traditional techniques. Gentle grinding preserves the precious
+              volatile oils that give spices their healing power and unmistakable fragrance.
             </p>
             <p>
               By selecting top-grade whole pods, slow-roasting them on gentle firewood
@@ -342,6 +250,71 @@ export const About = () => (
               and profound soul that make everyday home meals taste divine.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* SUJATHA ARTICLE IN TAMIL WITH PHOTO */}
+      <section className="rrSujathaStory">
+        <div className="rrSujathaHeaderWrap">
+          <div className="rrSujathaPhotoCard">
+            <img
+              src={ASSETS.sujatha}
+              alt="எழுத்தாளர் சுஜாதா"
+              className="rrSujathaImg"
+            />
+            <div className="rrSujathaPhotoFrame" />
+          </div>
+          <div className="rrSujathaTitleBox">
+            <span className="rrSectionEyebrow">மதுரை சௌராட்டிர பாரம்பரியம்</span>
+            <h2>மதுரை சௌராட்டிர சமூகத்தினர் செய்யும் புளியோதரை-யின் மகத்துவம் பற்றி எழுத்தாளர் சுஜாதா அவர்கள்!</h2>
+            <span className="rrSujathaTag">#எழுத்தாளர்_சுஜாதா_அவர்களின்_புளியோதரை_புராணம்!</span>
+          </div>
+        </div>
+
+        <div className="rrSujathaContent">
+          <p>
+            ரெஃப்ரிஜிரேட்டர் கண்டு பிடிக்கும் முன்பே தமிழன் “வச்சு வச்சு” சாப்பிட்டது புளி சாதத்தைத் தான்.! ஒரு வாரம் ஆனாலும் கெடாது.!
+          </p>
+          <p>
+            அக்காலத்தில் வெளியூர் பயணங்களில் நம் கால்களே டாக்சியாக இருந்த காலத்தில் நம் பாட்டன்களின் பசியைப் போக்கிய வழிச் சோறு என்பது புளிச் சோறே! என்பது 100% உண்மை.!
+          </p>
+          <p>
+            எப்போதும் சுவை மிகுந்த உணவுகளின் பட்டியலில் டாப் 5 இல் இடம் பிடிக்கக் கூடிய ஒரு உணவு புளியோதரை.! உப்பு, இனிப்பு, புளிப்பு, துவர்ப்பு, கார்ப்பு, கசப்பு என அறு சுவைகளும் உள்ள உணவு புளியோதரை.. இதன் நிறத்திலேயே அதன் தரத்தை அறிந்துவிடலாம்.. இதன் புராணம் மிகச் சுவையானது!
+          </p>
+          <p>
+            புளியோதரைக்கு மணமும் நிறமும் இரு கண்கள்.. முதலில் புளியோதரைக்கு வடிக்கும் சாதத்தின் பதம் மிக முக்கியம்.. அது புதுமணத் தம்பதியர் போல பின்னிப் பிணைந்து குழைந்து இராமல்.. திருமணமாகி 10 ஆண்டுகள் ஆன தம்பதிகள் போல சற்று ஒட்டியும் ஒட்டாமலும் இருக்கும் பதமே சாலச் சிறந்தது..
+          </p>
+          <p>
+            அடுத்து நிறம்.! புளியோதரை ஆழ்ந்த மஞ்சளில் இருப்பது மிகச்சிறப்பு.! சாதத்தை வடித்து ஆறவிட்டு பயன்படுத்துதல் புளியோதரைக்கு சரியான சமையல் முறையாகும்..
+          </p>
+          <p>
+            அடுத்து எண்ணெய்.. நீங்கள் பில்கேட்ஸ் குடும்பமாக இருந்தாலும் எண்ணெய்க்கு பதிலாக நெய் எல்லாம் சேர்க்கக்கூடாது.. 'நல்லெண்ணெய்' என்னும் 'ஏக பத்தினி'-யை மட்டும் ஏற்றுக் கொள்வான் இந்த 'புளியோதரை என்னும் ராமச்சந்திர மூர்த்தி'! அதிலும் செக்கில் ஆட்டிய 'புனிதவதி எண்ணெய்' எனில் 'எந்தச் சீரும் வாங்காமல் சிறப்பாக இணைவான் இவன்'.
+          </p>
+          <p>
+            அடுத்து புளி.. நேற்று முளைத்த புதுப்புளி கூடாது.! பழம் புளியே புளிக் காய்ச்சல் செய்வதற்கு மிகச் சிறந்தது.. புதுப்புளியில் செய்தால் புளியோதரை 'புளி'க்கு பிறந்த 'பூனை'யாகிவிடும்.! பழம் புளியில் தான் அது புலியாகும்!
+          </p>
+          <p>
+            அடுத்து மிளகாய்.. நல்ல தரமான வதக்கும் போதே நெடியேறும்.. காரசார காய்ந்த மிளகாய்தான் பெரும் சிறப்பு.. அடுத்து இதற்கு மிகுந்த சுவை சேர்ப்பது கடலைப் பருப்புகள்.! கடலைப் பருப்பும் புளியோதரையும் நல்ல நண்பர்கள்! நல்லெண்ணெய் கமகமக்க ஒரு வாய் அள்ளிச் சுவைக்கையில் வாயில் அரைபடும் புளியோதரையின் கடலைப் பருப்பு பத்து பாதாம் பருப்புகளுக்குச் சமம்.!
+          </p>
+          <p>
+            புளியோதரைக்கு மிகப் பொருத்தமான சாம்பார் இருப்பது அவசியம். இஞ்சி, பருப்பு, புதினா, கடலை, நவதானியம், இப்படி தேங்காய் சேர்க்காது புளி சேர்த்து அரைக்கும் துவையல்கள் நீண்ட நாள் உபயோகத்திற்கு.. பொட்டுக் கடலை தேங்காய் வைத்து அரைக்கும் துவையல் இன்ஸ்டண்ட் சுவர்க்கம்.!
+          </p>
+          <p>
+            மதுரையில் சித்திரான்னங்களுக்கு பெயர் பெற்ற ஸௌராஷ்ட்ரா ஸமூக நண்பர்களுடன் பழகிய போது தான் 'ஒரு உலக உண்மையை இவ்வளவு நாள் அறிந்திராது இருந்திருக்கிறோமே' என்று உள் மனது 'உரைத்த' போது 'உறைத்தது'. ஸௌராஷ்ட்ரர்கள் செய்யும் புளியோதரை புளியோதரைகளின் மஹாராணி! அவர்கள் செய்யும் புளியோதரையை சாப்பிட்டவர்கள், இந்த ஜென்மத்தில் மற்ற புளியோதரை சாதத்தை ஒரு சிற்றரசி ஸ்தானத்தில் கூட வைக்க முடியாது. அவ்வளவு ருசியாக இருக்கும்.
+          </p>
+          <p>
+            ஸௌராஷ்ட்ரர்கள் வீட்டில் செய்யும் புளியோதரைக்கு கருப்பு கொண்டைக் கடலை சுண்டலை தந்தார்கள்.... பக்கத்தில் சிறிது கொளுமிச்சங்காய் ஊறுகாய் வைத்தார்கள். அசுவாரஸ்யாமாக சாப்பிட்டால் சுவை ஆஹா.. அள்ளியது..! கூடவே இஞ்சி மிளகாய் சட்னி வேறு! பக்கத்தில் கடிக்க தேங்காய் பத்தை (மதுரைத் தமிழில்...தேங்காய் சில்) ஒரு துண்டு வைத்தார்கள். ஆஹா... என்ன ஒரு காம்பினேஷன். என் வாழ் நாளில் மறக்கவே முடியாத நிலை.
+          </p>
+          <p>
+            ஆமாம்... அன்றைக்கு மாத்திரம் நான் நான்கு முறை திரும்பத் திரும்ப இலை நிறைய புளியோதரை சாப்பிட்டேன். இருந்தாலும், வயிற்றுப்போக்கு என்று... ஒரு கெடுதலும் செய்யவில்லை. எவ்வளவு ஆச்சரியம். "சொர்க்கத்தில் அறுசுவை உணவு உண்ணும் முன்பே இங்கேயே அதை அனுபவிக்க முடியும்" என்று அன்று என் உள் மனம் கருத்து சொன்னது.
+          </p>
+          <p>
+            "ஸௌராஷ்ட்ரர்கள் செய்யும் புளியோதரைகளுக்கு நான் ஹேமநாத பாகவதர் பாண்டிய நாட்டிற்கு அடிமை என எழுதித் தந்தது போல எழுதித் தரச் சொன்னால்... கொஞ்சமும் தயங்காமல் மனதார எழுதித் தருவேன்." கோவில்களில், பெருமாளே வந்து கையேந்தும் பக்குவத்தில் மிகப் பிரமாதமாகச் செய்வார்கள். புளியோதரையை புண்ணியச் சோறு என்பார்!
+          </p>
+          <p>
+            கல்யாண சமையல் சாதம் என்ற மாயாபஜார் படப் பாடல் வரிகளில்.. “புளியோதரையில் சோறு மிகப் பொருத்தமாய் சாம்பாரு” போல அருமையான புளியோதரை கிடைத்துவிட்டால் நாம் எல்லாருமே கடோத்கஜன்கள் தானே!!!
+          </p>
+          <span className="rrSujathaAuthor">— எழுத்தாளர் சுஜாதா.</span>
         </div>
       </section>
 
@@ -395,8 +368,8 @@ export const About = () => (
             <div className="rrCardGlare" />
             <div className="rrSmallIcon"><Sparkles size={18} /></div>
             <span>THE CRAFT</span>
-            <h3>No Commercial Compromise</h3>
-            <p>We completely reject artificial enhancers, emulsifiers, MSG, or synthetic red dyes. What goes into our pack is 100% natural spice.</p>
+            <h3>Pure Kitchen Philosophy</h3>
+            <p>We craft our blends using 100% natural, farm-picked spices with authentic aroma and therapeutic purity.</p>
           </article>
           <article className="rrHeritageCard">
             <div className="rrCardGlare" />
@@ -411,7 +384,7 @@ export const About = () => (
       <section className="rrQuote">
         <span className="rrSectionEyebrow">04 · CUSTOMER PROMISE</span>
         <blockquote>
-          “Purity is not a feature we market; it is the fundamental vow of our kitchen.”
+          “Purity is the fundamental vow of our kitchen.”
         </blockquote>
         <p>Formulated, batch-tested, and packaged under strict FSSAI compliance standards in Tamil Nadu, India.</p>
       </section>
@@ -590,7 +563,7 @@ const POLICY_DATA = {
     intro: "The formal legal agreement governing transactions, pricing integrity, and platform usage on the RR MASALA storefront.",
     cards: [
       ["01", "Pricing & Invoicing", "All prices listed on the store are inclusive of statutory GST. Invoices accompany every package detailing batch number and packing date."],
-      ["02", "Batch Purity Variance", "Because our spices are 100% natural without artificial dyes, slight shade variations may occur between seasonal crop harvests."],
+      ["02", "Batch Purity Variance", "Because our spices are 100% natural, slight shade variations may occur between seasonal crop harvests."],
       ["03", "Order Acceptance", "We reserve the right to decline or cancel orders in cases of demonstrable typographical pricing errors or technical inventory discrepancies."],
       ["04", "Jurisdiction", "All commercial disputes, transactions, and claims arising from website purchases shall be subject to the exclusive jurisdiction of the courts of Tamil Nadu, India."],
     ],
@@ -610,7 +583,7 @@ export const Policy = ({ title }) => {
         <div className="rrPolicyTop">
           <div>
             <span className="rrSectionEyebrow">POLICY SPECIFICATIONS</span>
-            <h2>Transparent terms. No hidden clauses.</h2>
+            <h2>Transparent terms. Clear specifications.</h2>
           </div>
           <div className="rrPolicyUpdated">
             <Clock3 size={15} />
@@ -678,16 +651,16 @@ function OrderSuccessPage() {
 export { OrderSuccessPage as Success };
 
 /* =========================================================
-   EMBEDDED STYLES (CLEAN WHITE THEME + TOP SKY EXPORT ANIMATION)
+   EMBEDDED STYLES
 ========================================================= */
 export function InfoStyles() {
   return (
     <style>{`
-      /* Core Root Styling - Entire page is pure white */
+      /* Core Root Styling */
       .rrInfoPage,
       .rrSuccessPage {
         min-height: 100vh;
-        background: #ffffff; /* PURE WHITE BACKGROUND EVERYWHERE EXCEPT TOP SKY */
+        background: #ffffff;
         color: #1a1412;
         padding: 0 24px 80px;
         font-family: "DM Sans", system-ui, sans-serif;
@@ -695,409 +668,114 @@ export function InfoStyles() {
         overflow-x: hidden;
       }
 
-      /* 0. THEATER PRELOADER WHITE CLOTH CURTAIN */
-      .rrTheaterCurtain {
-        position: fixed !important;
-        inset: 0 !important;
-        z-index: 999999 !important;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        pointer-events: none;
-      }
-
-      .rrClothHalf {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 50%;
-        background: #ffffff;
-        box-shadow: inset 0 0 40px rgba(0,0,0,0.05);
-        transition: transform 1s cubic-bezier(0.7, 0, 0.3, 1) 0.2s;
-        will-change: transform;
-      }
-
-      .rrClothLeft {
-        left: 0;
-        transform-origin: left;
-        border-right: 1px solid rgba(0,0,0,0.05);
-      }
-
-      .rrClothRight {
-        right: 0;
-        transform-origin: right;
-        border-left: 1px solid rgba(0,0,0,0.05);
-      }
-
-      .rrClothFolds {
-        position: absolute;
-        inset: 0;
-        background: repeating-linear-gradient(
-          90deg,
-          transparent 0%,
-          rgba(0,0,0,0.03) 10%,
-          transparent 20%
-        );
-      }
-
-      .rrTheaterCurtain.isOpen .rrClothLeft {
-        transform: translateX(-100%);
-      }
-
-      .rrTheaterCurtain.isOpen .rrClothRight {
-        transform: translateX(100%);
-      }
-
-      .rrCurtainLogoBox {
-        position: relative;
-        z-index: 2;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-        transition: opacity 0.3s ease;
-      }
-
-      .rrTheaterCurtain.isOpen .rrCurtainLogoBox {
-        opacity: 0;
-      }
-
-      .rrCurtainLogoImg {
-        height: 190px;
-        object-fit: contain;
-        animation: rrCurtainPulse 1.5s ease-in-out infinite alternate;
-        filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));
-      }
-
-      .rrCurtainLoader {
-        width: 120px;
-        height: 2px;
-        background: rgba(0,0,0,0.1);
-        position: relative;
-        overflow: hidden;
-      }
-
-      .rrCurtainLoader::before {
-        content: "";
-        position: absolute;
-        top: 0; left: -100%;
-        width: 100%; height: 100%;
-        background: #fbb034;
-        animation: rrTheaterLoad 1.5s ease-in-out forwards;
-      }
-
-      @keyframes rrTheaterLoad {
-        0% { left: -100%; }
-        100% { left: 0; }
-      }
-      @keyframes rrCurtainPulse {
-        0% { transform: scale(0.95); opacity: 0.8; }
-        100% { transform: scale(1.05); opacity: 1; }
-      }
-
-      /* 1. TOP SKY EXPORT ANIMATION (LIMITED TO TOP 120PX ONLY) */
+      /* 1. TOP 120PX HERITAGE TAMIL NADU / MADURAI / SAURASHTRA STYLE TICKER */
       .rrTopSkyBackground {
         position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 120px; /* Reduced to strictly the marked yellow area */
-        background: linear-gradient(180deg, #090406 0%, #1a0b0e 100%);
+        top: 0; 
+        left: 0; 
+        right: 0;
+        height: 120px;
+        background: radial-gradient(ellipse at top, #240a0d 0%, #100406 100%);
+        border-bottom: 2px solid #b8860b;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 -1px 0 rgba(243, 146, 0, 0.4);
         overflow: hidden;
-        z-index: 1;
+        z-index: 5;
+        display: flex;
+        align-items: center;
       }
 
-      .rrCinematicCanopy {
-        position: absolute;
-        inset: 0;
-      }
-
-      .rrStar {
-        position: absolute;
-        width: 2px; height: 2px;
-        background: #ffffff;
-        border-radius: 50%;
-        animation: rrStarTwinkle 4s infinite alternate;
-      }
-      .rrStar1 { top: 10%; left: 15%; }
-      .rrStar2 { top: 30%; left: 40%; }
-      .rrStar3 { top: 15%; left: 85%; }
-      .rrStar4 { top: 40%; left: 10%; }
-      .rrStar5 { top: 5%; left: 60%; }
-      .rrStar6 { top: 50%; left: 75%; }
-      .rrStar7 { top: 20%; left: 92%; }
-      .rrStar8 { top: 8%; left: 30%; }
-      .rrStar9 { top: 35%; left: 52%; }
-      .rrStar10 { top: 18%; left: 5%; }
-      .rrStar11 { top: 60%; left: 25%; }
-      .rrStar12 { top: 70%; left: 48%; }
-      .rrStar13 { top: 65%; left: 88%; }
-      .rrStar14 { top: 55%; left: 22%; }
-      .rrStar15 { top: 78%; left: 58%; }
-
-      @keyframes rrStarTwinkle {
-        0% { opacity: 0.2; }
-        100% { opacity: 1; }
-      }
-
-      /* Export Skyway Flowing Left to Right */
-      .rrExportSkyway {
-        position: absolute;
-        inset: 0;
-      }
-
-      .rrCssAircraft {
-        position: absolute;
+      .rrTickerTrack {
+        display: flex;
+        align-items: center;
+        width: max-content;
+        gap: 28px;
+        animation: rrTickerScroll 28s linear infinite;
         will-change: transform;
-        opacity: 0;
-        transform: scale(0.65); /* Scale down to fit in 120px */
       }
 
-      .rrNavLight {
-        position: absolute;
-        width: 3px; height: 3px;
+      .rrTickerTrack:hover {
+        animation-play-state: paused;
+      }
+
+      @keyframes rrTickerScroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
+
+      /* Madurai Heritage Antique Glass Pill */
+      .rrTickerItem {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        background: linear-gradient(135deg, rgba(74, 18, 22, 0.45) 0%, rgba(20, 5, 7, 0.65) 100%);
+        border: 1px solid rgba(243, 146, 0, 0.35);
+        border-radius: 999px;
+        padding: 6px 20px 6px 8px;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 215, 0, 0.2);
+        flex-shrink: 0;
+        position: relative;
+      }
+
+      /* Saurashtra Brass / Temple Gold Coin Frame */
+      .rrTickerImgBox {
+        width: 54px;
+        height: 54px;
         border-radius: 50%;
-        animation: rrBlinkNav 1s infinite;
+        background: radial-gradient(circle, #3d1419 0%, #160608 100%);
+        display: grid;
+        place-items: center;
+        border: 1.5px solid #d4af37;
+        box-shadow: 0 0 10px rgba(212, 175, 55, 0.25), inset 0 0 8px rgba(0, 0, 0, 0.7);
+        overflow: hidden;
+        flex-shrink: 0;
       }
-      .rrNavLight--red { background: #ff2a2a; }
-      .rrNavLight--green { background: #2aff2a; }
-      .rrNavLight--white { background: #ffffff; animation: rrBlinkNavFast 0.5s infinite; }
 
-      @keyframes rrBlinkNav { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
-      @keyframes rrBlinkNavFast { 0%, 20% { opacity: 1; } 21%, 100% { opacity: 0; } }
+      .rrTickerImgBox img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.5));
+      }
 
-      .rrHangingCargo {
-        position: absolute;
-        bottom: -35px;
-        left: 50%;
-        transform: translateX(-50%);
+      .rrTickerInfo {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        animation: rrCargoSwing 2.5s ease-in-out infinite alternate;
-        transform-origin: top center;
-      }
-      .rrCargoCable {
-        width: 1px;
-        height: 16px;
-        background: rgba(255, 255, 255, 0.4);
-      }
-      .rrCargoBoxImg {
-        width: 18px;
-        height: auto;
-        object-fit: contain;
+        gap: 3px;
       }
 
-      @keyframes rrCargoSwing {
-        0% { transform: translateX(-50%) rotate(-5deg); }
-        100% { transform: translateX(-50%) rotate(5deg); }
+      /* Temple Inscription Style Badge */
+      .rrTickerTag {
+        font-size: 9px;
+        font-weight: 900;
+        letter-spacing: 1.8px;
+        color: #f5b335;
+        text-transform: uppercase;
+        font-family: system-ui, sans-serif;
+        text-shadow: 0 0 6px rgba(245, 179, 53, 0.4);
       }
 
-      /* Base Plane Animation - All go left to right sequentially */
-      @keyframes rrFlyLeftToRight {
-        0% { transform: translateX(-150px) scale(0.65); opacity: 0; }
-        5% { opacity: 1; }
-        95% { opacity: 1; }
-        100% { transform: translateX(110vw) scale(0.65); opacity: 0; }
+      /* Madurai / Tamil Nadu Heritage Royal Serif Typography */
+      .rrTickerName {
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 17px;
+        font-weight: 700;
+        color: #fff9e6;
+        letter-spacing: 0.8px;
+        white-space: nowrap;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
       }
 
-      /* Plane 1 - Jumbo Export Cargo */
-      .rrCssPlane1 {
-        top: 10px;
-        width: 80px; height: 20px;
-        animation: rrFlyLeftToRight 24s linear infinite 0s;
-      }
-      .rrCssPlane1 .rrPlaneFuselage {
-        position: absolute;
-        top: 8px; left: 0;
-        width: 80px; height: 10px;
-        background: #ffffff;
-        border-radius: 50% 50% 40% 40% / 60% 60% 40% 40%;
-      }
-      .rrCssPlane1 .rrPlaneCockpit {
-        position: absolute;
-        top: 2px; right: 4px;
-        width: 8px; height: 4px;
-        background: #111;
-        border-radius: 2px 5px 0 0;
-      }
-      .rrCssPlane1 .rrPlaneBrand {
-        position: absolute;
-        top: 3px; left: 15px;
-        font-size: 3px; font-weight: 900; color: #9e1017;
-      }
-      .rrCssPlane1 .rrPlaneWingFront {
-        position: absolute;
-        top: 12px; left: 30px;
-        width: 25px; height: 8px;
-        background: #e6e6e6;
-        clip-path: polygon(0 0, 100% 0, 80% 100%, 20% 100%);
-        transform: rotate(-10deg);
-        z-index: 2;
-      }
-      .rrCssPlane1 .rrPlaneWingFront .rrNavLight { bottom: -1px; left: -1px; }
-      
-      .rrCssPlane1 .rrPlaneWingBack {
-        position: absolute;
-        top: 4px; left: 32px;
-        width: 20px; height: 6px;
-        background: #cccccc;
-        clip-path: polygon(0 100%, 100% 100%, 80% 0, 20% 0);
-        transform: rotate(10deg);
-        z-index: -1;
-      }
-      .rrCssPlane1 .rrPlaneWingBack .rrNavLight { top: -1px; left: -1px; }
-
-      .rrCssPlane1 .rrPlaneTail {
-        position: absolute;
-        top: 0; left: 3px;
-        width: 10px; height: 12px;
-      }
-      .rrCssPlane1 .rrPlaneTailFin {
-        position: absolute;
-        bottom: 5px; left: 0;
-        width: 8px; height: 10px;
-        background: #9e1017;
-        clip-path: polygon(0 100%, 100% 100%, 60% 0, 0 0);
-      }
-      .rrCssPlane1 .rrPlaneTail .rrNavLight { top: 1px; left: -1px; }
-
-      /* Helicopter 1 */
-      .rrCssHelicopter1 {
-        top: 25px;
-        width: 90px; height: 45px;
-        animation: rrFlyLeftToRight 24s linear infinite 6s;
-      }
-      /* Plane 2 - Fast Mid Altitude */
-      .rrCssPlane2 {
-        top: 40px;
-        width: 50px; height: 15px;
-        animation: rrFlyLeftToRight 24s linear infinite 12s;
-        z-index: 1;
-      }
-      .rrCssPlane2 .rrPlaneFuselage {
-        position: absolute;
-        top: 5px; left: 0;
-        width: 50px; height: 8px;
-        background: #d9d9d9;
-        border-radius: 50% / 60% 60% 40% 40%;
-      }
-      .rrCssPlane2 .rrPlaneCockpit {
-        position: absolute;
-        top: 1px; right: 3px;
-        width: 6px; height: 3px;
-        background: #000;
-        border-radius: 2px 4px 0 0;
-      }
-      .rrCssPlane2 .rrPlaneWingFront {
-        position: absolute;
-        top: 8px; left: 20px;
-        width: 16px; height: 6px;
-        background: #aaa;
-        clip-path: polygon(0 0, 100% 0, 70% 100%, 30% 100%);
-        transform: rotate(-10deg);
-        z-index: 2;
-      }
-      .rrCssPlane2 .rrPlaneWingBack {
-        position: absolute;
-        top: 2px; left: 22px;
-        width: 14px; height: 4px;
-        background: #777;
-        clip-path: polygon(0 100%, 100% 100%, 70% 0, 30% 0);
-        transform: rotate(10deg);
-        z-index: -1;
-      }
-      .rrCssPlane2 .rrPlaneTailFin {
-        position: absolute;
-        bottom: 6px; left: 3px;
-        width: 6px; height: 8px;
-        background: #2e7d32;
-        clip-path: polygon(0 100%, 100% 100%, 50% 0, 0 0);
+      /* Traditional Brass Bell / Accent Dot */
+      .rrTickerDot {
+        color: #d4af37;
+        font-size: 16px;
+        margin-left: 6px;
+        text-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
       }
 
-      /* Helicopter 2 */
-      .rrCssHelicopter2 {
-        top: 15px;
-        width: 90px; height: 45px;
-        animation: rrFlyLeftToRight 24s linear infinite 18s;
-      }
-
-      /* Shared Helicopter Parts */
-      .rrCssAircraft[class*="rrCssHeli"] .rrHeliCabin {
-        position: absolute;
-        top: 12px; left: 27px;
-        width: 38px; height: 26px;
-        background: #c41a22;
-        border-radius: 40% 60% 50% 50% / 50% 50% 40% 40%;
-        z-index: 2;
-      }
-      .rrCssAircraft[class*="rrCssHeli"] .rrHeliWindow {
-        position: absolute;
-        top: 4px; right: 4px;
-        width: 15px; height: 12px;
-        background: #aaccff;
-        border-radius: 3px 12px 3px 3px;
-        opacity: 0.8;
-      }
-      .rrCssAircraft[class*="rrCssHeli"] .rrHeliTail {
-        position: absolute;
-        top: 18px; left: 0;
-        width: 32px; height: 6px;
-        background: #9e1017;
-        border-radius: 3px 0 0 3px;
-        z-index: 1;
-      }
-      .rrCssAircraft[class*="rrCssHeli"] .rrHeliTailRotor {
-        position: absolute;
-        top: -6px; left: -3px;
-        width: 15px; height: 15px;
-        border-radius: 50%;
-        border: 1px solid rgba(255,255,255,0.2);
-        display: grid; place-items: center;
-      }
-      .rrCssAircraft[class*="rrCssHeli"] .rrHeliBladeSmall {
-        width: 1px; height: 12px; background: #fff;
-        animation: rrHeliRotorSpin 0.1s linear infinite;
-      }
-      .rrCssAircraft[class*="rrCssHeli"] .rrHeliMainRotor {
-        position: absolute;
-        top: 0; left: 30px;
-        width: 30px; height: 8px;
-        z-index: 3;
-      }
-      .rrCssAircraft[class*="rrCssHeli"] .rrHeliMainRotor::before {
-        content: ""; position: absolute;
-        bottom: 0; left: 14px;
-        width: 3px; height: 9px; background: #555;
-      }
-      .rrCssAircraft[class*="rrCssHeli"] .rrHeliBlade {
-        position: absolute;
-        top: -1px; left: -22px;
-        width: 75px; height: 1px;
-        background: rgba(255,255,255,0.8);
-        border-radius: 50%;
-        animation: rrHeliRotorSpin 0.15s linear infinite;
-      }
-      .rrCssAircraft[class*="rrCssHeli"] .rrHeliSkids {
-        position: absolute;
-        bottom: -1px; left: 30px;
-        width: 30px; height: 9px;
-        z-index: 1;
-      }
-      .rrCssAircraft[class*="rrCssHeli"] .rrHeliLeg {
-        position: absolute;
-        top: 0; width: 2px; height: 7px; background: #777;
-      }
-      .rrCssAircraft[class*="rrCssHeli"] .rrHeliLeg:nth-child(1) { left: 8px; }
-      .rrCssAircraft[class*="rrCssHeli"] .rrHeliLeg:nth-child(2) { right: 8px; }
-      .rrCssAircraft[class*="rrCssHeli"] .rrHeliRunner {
-        position: absolute;
-        bottom: 0; left: -3px;
-        width: 38px; height: 2px;
-        background: #ccc; border-radius: 1px;
-      }
-
-      @keyframes rrHeliRotorSpin { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
-
-      /* INFO SHELL Gap Fix (Directly below 120px sky) */
+      /* INFO SHELL (Exactly below 120px ticker) */
       .rrInfoShell {
         width: min(1280px, 100%);
         margin: 0 auto;
@@ -1106,7 +784,6 @@ export function InfoStyles() {
         padding-top: 140px; 
       }
 
-      /* Clean Back Button */
       .rrBack {
         display: inline-flex;
         align-items: center;
@@ -1125,7 +802,6 @@ export function InfoStyles() {
         transform: translateX(-3px);
       }
 
-      /* High-End Glass Header */
       .rrPageHeader {
         background: #ffffff;
         border: 1px solid rgba(158, 16, 23, 0.12);
@@ -1181,7 +857,6 @@ export function InfoStyles() {
         max-width: 820px;
       }
 
-      /* About Section Overrides */
       .rrAboutHero {
         background: #ffffff;
         border: 1px solid rgba(158, 16, 23, 0.12);
@@ -1232,7 +907,6 @@ export function InfoStyles() {
         color: #9e1017;
       }
 
-      /* Real Food Photography */
       .rrRealFoodVisual {
         display: grid;
         place-items: center;
@@ -1278,7 +952,6 @@ export function InfoStyles() {
       }
       .rrPhotoTag svg { color: #f39200; }
 
-      /* Number Strip */
       .rrNumberStrip {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -1312,7 +985,6 @@ export function InfoStyles() {
         line-height: 1.5;
       }
 
-      /* Story Block */
       .rrStoryBlock {
         display: grid;
         grid-template-columns: 220px 1fr;
@@ -1349,7 +1021,82 @@ export function InfoStyles() {
         color: #5d524c;
       }
 
-      /* Real Ingredients Photo Grid */
+      /* SUJATHA ARTICLE TAMIL SECTION STYLES (WITH PHOTO) */
+      .rrSujathaStory {
+        background: #fdfaf4;
+        border: 1px solid rgba(243, 146, 0, 0.3);
+        border-radius: 24px;
+        padding: 44px;
+        margin: 40px 0;
+        box-shadow: 0 8px 26px rgba(158, 16, 23, 0.04);
+      }
+      .rrSujathaHeaderWrap {
+        display: grid;
+        grid-template-columns: 170px 1fr;
+        gap: 28px;
+        align-items: center;
+        margin-bottom: 24px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid rgba(158, 16, 23, 0.1);
+      }
+      .rrSujathaPhotoCard {
+        position: relative;
+        width: 150px;
+        height: 190px;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 24px rgba(158, 16, 23, 0.15);
+        border: 3px solid #d4af37;
+        background: #1a0b0e;
+      }
+      .rrSujathaImg {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        filter: contrast(1.05);
+      }
+      .rrSujathaPhotoFrame {
+        position: absolute;
+        inset: 0;
+        box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.4);
+        pointer-events: none;
+      }
+      .rrSujathaTitleBox h2 {
+        margin: 8px 0 6px;
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: clamp(24px, 2.8vw, 34px);
+        color: #1a1412;
+        line-height: 1.35;
+        font-weight: 700;
+      }
+      .rrSujathaTag {
+        display: inline-block;
+        font-size: 13px;
+        font-weight: 800;
+        color: #9e1017;
+      }
+      .rrSujathaContent {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .rrSujathaContent p {
+        font-size: 15px;
+        line-height: 1.85;
+        color: #4a3e39;
+        margin: 0;
+        text-align: justify;
+      }
+      .rrSujathaAuthor {
+        display: block;
+        margin-top: 14px;
+        font-size: 16px;
+        font-weight: 800;
+        color: #9e1017;
+        text-align: right;
+      }
+
       .rrIngredientSection {
         padding: 50px 0;
         border-top: 1px solid rgba(158, 16, 23, 0.1);
@@ -1428,7 +1175,6 @@ export function InfoStyles() {
         color: #6a5e57;
       }
 
-      /* Heritage Grid */
       .rrHeritage {
         padding: 50px 0;
         border-top: 1px solid rgba(158, 16, 23, 0.1);
@@ -1461,9 +1207,7 @@ export function InfoStyles() {
         color: #ffffff;
         border-color: #1e0907;
       }
-      .rrHeritageCard.dark p {
-        color: #d1c3be;
-      }
+      .rrHeritageCard.dark p { color: #d1c3be; }
       .rrSmallIcon {
         width: 38px;
         height: 38px;
@@ -1493,7 +1237,6 @@ export function InfoStyles() {
         color: #6a5e57;
       }
 
-      /* Quote */
       .rrQuote {
         margin: 20px 0 60px;
         padding: 44px 30px;
@@ -1517,7 +1260,6 @@ export function InfoStyles() {
         color: #6a5e57;
       }
 
-      /* Contact Section */
       .rrContactIntro {
         background: #ffffff;
         border: 1px solid rgba(158, 16, 23, 0.12);
@@ -1618,7 +1360,6 @@ export function InfoStyles() {
         line-height: 1.6;
       }
 
-      /* FAQ */
       .rrFaqCategoryBar {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -1840,7 +1581,6 @@ export function InfoStyles() {
         opacity: 1;
       }
 
-      /* Policies */
       .rrPolicyTop {
         display: flex;
         justify-content: space-between;
@@ -1961,7 +1701,6 @@ export function InfoStyles() {
         color: #5d524c;
       }
 
-      /* Order Success Page */
       .rrSuccess {
         background: #ffffff;
         border: 1px solid rgba(158, 16, 23, 0.12);
@@ -2000,7 +1739,6 @@ export function InfoStyles() {
         gap: 14px;
       }
 
-      /* CTA Bottom Button */
       .rrBottomShop {
         display: flex;
         justify-content: center;
@@ -2040,7 +1778,6 @@ export function InfoStyles() {
         text-decoration: none;
       }
 
-      /* Scroll reveal animations */
       .rrReveal {
         opacity: 0;
         transform: translateY(20px);
@@ -2051,7 +1788,6 @@ export function InfoStyles() {
         transform: translateY(0);
       }
 
-      /* Responsive Rules */
       @media (max-width: 992px) {
         .rrInfoShell { padding-top: 130px; }
         .rrAboutHero { grid-template-columns: 1fr; }
@@ -2065,6 +1801,8 @@ export function InfoStyles() {
         .rrFaqPremiumGrid { grid-template-columns: 1fr; }
         .rrFaqIndex { position: relative; top: 0; }
         .rrPolicyGrid, .rrPolicyDetails { grid-template-columns: 1fr; }
+        .rrSujathaStory { padding: 28px; }
+        .rrSujathaHeaderWrap { grid-template-columns: 1fr; text-align: center; justify-items: center; }
       }
 
       @media (max-width: 600px) {
@@ -2079,6 +1817,8 @@ export function InfoStyles() {
         .rrPolicyContact { flex-direction: column; }
         .rrSuccess { padding: 40px 20px; }
         .rrSuccessActions { flex-direction: column; }
+        .rrSujathaStory { padding: 20px; }
+        .rrSujathaPhotoCard { width: 130px; height: 160px; }
       }
 
       @media (prefers-reduced-motion: reduce) {
