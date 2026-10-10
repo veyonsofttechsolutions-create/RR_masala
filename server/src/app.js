@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
@@ -142,9 +143,20 @@ app.use(
 // ==========================================
 
 app.get("/api/health", (req, res) => {
-  res.json({
-    success: true,
-    message: "RR MASALA API online",
+  const states = {
+    0: "disconnected",
+    1: "connected",
+    2: "connecting",
+    3: "disconnecting",
+  };
+
+  const connected = mongoose.connection.readyState === 1;
+
+  res.status(connected ? 200 : 503).json({
+    success: connected,
+    api: "online",
+    database: states[mongoose.connection.readyState] || "unknown",
+    readyState: mongoose.connection.readyState,
     time: new Date().toISOString(),
   });
 });
