@@ -11,6 +11,7 @@ import {
   ShoppingBag,
   ShieldCheck,
   Truck,
+  Info,
 } from "lucide-react";
 
 import { API } from "../api/http.js";
@@ -636,11 +637,11 @@ export default function ProductDetails() {
 
                   <div className="rrpd-detail-content">
                     <p>
-                      {product.weight
+                      {product.netQuantity || (product.weight
                         ? `${product.weight} ${
                             product.weightUnit || ""
                           }`
-                        : "Refer to the selected product package."}
+                        : "Refer to the selected product package.")}
                       {product.sku ? ` • SKU: ${product.sku}` : ""}
                     </p>
                   </div>
@@ -657,9 +658,51 @@ export default function ProductDetails() {
                       {product.storageInstructions ||
                         "Store in a cool, dry place away from direct sunlight."}
                       {product.shelfLife
-                        ? ` ${product.shelfLife}`
+                        ? ` Shelf Life: ${product.shelfLife}`
                         : ""}
                     </p>
+                  </div>
+                </details>
+
+                {/* EXTRA COMPLIANCE & FOOD INFO SECTION */}
+                <details>
+                  <summary>
+                    <span>Compliance, FSSAI & Manufacturer info</span>
+                    <ChevronRight size={17} />
+                  </summary>
+
+                  <div className="rrpd-detail-content">
+                    <div className="rrpd-compliance-subgrid">
+                      {product.fssaiLicenseNo && (
+                        <div>
+                          <span>FSSAI License No</span>
+                          <b>{product.fssaiLicenseNo}</b>
+                        </div>
+                      )}
+                      {product.manufacturerName && (
+                        <div>
+                          <span>Manufacturer</span>
+                          <b>{product.manufacturerName}</b>
+                        </div>
+                      )}
+                      {product.countryOfOrigin && (
+                        <div>
+                          <span>Country of Origin</span>
+                          <b>{product.countryOfOrigin}</b>
+                        </div>
+                      )}
+                      {product.consumerCarePhone && (
+                        <div>
+                          <span>Customer Care</span>
+                          <b>{product.consumerCarePhone}</b>
+                        </div>
+                      )}
+                    </div>
+                    {product.manufacturerAddress && (
+                      <p style={{ marginTop: "10px" }}>
+                        <b>Address:</b> {product.manufacturerAddress}
+                      </p>
+                    )}
                   </div>
                 </details>
               </div>
@@ -832,7 +875,7 @@ const styles = `
 
   .rrpd-product {
     display: grid;
-    grid-template-columns: minmax(0, 1.02fr) minmax(420px, .98fr);
+    grid-template-columns: minmax(0, 0.78fr) minmax(420px, 1.22fr);
     gap: clamp(38px, 6vw, 84px);
     align-items: start;
   }
@@ -841,6 +884,9 @@ const styles = `
     min-width: 0;
     position: sticky;
     top: 18px;
+    max-width: 440px;
+    margin: 0 auto;
+    width: 100%;
   }
 
   .rrpd-sale-badge {
@@ -1296,6 +1342,33 @@ const styles = `
     line-height: 1.75;
   }
 
+  .rrpd-compliance-subgrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 6px;
+  }
+
+  .rrpd-compliance-subgrid > div {
+    background: #fdfbf7;
+    border: 1px solid #ebd9cc;
+    padding: 8px 10px;
+    border-radius: 8px;
+  }
+
+  .rrpd-compliance-subgrid span {
+    display: block;
+    font-size: 9px;
+    color: #8c7f76;
+    text-transform: uppercase;
+    font-weight: 800;
+  }
+
+  .rrpd-compliance-subgrid b {
+    font-size: 11px;
+    color: var(--rrpd-brown-dark);
+  }
+
   .rrpd-trust {
     margin-top: 60px;
     border: 1px solid var(--rrpd-line);
@@ -1413,7 +1486,6 @@ const styles = `
     width: 100%;
   }
 
-  /* RELATED IMAGE FIX - ALWAYS COVER */
   .rrpd-related-image img {
     width: 100%;
     height: 100%;
@@ -1891,7 +1963,6 @@ const styles = `
     }
   }
 
-  /* RR MASALA — PRODUCT DETAILS WORLD-CLASS OVERRIDES */
   .rrpd-page{
     background:
       radial-gradient(circle at 4% 4%,rgba(169,15,25,.045),transparent 22%),
@@ -1910,7 +1981,6 @@ const styles = `
     background:#fff!important;
   }
 
-  /* MAIN IMAGE OVERRIDES */
   .rrpd-main-image{
     aspect-ratio: 1 / 1 !important;
     width: 100% !important;
@@ -1921,8 +1991,8 @@ const styles = `
   .rrpd-main-photo{
     width: 100% !important;
     height: 100% !important;
-    object-fit: cover !important; /* Changed from contain to cover */
-    padding: 0 !important; /* Removed padding so image spans entire box */
+    object-fit: cover !important;
+    padding: 0 !important;
     border-radius: 24px !important;
   }
 

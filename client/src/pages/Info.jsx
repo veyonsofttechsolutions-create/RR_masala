@@ -309,7 +309,7 @@ export const About = () => (
             ஆமாம்... அன்றைக்கு மாத்திரம் நான் நான்கு முறை திரும்பத் திரும்ப இலை நிறைய புளியோதரை சாப்பிட்டேன். இருந்தாலும், வயிற்றுப்போக்கு என்று... ஒரு கெடுதலும் செய்யவில்லை. எவ்வளவு ஆச்சரியம். "சொர்க்கத்தில் அறுசுவை உணவு உண்ணும் முன்பே இங்கேயே அதை அனுபவிக்க முடியும்" என்று அன்று என் உள் மனம் கருத்து சொன்னது.
           </p>
           <p>
-            "ஸௌராஷ்ட்ரர்கள் செய்யும் புளியோதரைகளுக்கு நான் ஹேமநாத பாகவதர் பாண்டிய நாட்டிற்கு அடிமை என எழுதித் தந்தது போல எழுதித் தரச் சொன்னால்... கொஞ்சமும் தயங்காமல் மனதார எழுதித் தருவேன்." கோவில்களில், பெருமாளே வந்து கையேந்தும் பக்குவத்தில் மிகப் பிரமாதமாகச் செய்வார்கள். புளியோதரையை புண்ணியச் சோறு என்பார்!
+            "ஸௌராஷ்ட்ரர்கள் செய்யும் புளியோதரைகளுக்கு நான் ஹேமநாத பாகவதர் பாண்டிய நாட்டிற்கு அடிமை என எழுதித் தரச் சொன்னால்... கொஞ்சமும் தயங்காமல் மனதார எழுதித் தருவேன்." கோவில்களில், பெருமாளே வந்து கையேந்தும் பக்குவத்தில் மிகப் பிரமாதமாகச் செய்வார்கள். புளியோதரையை புண்ணியச் சோறு என்பார்!
           </p>
           <p>
             கல்யாண சமையல் சாதம் என்ற மாயாபஜார் படப் பாடல் வரிகளில்.. “புளியோதரையில் சோறு மிகப் பொருத்தமாய் சாம்பாரு” போல அருமையான புளியோதரை கிடைத்துவிட்டால் நாம் எல்லாருமே கடோத்கஜன்கள் தானே!!!
@@ -1031,23 +1031,26 @@ export function InfoStyles() {
         box-shadow: 0 8px 26px rgba(158, 16, 23, 0.04);
       }
       .rrSujathaHeaderWrap {
-        display: grid;
-        grid-template-columns: 170px 1fr;
-        gap: 28px;
+        display: flex;
+        flex-direction: column;
         align-items: center;
+        text-align: center;
+        gap: 20px;
         margin-bottom: 24px;
         padding-bottom: 24px;
         border-bottom: 1px solid rgba(158, 16, 23, 0.1);
       }
       .rrSujathaPhotoCard {
         position: relative;
-        width: 150px;
-        height: 190px;
-        border-radius: 16px;
+        width: 120px;
+        height: 150px;
+        border-radius: 14px;
         overflow: hidden;
-        box-shadow: 0 10px 24px rgba(158, 16, 23, 0.15);
-        border: 3px solid #d4af37;
+        box-shadow: 0 8px 20px rgba(158, 16, 23, 0.15);
+        border: 2px solid #d4af37;
         background: #1a0b0e;
+        flex-shrink: 0;
+        margin: 0 auto;
       }
       .rrSujathaImg {
         width: 100%;
@@ -1062,19 +1065,25 @@ export function InfoStyles() {
         box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.4);
         pointer-events: none;
       }
+      .rrSujathaTitleBox {
+        text-align: center;
+        width: 100%;
+      }
       .rrSujathaTitleBox h2 {
         margin: 8px 0 6px;
         font-family: "Cormorant Garamond", Georgia, serif;
-        font-size: clamp(24px, 2.8vw, 34px);
+        font-size: clamp(22px, 2.5vw, 30px);
         color: #1a1412;
         line-height: 1.35;
         font-weight: 700;
+        text-align: center;
       }
       .rrSujathaTag {
         display: inline-block;
         font-size: 13px;
         font-weight: 800;
         color: #9e1017;
+        text-align: center;
       }
       .rrSujathaContent {
         display: flex;
@@ -1802,7 +1811,6 @@ export function InfoStyles() {
         .rrFaqIndex { position: relative; top: 0; }
         .rrPolicyGrid, .rrPolicyDetails { grid-template-columns: 1fr; }
         .rrSujathaStory { padding: 28px; }
-        .rrSujathaHeaderWrap { grid-template-columns: 1fr; text-align: center; justify-items: center; }
       }
 
       @media (max-width: 600px) {
@@ -1818,7 +1826,7 @@ export function InfoStyles() {
         .rrSuccess { padding: 40px 20px; }
         .rrSuccessActions { flex-direction: column; }
         .rrSujathaStory { padding: 20px; }
-        .rrSujathaPhotoCard { width: 130px; height: 160px; }
+        .rrSujathaPhotoCard { width: 100px; height: 130px; }
       }
 
       @media (prefers-reduced-motion: reduce) {
