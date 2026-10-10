@@ -32,7 +32,7 @@ const PRODUCT_LINKS = [
 ];
 
 export function Layout() {
-  const { count = 0 } = useCart();
+  const { count = 0, toast } = useCart();
   const { items = [] } = useWishlist();
   const { user } = useAuth();
 
@@ -257,6 +257,16 @@ export function Layout() {
         <Outlet />
       </main>
 
+      {/* Toast Notification Popup */}
+      {toast && (
+        <div className="rrToastNotification">
+          <div className="rrToastContent">
+            <ShoppingCart size={18} />
+            <span>{toast}</span>
+          </div>
+        </div>
+      )}
+
       {/* Footer without FAQ link */}
       <footer className="rrFooter">
         <div className="rrFooterTop">
@@ -320,6 +330,46 @@ export function Layout() {
           <span>Pan-India & Global Express Dispatch</span>
         </div>
       </footer>
+
+      <style>{`
+        .rrToastNotification {
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          z-index: 9999;
+          animation: rrSlideUp 0.3s ease forwards;
+        }
+
+        .rrToastContent {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          background: #3b1b10;
+          color: #fff;
+          padding: 14px 20px;
+          border-radius: 12px;
+          box-shadow: 0 10px 25px rgba(59, 27, 16, 0.25);
+          font-size: 14px;
+          font-weight: 600;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .rrToastContent svg {
+          color: #ffca28;
+          flex-shrink: 0;
+        }
+
+        @keyframes rrSlideUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   );
 }
