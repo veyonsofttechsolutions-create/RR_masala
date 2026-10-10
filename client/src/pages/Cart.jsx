@@ -251,10 +251,7 @@ export default function Cart() {
                         <div className="rrQtyControl">
                           <button
                             type="button"
-                            disabled={
-                              isBusy ||
-                              quantity <= 1
-                            }
+                            disabled={isBusy}
                             onClick={() =>
                               updateQuantity(
                                 product,

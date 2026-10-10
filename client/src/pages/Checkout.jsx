@@ -603,7 +603,7 @@ export default function Checkout() {
 function CheckoutStyles() {
   return (
     <style>{`
-      .rrCheckoutPage { min-height: 100vh; background-color: #fbf7ef; font-family: "DM Sans", system-ui, sans-serif; padding-top: 32px; padding-bottom: 100px; box-sizing: border-box; }
+      .rrCheckoutPage { min-height: 100vh; background-color: #fbf7ef; font-family: "DM Sans", system-ui, sans-serif; padding-top: 32px; padding-bottom: 100px; box-sizing: border-box; width: 100%; overflow-x: hidden; }
       .rrCheckoutContainer { width: min(1180px, 92%); margin: 0 auto; display: grid; grid-template-columns: 1.4fr 0.9fr; gap: 24px; align-items: start; box-sizing: border-box; }
       
       .rrCheckoutEmpty { min-height: 80vh; display: flex; align-items: center; justify-content: center; background: #fbf7ef; padding: 20px; }
@@ -613,22 +613,23 @@ function CheckoutStyles() {
       .emptyBox p { color: #5e514c; font-size: 14px; margin: 0 0 30px; }
       .btnSolid { display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--rr-maroon, #9e1017), #c41a22); color: #fff; text-decoration: none; padding: 14px 30px; border-radius: 14px; font-weight: 800; box-shadow: 0 8px 20px rgba(158, 16, 23, 0.25); }
 
-      .rrLeftPanel { display: flex; flex-direction: column; gap: 20px; width: 100%; box-sizing: border-box; }
-      .rrHeaderRow { display: flex; align-items: center; gap: 16px; margin-bottom: 4px; }
-      .rrBackBtn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--rr-border, #e5b900); background: #fff; border-radius: 10px; padding: 10px 16px; font-weight: 800; font-size: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-      .rrHeaderRow h2 { margin: 0; font-size: 26px; font-weight: 700; color: #140d0b; font-family: 'Cormorant Garamond', serif; }
+      .rrLeftPanel { display: flex; flex-direction: column; gap: 20px; width: 100%; box-sizing: border-box; min-width: 0; }
+      .rrHeaderRow { display: flex; align-items: center; justify-content: flex-start; gap: 12px; margin-bottom: 4px; width: 100%; box-sizing: border-box; }
+      .rrBackBtn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--rr-border, #e5b900); background: #fff; border-radius: 10px; padding: 8px 14px; font-weight: 800; font-size: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.04); flex-shrink: 0; }
+      .rrHeaderRow h2 { margin: 0; font-size: 24px; font-weight: 700; color: #140d0b; font-family: 'Cormorant Garamond', serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       
       .rrErrorBanner { background: #fff0f1; border: 1px solid #ffd1d3; color: #9e1017; padding: 14px 18px; border-radius: 14px; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
       
       .rrCardBox { background: #ffffff; border-radius: 24px; padding: 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid rgba(158, 16, 23, 0.08); width: 100%; box-sizing: border-box; }
-      .rrCardHead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; }
+      .rrCardHead { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6; width: 100%; box-sizing: border-box; }
       .rrCardHead.borderNone { border-bottom: none; padding-bottom: 0; margin-bottom: 16px; }
       
-      .titleArea { display: flex; align-items: center; gap: 14px; }
-      .iconWrap { width: 44px; height: 44px; background: #fdf3e8; color: var(--rr-maroon, #9e1017); border-radius: 14px; display: grid; place-items: center; }
-      .titleArea h3 { margin: 0; font-size: 18px; font-weight: 800; color: #140d0b; }
-      .titleArea p { margin: 2px 0 0; font-size: 12px; color: #5e514c; }
-      .rrChangeBtn { background: transparent; border: 1px solid var(--rr-border, #e5b900); color: var(--rr-maroon, #9e1017); font-weight: 800; font-size: 13px; cursor: pointer; padding: 8px 16px; border-radius: 20px; transition: all 0.2s; }
+      .titleArea { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; }
+      .iconWrap { width: 42px; height: 42px; background: #fdf3e8; color: var(--rr-maroon, #9e1017); border-radius: 14px; display: grid; place-items: center; flex-shrink: 0; }
+      .titleArea > div { min-width: 0; flex: 1; }
+      .titleArea h3 { margin: 0; font-size: 16px; font-weight: 800; color: #140d0b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .titleArea p { margin: 2px 0 0; font-size: 11px; color: #5e514c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .rrChangeBtn { background: transparent; border: 1px solid var(--rr-border, #e5b900); color: var(--rr-maroon, #9e1017); font-weight: 800; font-size: 11px; cursor: pointer; padding: 6px 10px; border-radius: 20px; transition: all 0.2s; white-space: nowrap; flex-shrink: 0; }
       .rrChangeBtn:hover { background: #fdf3e8; }
       
       .rrSelectedAddressBox { background: #faf9f4; border: 1px solid #eef0ec; border-radius: 16px; padding: 20px; box-sizing: border-box; }
@@ -638,14 +639,18 @@ function CheckoutStyles() {
       .rrNoAddrPrompt { display: flex; align-items: center; justify-content: center; gap: 8px; height: 70px; font-weight: 700; color: var(--rr-maroon, #9e1017); cursor: pointer; border: 1px dashed rgba(158, 16, 23, 0.3); border-radius: 12px; background: #fff0f1; font-size: 13px; }
       
       .shipMethodStandard { display: flex; align-items: center; gap: 10px; background: #edf7f1; border: 1px solid #c8e6c9; padding: 16px; border-radius: 14px; font-weight: 700; color: #2e7d32; font-size: 13px; }
-      .shipMethodSelector { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
-      .shipBox { display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid #eee; border-radius: 14px; cursor: pointer; transition: all 0.2s; background: #faf9f4; }
+      .shipMethodSelector { display: grid; gap: 12px; grid-template-columns: 1fr; }
+      @media (min-width: 600px) {
+        .shipMethodSelector { grid-template-columns: 1fr 1fr; }
+      }
+      .shipBox { display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid #eee; border-radius: 14px; cursor: pointer; transition: all 0.2s; background: #faf9f4; box-sizing: border-box; width: 100%; min-width: 0; }
       .shipBox.active { border-color: var(--rr-maroon, #9e1017); background: #fff; box-shadow: 0 4px 12px rgba(158, 16, 23, 0.08); }
-      .shipBox input { accent-color: var(--rr-maroon, #9e1017); width: 16px; height: 16px; }
-      .shipBox svg { color: #8a7c75; }
+      .shipBox input { accent-color: var(--rr-maroon, #9e1017); width: 16px; height: 16px; flex-shrink: 0; }
+      .shipBox svg { color: #8a7c75; flex-shrink: 0; }
       .shipBox.active svg { color: var(--rr-maroon, #9e1017); }
-      .shipBox strong { display: block; font-size: 13px; color: #140d0b; }
-      .shipBox span { font-size: 11px; color: #5e514c; }
+      .shipBox > div { min-width: 0; flex: 1; }
+      .shipBox strong { display: block; font-size: 13px; color: #140d0b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .shipBox span { display: block; font-size: 11px; color: #5e514c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       
       .rrPaymentBox { display: flex; align-items: center; gap: 16px; padding: 16px; border: 2px solid var(--rr-maroon, #9e1017); border-radius: 16px; background: #faf9f4; }
       .upiIcon { width: 36px; height: 36px; object-fit: contain; }
