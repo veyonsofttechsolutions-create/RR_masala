@@ -7,6 +7,7 @@ import rateLimit from "express-rate-limit";
 import morgan from "morgan";
 
 import { env } from "./config/env.js";
+import { connectDB } from "./config/db.js";
 
 import auth from "./routes/auth.js";
 import products from "./routes/products.js";
@@ -59,7 +60,7 @@ const allowedOrigins = new Set([
 app.use(
   cors({
     origin(origin, callback) {
-      // Allow requests without an Origin header.
+      // Allow requests without an Origin header
       if (!origin) {
         return callback(null, true);
       }
@@ -142,23 +143,76 @@ app.use(
 // HEALTH CHECK
 // ==========================================
 
-app.get("/api/health", (req, res) => {
-  const states = {
-    0: "disconnected",
-    1: "connected",
-    2: "connecting",
-    3: "disconnecting",
-  };
+app.get("/api/health", async (req, res) => {
+  try {
+    // Establish MongoDB connection if not connected
+    await connectDB();
 
-  const connected = mongoose.connection.readyState === 1;
+    // Verify that MongoDB responds
+    if (!mongoose.connection.db) {
+      throw new Error(
+        "MongoDB connection exists, but database handle is unavailable."
+      );
+    }
 
-  res.status(connected ? 200 : 503).json({
-    success: connected,
-    api: "online",
-    database: states[mongoose.connection.readyState] || "unknown",
-    readyState: mongoose.connection.readyState,
-    time: new Date().toISOString(),
-  });
+    await mongoose.connection.db.admin().ping();
+
+    return res.status(200).json({
+      success: true,
+      api: "online",
+      database: "connected",
+      databasePing: "success",
+      readyState: mongoose.connection.readyState,
+      time: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("Health check database failure:", {
+      name: error.name,
+      message: error.message,
+      readyState: mongoose.connection.readyState,
+    });
+
+    return res.status(503).json({
+      success: false,
+      api: "online",
+      database: "disconnected",
+      readyState: mongoose.connection.readyState,
+      errorName: error.name || "DatabaseConnectionError",
+      error: error.message || "Unknown MongoDB connection error",
+      time: new Date().toISOString(),
+    });
+  }
+});
+
+// ==========================================
+// DATABASE CONNECTION MIDDLEWARE
+// ==========================================
+
+// Ensure MongoDB is connected before processing API routes.
+// The health endpoint above handles its own connection check.
+
+app.use("/api", async (req, res, next) => {
+  try {
+    await connectDB();
+    return next();
+  } catch (error) {
+    console.error("API database connection failed:", {
+      path: req.originalUrl,
+      name: error.name,
+      message: error.message,
+      readyState: mongoose.connection.readyState,
+    });
+
+    return res.status(503).json({
+      success: false,
+      code: "DATABASE_CONNECTION_FAILED",
+      message: "Unable to connect to the database.",
+      errorName: error.name || "DatabaseConnectionError",
+      error: error.message || "Unknown MongoDB connection error",
+      readyState: mongoose.connection.readyState,
+      time: new Date().toISOString(),
+    });
+  }
 });
 
 // ==========================================
@@ -232,5 +286,9 @@ app.use(notFound);
 // ==========================================
 
 app.use(errorHandler);
+
+// ==========================================
+// EXPORT APP
+// ==========================================
 
 export default app;
