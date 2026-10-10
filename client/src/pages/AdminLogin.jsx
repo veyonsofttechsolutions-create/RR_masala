@@ -25,18 +25,16 @@ function TheaterPreloader() {
   if (!render) return null;
 
   return (
-    <div className={`rrTheaterCurtain ${!loading ? "isOpen" : ""}`} aria-hidden="true">
-      <div className="rrClothHalf rrClothLeft">
-        <div className="rrClothFolds" />
-      </div>
-      <div className="rrClothHalf rrClothRight">
-        <div className="rrClothFolds" />
-      </div>
-      <div className="rrCurtainLogoBox">
-        <img src={ASSETS.logo} alt="RR MASALA" className="rrCurtainLogoImg" />
-        <div className="rrCurtainLoader" />
-      </div>
-    </div>
+    // <div className={`rrTheaterCurtain ${!loading ? "isOpen" : ""}`} aria-hidden="true">
+    //   <div className="rrClothHalf rrClothLeft">
+    //     <div className="rrClothFolds" />
+    //   </div>
+    //   <div className="rrClothHalf rrClothRight">
+    //     <div className="rrClothFolds" />
+    //   </div>
+    //  
+    // </div>
+    <div></div>
   );
 }
 
@@ -58,9 +56,13 @@ export default function AdminLogin() {
       setError("");
       setLoading(true);
       
-const res = await API.post("/api/login", { email, password });      
-      if (res.data?.token) {
-        localStorage.setItem("adminToken", res.data.token);
+      // FIXED ROUTE: Using standard auth login endpoint "/api/auth/login"
+      const res = await API.post("/auth/login", { email, password });      
+      
+      const token = res.data?.token || res.data?.data?.token;
+      if (token) {
+        localStorage.setItem("adminToken", token);
+        localStorage.setItem("token", token);
       }
       nav("/admin");
     } catch (err) {
@@ -137,7 +139,7 @@ const res = await API.post("/api/login", { email, password });
           height: 56px;
           border-radius: 12px;
           object-fit: cover;
-          background: #fff; /* White background highlight for logo contrast */
+          background: #fff;
           padding: 4px;
           box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
@@ -341,7 +343,6 @@ const res = await API.post("/api/login", { email, password });
       {/* LEFT SIDE - BRANDING */}
       <div className="loginLeft">
         <div className="brandTop">
-          {/* INTHA EDATHULA THAAN ACTUAL LOGO CHANGE PANNIRUKEN */}
           <img src={ASSETS.logo} alt="RR MASALA Logo" className="brandActualLogo" />
           <div className="brandTopText">
             <strong>RR MASALA</strong>
