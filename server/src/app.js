@@ -144,6 +144,12 @@ app.use(
 // ==========================================
 
 app.get("/api/health", async (req, res) => {
+  console.log("MongoDB environment diagnostic:", {
+  hasMongoUri: Boolean(process.env.MONGODB_URI),
+  mongoUriLength: process.env.MONGODB_URI?.length || 0,
+  vercelEnvironment: process.env.VERCEL_ENV || "unknown",
+  vercelRegion: process.env.VERCEL_REGION || "unknown",
+});
   try {
     // Establish MongoDB connection if not connected
     await connectDB();
